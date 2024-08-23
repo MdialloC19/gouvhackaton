@@ -5,7 +5,7 @@ import { Comptes } from '../../interfaces/comptes.interface';
 import { CreateCompteDto } from '../../dto/create-compte.dto';
 import { UpdateCompteDto } from '../../dto/update-compte.dto';
 import * as bcrypt from 'bcrypt';
-
+import * as crypto from 'crypto';
 @Injectable()
 export class ComptesService {
     constructor(
@@ -123,5 +123,18 @@ export class ComptesService {
         hashedPassword: string,
     ): Promise<boolean> {
         return bcrypt.compare(plainPassword, hashedPassword);
+    }
+
+    /**
+     * Génère un OTP (One-Time Password) aléatoire.
+     * @returns {string} - OTP généré.
+     */
+    generateOtp(): string {
+        return crypto.randomInt(1000, 9999).toString();
+    }
+
+    async hashSecret(secret) {
+        const salt = await bcrypt.genSalt(10);
+        return bcrypt.hash(secret, salt);
     }
 }

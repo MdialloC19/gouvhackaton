@@ -18,6 +18,9 @@ export class CreateCompteDto {
     @IsBoolean()
     isConfirmed?: boolean;
 
+    @IsString()
+    otp?: string;
+
     @IsMongoId()
     @IsNotEmpty()
     userId: string;

@@ -1,4 +1,5 @@
 import * as mongoose from 'mongoose';
+import { optimizeDeps } from 'vite';
 
 const ComptesSchema = new mongoose.Schema({
     idCardNumber: { type: Number, required: true },
@@ -10,6 +11,7 @@ const ComptesSchema = new mongoose.Schema({
         required: true,
     },
     isDeleted: { type: Boolean, default: false },
+    otp: { type: Number, required: false },
     createdAt: { type: Date, default: Date.now },
 });
 
