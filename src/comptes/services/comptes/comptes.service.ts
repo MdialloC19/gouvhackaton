@@ -9,7 +9,7 @@ import * as crypto from 'crypto';
 @Injectable()
 export class ComptesService {
     constructor(
-        @InjectModel('Comptes') private readonly comptesModel: Model<Comptes>,
+        @InjectModel('Compte') private readonly comptesModel: Model<Comptes>,
     ) {}
 
     async createCompte(createCompteDto: CreateCompteDto): Promise<Comptes> {
@@ -31,6 +31,12 @@ export class ComptesService {
         createCompteDto.password = hashedPassword;
 
         const compte = new this.comptesModel(createCompteDto);
+        if (!compte) {
+            throw new HttpException(
+                'Impossible de créer un compte pour cet utilisateur',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
         return compte.save();
     }
 

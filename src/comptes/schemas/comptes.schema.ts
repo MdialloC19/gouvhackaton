@@ -11,7 +11,7 @@ const ComptesSchema = new mongoose.Schema({
         required: true,
     },
     isDeleted: { type: Boolean, default: false },
-    otp: { type: Number, required: false },
+    otp: { type: String, required: false },
     createdAt: { type: Date, default: Date.now },
 });
 

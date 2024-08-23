@@ -8,13 +8,14 @@ import { User } from '../../interfaces/users.interface';
 @Injectable()
 export class UsersService {
     constructor(
-        @InjectModel('Users') private readonly usersModel: Model<User>,
+        @InjectModel('User') private readonly usersModel: Model<User>,
     ) {}
 
     async createUser(createUserDto: CreateUserDto): Promise<User> {
         const existingUser = await this.usersModel.findOne({
             number: createUserDto.number,
         });
+
         if (existingUser) {
             throw new HttpException(
                 'Le numéro de téléphone existe déjà.',

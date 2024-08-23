@@ -19,6 +19,7 @@ import { UsersService } from 'src/users/services/users/users.service';
 import { loginCompteDto } from 'src/comptes/dto/login-compte.dto';
 import { VerifyOtpDto } from 'src/comptes/dto/verify-otp.dto';
 import { SmsService } from 'src/utils/sms/services/sms/sms.service';
+import { MongoServerError } from 'mongodb';
 
 @Controller('comptes')
 export class ComptesController {
@@ -43,9 +44,12 @@ export class ComptesController {
             const secretOtp = await this.comptesService.generateOtp();
             const hashedOtp = await this.comptesService.hashSecret(secretOtp);
 
+            const castNumber = '+221' + createUserDto.number;
+
             const sendSMS = await this.smsService.sendSMSAndSave(secretOtp, [
-                createUserDto.number.toString(),
+                castNumber,
             ]);
+
             if (!sendSMS) {
                 throw new HttpException(
                     "Impossible d'envoyer le SMS de vérification",
@@ -73,6 +77,7 @@ export class ComptesController {
                 data: compte,
             };
         } catch (error) {
+            console.log(error);
             return this.handleError(error);
         }
     }
@@ -158,8 +163,10 @@ export class ComptesController {
         try {
             const compte =
                 await this.comptesService.createCompte(createCompteDto);
+            console.log('creer compte', compte);
             return compte;
         } catch (error) {
+            console.log(error);
             return this.handleError(error);
         }
     }
@@ -264,6 +271,28 @@ export class ComptesController {
                 message: error.message,
                 statusCode: error.getStatus(),
             };
+        } else if (error instanceof MongoServerError) {
+            switch (error.code) {
+                case 11000:
+                    const duplicateField = Object.keys(error.keyValue)[0];
+                    return {
+                        success: false,
+                        message: `Un utilisateur avec ce ${duplicateField} existe déjà.`,
+                        statusCode: HttpStatus.BAD_REQUEST,
+                    };
+                case 121:
+                    return {
+                        success: false,
+                        message: `Échec de la validation du document: ${error.errmsg}`,
+                        statusCode: HttpStatus.BAD_REQUEST,
+                    };
+                default:
+                    return {
+                        success: false,
+                        message: `Erreur MongoDB: ${error.message}`,
+                        statusCode: HttpStatus.INTERNAL_SERVER_ERROR,
+                    };
+            }
         } else {
             return {
                 success: false,

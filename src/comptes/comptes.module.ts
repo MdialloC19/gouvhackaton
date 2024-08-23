@@ -3,16 +3,19 @@ import { ComptesController } from './controllers/comptes/comptes.controller';
 import { ComptesService } from './services/comptes/comptes.service';
 import { MongooseModule } from '@nestjs/mongoose';
 import { ComptesSchema } from './schemas/comptes.schema';
-import { UsersSchema } from '../users/schemas/users.schema';
-import { UsersService } from '../users/services/users/users.service';
+import { SmsSchema } from 'src/utils/sms/schemas/sms.schema';
+import { SmsService } from 'src/utils/sms/services/sms/sms.service';
+import { UsersModule } from '../users/users.module';
 
 @Module({
     imports: [
-        MongooseModule.forFeature([{ name: 'Comptes', schema: ComptesSchema }]),
-        MongooseModule.forFeature([{ name: 'Users', schema: UsersSchema }]),
+        MongooseModule.forFeature([
+            { name: 'Compte', schema: ComptesSchema },
+            { name: 'Sms', schema: SmsSchema },
+        ]),
+        UsersModule,
     ],
-
-    providers: [ComptesService, UsersService],
+    providers: [ComptesService, SmsService],
     controllers: [ComptesController],
 })
 export class ComptesModule {}
