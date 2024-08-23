@@ -2,8 +2,8 @@ import {
     Controller,
     Get,
     Post,
+    Put,
     Body,
-    Patch,
     Param,
     Query,
     Delete,
@@ -93,7 +93,7 @@ export class UsersController {
         }
     }
 
-    @Patch(':id')
+    @Put(':id')
     @UsePipes(new ValidationPipe())
     async updateUser(
         @Param('id') id: string,

@@ -20,4 +20,7 @@ export class CreateUserDto {
     @IsNumber()
     @IsNotEmpty()
     idCardNumber: number;
+
+    @IsNotEmpty()
+    password: string;
 }
