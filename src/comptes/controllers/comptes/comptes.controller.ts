@@ -10,6 +10,7 @@ import {
     HttpException,
     HttpStatus,
     Put,
+    HttpCode,
 } from '@nestjs/common';
 import { ComptesService } from '../../services/comptes/comptes.service';
 import { CreateCompteDto } from '../../dto/create-compte.dto';
@@ -20,6 +21,7 @@ import { loginCompteDto } from 'src/comptes/dto/login-compte.dto';
 import { VerifyOtpDto } from 'src/comptes/dto/verify-otp.dto';
 import { SmsService } from 'src/utils/sms/services/sms/sms.service';
 import { MongoServerError } from 'mongodb';
+import { Schema } from 'mongoose';
 
 @Controller('comptes')
 export class ComptesController {
@@ -81,7 +83,7 @@ export class ComptesController {
             return this.handleError(error);
         }
     }
-
+    @HttpCode(HttpStatus.OK)
     @Post('login')
     @UsePipes(new ValidationPipe())
     async loginCompte(@Body() loginCompteDto: loginCompteDto) {
@@ -120,7 +122,7 @@ export class ComptesController {
             return this.handleError(error);
         }
     }
-    @Post('verifyOtp')
+    @Post('verify-otp')
     @UsePipes(new ValidationPipe())
     async verifyOtp(@Body() verifyOtpDto: VerifyOtpDto) {
         try {
@@ -147,26 +149,19 @@ export class ComptesController {
                 );
             }
 
-            //JWT token generation can be added here if needed, after i will do it
+            const updatedCompte = await this.comptesService.updateCompte(
+                compte._id,
+                {
+                    isConfirmed: true,
+                },
+            );
 
             return {
                 success: true,
-                message: 'Connexion réussie',
-                data: compte,
+                message: 'OTP vérifié avec succès, compte confirmé',
+                data: updatedCompte,
             };
         } catch (error) {
-            return this.handleError(error);
-        }
-    }
-
-    async createCompte(createCompteDto: CreateCompteDto) {
-        try {
-            const compte =
-                await this.comptesService.createCompte(createCompteDto);
-            console.log('creer compte', compte);
-            return compte;
-        } catch (error) {
-            console.log(error);
             return this.handleError(error);
         }
     }
@@ -186,7 +181,7 @@ export class ComptesController {
     }
 
     @Get(':id')
-    async getCompteById(@Param('id') id: string) {
+    async getCompteById(@Param('id') id: Schema.Types.ObjectId) {
         try {
             const compte = await this.comptesService.getCompteById(id);
             return {
@@ -200,7 +195,7 @@ export class ComptesController {
     }
 
     @Get('user/:userId')
-    async getCompteByUserId(@Param('userId') userId: string) {
+    async getCompteByUserId(@Param('userId') userId: Schema.Types.ObjectId) {
         try {
             const compte = await this.comptesService.getCompteByUserId(userId);
             return {
@@ -229,10 +224,72 @@ export class ComptesController {
         }
     }
 
+    @Put('change-password/:userId')
+    async changePassword(
+        @Body()
+        body: {
+            oldPassword: string;
+            newPassword: string;
+        },
+        @Param('userId') userId: Schema.Types.ObjectId,
+    ) {
+        try {
+            const { oldPassword, newPassword } = body;
+
+            if (!userId || !oldPassword || !newPassword) {
+                throw new HttpException(
+                    'Veuillez fournir tous les champs requis.',
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
+
+            const result = await this.comptesService.changePassword(
+                userId,
+                oldPassword,
+                newPassword,
+            );
+            return {
+                success: true,
+                message: 'Mot de passe changé avec succès',
+                data: result,
+            };
+        } catch (error) {
+            return this.handleError(error);
+        }
+    }
+
+    @Put('reset-password')
+    async resetPassword(
+        @Body() body: { newPassword: string },
+        @Param('userId') userId: Schema.Types.ObjectId,
+    ) {
+        try {
+            const { newPassword } = body;
+
+            if (!userId || !newPassword) {
+                throw new HttpException(
+                    'Veuillez fournir tous les champs requis.',
+                    HttpStatus.BAD_REQUEST,
+                );
+            }
+
+            const result = await this.comptesService.resetPassword(
+                userId,
+                newPassword,
+            );
+            return {
+                success: true,
+                message: 'Mot de passe réinitialisé avec succès',
+                data: result,
+            };
+        } catch (error) {
+            return this.handleError(error);
+        }
+    }
     @Put(':id')
     @UsePipes(new ValidationPipe())
     async updateCompte(
-        @Param('id') id: string,
+        @Param('id') id: Schema.Types.ObjectId,
         @Body() updateCompteDto: UpdateCompteDto,
     ) {
         try {
@@ -251,7 +308,7 @@ export class ComptesController {
     }
 
     @Delete(':id')
-    async deleteCompte(@Param('id') id: string) {
+    async deleteCompte(@Param('id') id: Schema.Types.ObjectId) {
         try {
             const deletedCompte = await this.comptesService.deleteCompte(id);
             return {
@@ -260,6 +317,17 @@ export class ComptesController {
                 data: deletedCompte,
             };
         } catch (error) {
+            return this.handleError(error);
+        }
+    }
+    async createCompte(createCompteDto: CreateCompteDto) {
+        try {
+            const compte =
+                await this.comptesService.createCompte(createCompteDto);
+            console.log('creer compte', compte);
+            return compte;
+        } catch (error) {
+            console.log(error);
             return this.handleError(error);
         }
     }

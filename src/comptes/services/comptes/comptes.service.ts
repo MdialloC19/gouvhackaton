@@ -1,11 +1,12 @@
 import { Injectable, HttpException, HttpStatus } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Schema } from 'mongoose';
 import { Comptes } from '../../interfaces/comptes.interface';
 import { CreateCompteDto } from '../../dto/create-compte.dto';
 import { UpdateCompteDto } from '../../dto/update-compte.dto';
 import * as bcrypt from 'bcrypt';
 import * as crypto from 'crypto';
+
 @Injectable()
 export class ComptesService {
     constructor(
@@ -40,14 +41,67 @@ export class ComptesService {
         return compte.save();
     }
 
+    async resetPassword(
+        userId: Schema.Types.ObjectId,
+        newPassword: string,
+    ): Promise<boolean> {
+        const compte = await this.getCompteByUserId(userId);
+        if (!compte) {
+            throw new HttpException(
+                'Compte introuvable.',
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        const updateCompteDto: UpdateCompteDto = {
+            password: newPassword,
+        };
+
+        await this.updateCompte(compte._id, updateCompteDto);
+
+        return true;
+    }
+
+    async changePassword(
+        userId: Schema.Types.ObjectId,
+        oldPassword: string,
+        newPassword: string,
+    ): Promise<boolean> {
+        const compte = await this.getCompteByUserId(userId);
+        if (!compte) {
+            throw new HttpException(
+                'Compte introuvable.',
+                HttpStatus.NOT_FOUND,
+            );
+        }
+
+        const isPasswordValid = await bcrypt.compare(
+            oldPassword,
+            compte.password,
+        );
+        if (!isPasswordValid) {
+            throw new HttpException(
+                'Mot de passe actuel incorrect.',
+                HttpStatus.BAD_REQUEST,
+            );
+        }
+
+        const updateCompteDto: UpdateCompteDto = {
+            password: newPassword,
+        };
+
+        await this.updateCompte(compte._id, updateCompteDto);
+
+        return true;
+    }
+
     async updateCompte(
-        compteId: string,
+        compteId: Schema.Types.ObjectId,
         updateCompteDto: UpdateCompteDto,
     ): Promise<Comptes> {
         if (updateCompteDto.password) {
-            updateCompteDto.password = await bcrypt.hash(
+            updateCompteDto.password = await this.hashSecret(
                 updateCompteDto.password,
-                10,
             );
         }
 
@@ -65,7 +119,7 @@ export class ComptesService {
         return compte;
     }
 
-    async deleteCompte(compteId: string): Promise<Comptes> {
+    async deleteCompte(compteId: Schema.Types.ObjectId): Promise<Comptes> {
         const compte = await this.comptesModel.findByIdAndUpdate(
             compteId,
             { isDeleted: true },
@@ -80,7 +134,7 @@ export class ComptesService {
         return compte;
     }
 
-    async getCompteByUserId(userId: string): Promise<Comptes> {
+    async getCompteByUserId(userId: Schema.Types.ObjectId): Promise<Comptes> {
         const compte = await this.comptesModel.findOne({ userId });
         if (!compte) {
             throw new HttpException(
@@ -91,7 +145,7 @@ export class ComptesService {
         return compte;
     }
 
-    async getCompteById(compteId: string): Promise<Comptes> {
+    async getCompteById(compteId: Schema.Types.ObjectId): Promise<Comptes> {
         const compte = await this.comptesModel.findById(compteId);
         if (!compte) {
             throw new HttpException(
