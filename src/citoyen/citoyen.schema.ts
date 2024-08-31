@@ -1,5 +1,4 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
 import { User } from '../user/user.schema';
 
 @Schema()
@@ -15,6 +14,10 @@ export class Citoyen extends User {
   mothersSurname: string;
   @Prop()
   maritalStatus: string; 
+  @Prop()
+  address: string; 
+  
+
 }
 
 export const CitoyenSchema = SchemaFactory.createForClass(Citoyen);

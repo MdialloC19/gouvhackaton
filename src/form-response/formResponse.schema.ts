@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Request } from '../request/request.schema';
-import { Field } from '../form/field.schema';
+import { Field } from '../service/field.schema';
 
 @Schema()
 export class FormResponse extends Document {

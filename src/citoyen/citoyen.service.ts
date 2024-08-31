@@ -1,26 +1,45 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Citoyen } from './citoyen.schema';
 import { CreateCitoyenDto } from './dto/create-citoyen.dto';
 import { UpdateCitoyenDto } from './dto/update-citoyen.dto';
 
 @Injectable()
 export class CitoyenService {
-  create(createCitoyenDto: CreateCitoyenDto) {
-    return 'This action adds a new citoyen';
+  constructor(@InjectModel(Citoyen.name) private citoyenModel: Model<Citoyen>) {}
+
+  async create(createCitoyenDto: CreateCitoyenDto): Promise<Citoyen> {
+    const createdCitoyen = new this.citoyenModel(createCitoyenDto);
+    return createdCitoyen.save();
   }
 
-  findAll() {
-    return `This action returns all citoyen`;
+  async findAll(): Promise<Citoyen[]> {
+    return this.citoyenModel.find().exec();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} citoyen`;
+  async findOne(id: string): Promise<Citoyen> {
+    const citoyen = await this.citoyenModel.findById(id).exec();
+    if (!citoyen) {
+      throw new NotFoundException(`Citoyen with ID ${id} not found`);
+    }
+    return citoyen;
   }
 
-  update(id: number, updateCitoyenDto: UpdateCitoyenDto) {
-    return `This action updates a #${id} citoyen`;
+  async update(id: string, updateCitoyenDto: UpdateCitoyenDto): Promise<Citoyen> {
+    const updatedCitoyen = await this.citoyenModel.findByIdAndUpdate(id, updateCitoyenDto, {
+      new: true,
+    }).exec();
+    if (!updatedCitoyen) {
+      throw new NotFoundException(`Citoyen with ID ${id} not found`);
+    }
+    return updatedCitoyen;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} citoyen`;
+  async remove(id: string): Promise<void> {
+    const result = await this.citoyenModel.findByIdAndDelete(id).exec();
+    if (!result) {
+      throw new NotFoundException(`Citoyen with ID ${id} not found`);
+    }
   }
 }

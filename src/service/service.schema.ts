@@ -1,8 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
-import { Form } from '../form/form.schema';
 import { Institution } from '../institution/institution.schema';
-
+import { Field } from './field.schema';
 @Schema()
 export class Service extends Document {
   @Prop({ required: true })
@@ -26,11 +25,11 @@ export class Service extends Document {
   @Prop({ required: true })
   link: string;
 
-  @Prop({ type: Types.ObjectId, ref: 'Form' })
-  form: Form;
-
   @Prop({ type: [{ type: Types.ObjectId, ref: 'Institution' }] })
   institutions: Institution[];
+
+  @Prop({ type: [{ type: Types.ObjectId, ref: 'Field' }] })
+  fields: Types.Array<Types.ObjectId>;
 }
 
 export const ServiceSchema = SchemaFactory.createForClass(Service);

@@ -31,6 +31,10 @@ export class InstitutionService {
     }
     return institution;
   }
+  
+  async findByName(name: string): Promise<Institution | null> {
+    return this.institutionModel.findOne({ name }).exec();
+  }
 
   async update(id: string, updateInstitutionDto: UpdateInstitutionDto): Promise<Institution> {
     const updatedInstitution = await this.institutionModel.findByIdAndUpdate(id, updateInstitutionDto, { new: true }).exec();
@@ -46,5 +50,19 @@ export class InstitutionService {
       throw new NotFoundException('Institution not found');
     }
     return { message: 'Institution deleted successfully' };
+  }
+
+  async findByDomain(domain: string): Promise<Institution[]> {
+    const institutions = await this.institutionModel.find({ domain }).exec();
+    if (institutions.length === 0) {
+      throw new NotFoundException(`No institutions found for domain "${domain}"`);
+    }
+    return institutions;
+  }
+
+  async getDistinctDomains(): Promise<string[]> {
+    const institutions = await this.institutionModel.find().exec();
+    const domains = institutions.map(institution => institution.domain);
+    return [...new Set(domains)]; 
   }
 }

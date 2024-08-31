@@ -15,9 +15,6 @@ export class Institution extends Document {
 
   @Prop({ required: true })
   locality: string;
-
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Services' }] })
-  services: Service[];
 }
 
 export const InstitutionSchema = SchemaFactory.createForClass(Institution);

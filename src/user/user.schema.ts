@@ -9,10 +9,10 @@ export class User extends Document {
   @Prop()
   phoneNumber: string;
 
-  @Prop()
+  @Prop({ required: true })
   name: string;
 
-  @Prop()
+  @Prop({ required: true })
   surname: string;
 
   @Prop()
@@ -21,10 +21,10 @@ export class User extends Document {
   @Prop()
   job: string;
 
-  @Prop()
+  @Prop({ required: true })
   sex: string; // EnumSex
 
-  @Prop()
+  @Prop({ required: true })
   password: string;
 }
 

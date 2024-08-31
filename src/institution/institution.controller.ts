@@ -31,6 +31,11 @@ export class InstitutionController {
       data: institutions,
     };
   }
+   
+  @Get('domains')
+  async getDistinctDomains(): Promise<string[]> {
+    return this.institutionService.getDistinctDomains();
+  }
 
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<any> {
@@ -72,4 +77,11 @@ export class InstitutionController {
       throw new NotFoundException(error.message);
     }
   }
+
+  @Get('searchbydomaine/:domaine')
+  async findByDomain(@Param('domaine') domain: string) {
+    return this.institutionService.findByDomain(domain);
+  }
+
+
 }

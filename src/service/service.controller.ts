@@ -1,34 +1,64 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Put, Param, Delete, NotFoundException } from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
+import { Service } from './service.schema';
 
-@Controller('service')
+@Controller('services')
 export class ServiceController {
   constructor(private readonly serviceService: ServiceService) {}
 
   @Post()
-  create(@Body() createServiceDto: CreateServiceDto) {
+  async create(@Body() createServiceDto: CreateServiceDto) {
     return this.serviceService.create(createServiceDto);
   }
 
   @Get()
-  findAll() {
+  async findAll() {
     return this.serviceService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.serviceService.findOne(+id);
+  async findOne(@Param('id') id: string) {
+    return this.serviceService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateServiceDto: UpdateServiceDto) {
-    return this.serviceService.update(+id, updateServiceDto);
+ @Get('byInstitution/:institutionId')
+  async findByInstitution(@Param('institutionId') institutionId: string) {
+    const services = await this.serviceService.findByInstitution(institutionId);
+    if (services.length === 0) {
+      throw new NotFoundException(`No services found for the institution with ID ${institutionId}`);
+    }
+    return {
+      statusCode: 200,
+      message: 'Services retrieved successfully',
+      data: services,
+    };
+  }
+
+  @Put(':id')
+  async update(@Param('id') id: string, @Body() updateServiceDto: UpdateServiceDto) {
+    return this.serviceService.update(id, updateServiceDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.serviceService.remove(+id);
+  async remove(@Param('id') id: string) {
+    return this.serviceService.remove(id);
+  }
+
+  @Put(':id/add-institution')
+  async addInstitution(
+    @Param('id') serviceId: string,
+    @Body('institutionId') institutionId: string
+  ): Promise<Service> {
+    return this.serviceService.addInstitutionToService(serviceId, institutionId);
+  }
+
+  @Put(':serviceId/remove-institution/:institutionId')
+  removeInstitutionFromService(
+    @Param('serviceId') serviceId: string,
+    @Param('institutionId') institutionId: string,
+  ) {
+    return this.serviceService.removeInstitutionFromService(serviceId, institutionId);
   }
 }

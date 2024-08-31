@@ -6,13 +6,11 @@ import { Citoyen, CitoyenSchema } from './citoyen/citoyen.schema';
 import { Fonctionnaire, FonctionnaireSchema } from './fonctionnaire/fonctionnaire.schema'; 
 import { Institution, InstitutionSchema } from './institution/institution.schema'; 
 import { Service, ServiceSchema } from './service/service.schema';
-import { Form, FormSchema } from './form/form.schema';
 import { FormResponse, FormResponseSchema } from './form-response/formResponse.schema'; 
 import { DocumentEntity, DocumentSchema } from './document/document.schema'; 
 import { Rendezvous, RendezvousSchema } from './rendezvous/rendezvous.schema'; 
 import { FonctionnaireModule } from './fonctionnaire/fonctionnaire.module';
 import { ServiceModule } from './service/service.module';
-import { FormModule } from './form/form.module';
 import { DocumentModule } from './document/document.module';
 import { RequestModule } from './request/request.module';
 import { FormResponseModule } from './form-response/form-response.module';
@@ -33,14 +31,12 @@ import { RequestSchema } from './request/request.schema';
             { name: Fonctionnaire.name, schema: FonctionnaireSchema },
             { name: Institution.name, schema: InstitutionSchema },
             { name: Service.name, schema: ServiceSchema },
-            { name: Form.name, schema: FormSchema },
             { name: FormResponse.name, schema: FormResponseSchema },
             { name: DocumentEntity.name, schema: DocumentSchema },
             { name: Rendezvous.name, schema: RendezvousSchema }
           ]),
           FonctionnaireModule,
           ServiceModule,
-          FormModule,
           DocumentModule,
           RequestModule,
           FormResponseModule,

@@ -15,7 +15,7 @@ export class Fonctionnaire extends User {
   role: string;
 
   @Prop({ type: Types.ObjectId, ref: 'Institution', required: true })
-  institution: Institution; // Référence à l'institution où le fonctionnaire travaille
+  institution: Institution; 
 }
 
 export const FonctionnaireSchema = SchemaFactory.createForClass(Fonctionnaire);

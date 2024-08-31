@@ -1,34 +1,35 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Get, Post, Body, Param, Put, Delete } from '@nestjs/common';
 import { CitoyenService } from './citoyen.service';
 import { CreateCitoyenDto } from './dto/create-citoyen.dto';
 import { UpdateCitoyenDto } from './dto/update-citoyen.dto';
+import { Citoyen } from './citoyen.schema';
 
-@Controller('citoyen')
+@Controller('citoyens')
 export class CitoyenController {
   constructor(private readonly citoyenService: CitoyenService) {}
 
   @Post()
-  create(@Body() createCitoyenDto: CreateCitoyenDto) {
+  create(@Body() createCitoyenDto: CreateCitoyenDto): Promise<Citoyen> {
     return this.citoyenService.create(createCitoyenDto);
   }
 
   @Get()
-  findAll() {
+  findAll(): Promise<Citoyen[]> {
     return this.citoyenService.findAll();
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.citoyenService.findOne(+id);
+  findOne(@Param('id') id: string): Promise<Citoyen> {
+    return this.citoyenService.findOne(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateCitoyenDto: UpdateCitoyenDto) {
-    return this.citoyenService.update(+id, updateCitoyenDto);
+  @Put(':id')
+  update(@Param('id') id: string, @Body() updateCitoyenDto: UpdateCitoyenDto): Promise<Citoyen> {
+    return this.citoyenService.update(id, updateCitoyenDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.citoyenService.remove(+id);
+  remove(@Param('id') id: string): Promise<void> {
+    return this.citoyenService.remove(id);
   }
 }
