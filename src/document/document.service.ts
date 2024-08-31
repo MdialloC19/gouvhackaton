@@ -1,26 +1,34 @@
-import { Injectable } from '@nestjs/common';
-import { CreateDocumentDto } from './dto/create-document.dto';
-import { UpdateDocumentDto } from './dto/update-document.dto';
+// document.service.ts
+
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { DocumentEntity } from './document.schema'; // Assurez-vous du chemin correct
+import { CreateDocumentDto } from './dto/create-document.dto'; // Assurez-vous du chemin correct
 
 @Injectable()
 export class DocumentService {
-    create(createDocumentDto: CreateDocumentDto) {
-        return 'This action adds a new document';
+    constructor(
+        @InjectModel(DocumentEntity.name)
+        private readonly documentModel: Model<DocumentEntity>,
+    ) {}
+
+    async createDocument(
+        createDocumentDto: CreateDocumentDto,
+    ): Promise<DocumentEntity> {
+        const newDocument = new this.documentModel(createDocumentDto);
+        return newDocument.save();
     }
 
-    findAll() {
-        return `This action returns all document`;
+    async getDocumentById(id: string): Promise<DocumentEntity> {
+        const document = await this.documentModel.findById(id).exec();
+        if (!document) {
+            throw new NotFoundException(`Document with ID ${id} not found`);
+        }
+        return document;
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} document`;
-    }
-
-    update(id: number, updateDocumentDto: UpdateDocumentDto) {
-        return `This action updates a #${id} document`;
-    }
-
-    remove(id: number) {
-        return `This action removes a #${id} document`;
+    async getAllDocuments(): Promise<DocumentEntity[]> {
+        return this.documentModel.find().exec();
     }
 }

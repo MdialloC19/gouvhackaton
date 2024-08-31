@@ -1,45 +1,60 @@
+// document.controller.ts
+import { Response } from 'express';
 import {
     Controller,
-    Get,
     Post,
-    Body,
-    Patch,
+    Get,
     Param,
-    Delete,
+    UseInterceptors,
+    UploadedFile,
+    NotFoundException,
+    Res,
 } from '@nestjs/common';
-import { DocumentService } from './document.service';
-import { CreateDocumentDto } from './dto/create-document.dto';
-import { UpdateDocumentDto } from './dto/update-document.dto';
+import { DocumentService } from './document.service'; // Assurez-vous du chemin correct
+import { CreateDocumentDto } from './dto/create-document.dto'; // Assurez-vous du chemin correct
+import { FileInterceptor } from '@nestjs/platform-express';
 
-@Controller('document')
+@Controller('documents')
 export class DocumentController {
     constructor(private readonly documentService: DocumentService) {}
 
-    @Post()
-    create(@Body() createDocumentDto: CreateDocumentDto) {
-        return this.documentService.create(createDocumentDto);
-    }
-
-    @Get()
-    findAll() {
-        return this.documentService.findAll();
+    @Post('upload')
+    @UseInterceptors(FileInterceptor('file'))
+    async uploadFile(@UploadedFile() file: Express.Multer.File) {
+        const documentData: CreateDocumentDto = {
+            originalname: file.originalname,
+            mimetype: file.mimetype,
+            size: file.size,
+            buffer: file.buffer,
+            name: file.originalname, // Exemple de nom
+            path: '', // Exemple de chemin, à adapter selon vos besoins
+            date: new Date(), // Date actuelle
+        };
+        return this.documentService.createDocument(documentData);
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.documentService.findOne(+id);
+    async getDocumentById(@Param('id') id: string, @Res() res: Response) {
+        const document = await this.documentService.getDocumentById(id);
+        if (!document) {
+            throw new NotFoundException(`Document with ID ${id} not found`);
+        }
+
+        res.setHeader('Content-Type', document.mimetype);
+        res.setHeader(
+            'Content-Disposition',
+            `attachment; filename="${document.originalname}"`,
+        );
+        res.send(document.buffer);
     }
 
-    @Patch(':id')
-    update(
-        @Param('id') id: string,
-        @Body() updateDocumentDto: UpdateDocumentDto,
-    ) {
-        return this.documentService.update(+id, updateDocumentDto);
-    }
-
-    @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.documentService.remove(+id);
+    @Get()
+    async getAllDocuments() {
+        const documents = await this.documentService.getAllDocuments();
+        return {
+            statusCode: 200,
+            message: 'Documents retrieved successfully',
+            data: documents,
+        };
     }
 }
