@@ -1,19 +1,19 @@
 import { IsString, IsNotEmpty } from 'class-validator';
 
 export class CreateInstitutionDto {
-  @IsString()
-  @IsNotEmpty()
-  name: string;
+    @IsString()
+    @IsNotEmpty()
+    name: string;
 
-  @IsString()
-  @IsNotEmpty()
-  department: string;
+    @IsString()
+    @IsNotEmpty()
+    department: string;
 
-  @IsString()
-  @IsNotEmpty()
-  domain: string;
+    @IsString()
+    @IsNotEmpty()
+    domain: string;
 
-  @IsString()
-  @IsNotEmpty()
-  locality: string;
+    @IsString()
+    @IsNotEmpty()
+    locality: string;
 }

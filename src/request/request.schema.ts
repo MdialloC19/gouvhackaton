@@ -7,29 +7,29 @@ import { Fonctionnaire } from '../fonctionnaire/fonctionnaire.schema';
 
 @Schema()
 export class Request extends Document {
-  @Prop({ type: Types.ObjectId, ref: 'Citoyen', required: true })
-  citoyen: Citoyen;
+    @Prop({ type: Types.ObjectId, ref: 'Citoyen', required: true })
+    citoyen: Citoyen;
 
-  @Prop({ type: Types.ObjectId, ref: 'Service', required: true })
-  service: Service;
+    @Prop({ type: Types.ObjectId, ref: 'Service', required: true })
+    service: Service;
 
-  @Prop()
-  dateAndHour: Date;
+    @Prop()
+    dateAndHour: Date;
 
-  @Prop()
-  dateAndHourTreatment: Date;
+    @Prop()
+    dateAndHourTreatment: Date;
 
-  @Prop()
-  state: string; // EnumState
+    @Prop()
+    state: string; // EnumState
 
-  @Prop()
-  comment: string;
+    @Prop()
+    comment: string;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'DocumentEntity' }] })
-  documents: Types.Array<Types.ObjectId>;
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'DocumentEntity' }] })
+    documents: Types.Array<Types.ObjectId>;
 
-  @Prop({ type: [{ type: Types.ObjectId, ref: 'Fonctionnaire' }] })
-  processedBy: Types.Array<Types.ObjectId>; // Tableau de références aux fonctionnaires
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Fonctionnaire' }] })
+    processedBy: Types.Array<Types.ObjectId>; // Tableau de références aux fonctionnaires
 }
 
 export const RequestSchema = SchemaFactory.createForClass(Request);

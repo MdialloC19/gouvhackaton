@@ -5,8 +5,12 @@ import { CitoyenService } from './citoyen.service';
 import { CitoyenController } from './citoyen.controller';
 
 @Module({
-  imports: [MongooseModule.forFeature([{ name: Citoyen.name, schema: CitoyenSchema }])],
-  controllers: [CitoyenController],
-  providers: [CitoyenService],
+    imports: [
+        MongooseModule.forFeature([
+            { name: Citoyen.name, schema: CitoyenSchema },
+        ]),
+    ],
+    controllers: [CitoyenController],
+    providers: [CitoyenService],
 })
 export class CitoyenModule {}

@@ -3,7 +3,7 @@ import { FormResponseService } from './form-response.service';
 import { FormResponseController } from './form-response.controller';
 
 @Module({
-  controllers: [FormResponseController],
-  providers: [FormResponseService],
+    controllers: [FormResponseController],
+    providers: [FormResponseService],
 })
 export class FormResponseModule {}

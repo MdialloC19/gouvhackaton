@@ -4,8 +4,8 @@ import { User } from './../user/user.schema';
 
 @Schema()
 export class Admin extends User {
-  @Prop({ required: true })
-  email: string;
+    @Prop({ required: true })
+    email: string;
 }
 
 export const AdminSchema = SchemaFactory.createForClass(Admin);

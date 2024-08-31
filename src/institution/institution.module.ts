@@ -5,11 +5,13 @@ import { InstitutionService } from './institution.service';
 import { InstitutionController } from './institution.controller';
 
 @Module({
-  imports: [
-    MongooseModule.forFeature([{ name: Institution.name, schema: InstitutionSchema }]),
-  ],
-  controllers: [InstitutionController],
-  providers: [InstitutionService],
-  exports: [InstitutionService], // Exporter si vous avez besoin d'utiliser ce service dans d'autres modules
+    imports: [
+        MongooseModule.forFeature([
+            { name: Institution.name, schema: InstitutionSchema },
+        ]),
+    ],
+    controllers: [InstitutionController],
+    providers: [InstitutionService],
+    exports: [InstitutionService], // Exporter si vous avez besoin d'utiliser ce service dans d'autres modules
 })
 export class InstitutionModule {}
