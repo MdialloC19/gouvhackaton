@@ -1,11 +1,11 @@
 import {
+    Body,
     Controller,
     Get,
     Post,
-    Body,
-    Patch,
-    Param,
+    Put,
     Delete,
+    Param,
 } from '@nestjs/common';
 import { RendezvousService } from './rendezvous.service';
 import { CreateRendezvousDto } from './dto/create-rendezvous.dto';
@@ -16,30 +16,58 @@ export class RendezvousController {
     constructor(private readonly rendezvousService: RendezvousService) {}
 
     @Post()
-    create(@Body() createRendezvousDto: CreateRendezvousDto) {
-        return this.rendezvousService.create(createRendezvousDto);
+    async create(@Body() createRendezvousDto: CreateRendezvousDto) {
+        const rendezvous =
+            await this.rendezvousService.create(createRendezvousDto);
+        return {
+            statusCode: 201,
+            message: 'Rendezvous created successfully',
+            data: rendezvous,
+        };
     }
 
     @Get()
-    findAll() {
-        return this.rendezvousService.findAll();
+    async findAll() {
+        const rendezvousList = await this.rendezvousService.findAll();
+        return {
+            statusCode: 200,
+            message: 'Rendezvous retrieved successfully',
+            data: rendezvousList,
+        };
     }
 
     @Get(':id')
-    findOne(@Param('id') id: string) {
-        return this.rendezvousService.findOne(+id);
+    async findById(@Param('id') id: string) {
+        const rendezvous = await this.rendezvousService.findOne(id);
+        return {
+            statusCode: 200,
+            message: 'Rendezvous retrieved successfully',
+            data: rendezvous,
+        };
     }
 
-    @Patch(':id')
-    update(
+    @Put(':id')
+    async update(
         @Param('id') id: string,
         @Body() updateRendezvousDto: UpdateRendezvousDto,
     ) {
-        return this.rendezvousService.update(+id, updateRendezvousDto);
+        const updatedRendezvous = await this.rendezvousService.update(
+            id,
+            updateRendezvousDto,
+        );
+        return {
+            statusCode: 200,
+            message: 'Rendezvous updated successfully',
+            data: updatedRendezvous,
+        };
     }
 
     @Delete(':id')
-    remove(@Param('id') id: string) {
-        return this.rendezvousService.remove(+id);
+    async delete(@Param('id') id: string) {
+        await this.rendezvousService.delete(id);
+        return {
+            statusCode: 200,
+            message: 'Rendezvous deleted successfully',
+        };
     }
 }

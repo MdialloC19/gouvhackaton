@@ -9,10 +9,12 @@ import {
     UploadedFile,
     NotFoundException,
     Res,
+    Delete,
 } from '@nestjs/common';
 import { DocumentService } from './document.service'; // Assurez-vous du chemin correct
 import { CreateDocumentDto } from './dto/create-document.dto'; // Assurez-vous du chemin correct
 import { FileInterceptor } from '@nestjs/platform-express';
+import { DocumentEntity } from './document.schema';
 
 @Controller('documents')
 export class DocumentController {
@@ -56,5 +58,9 @@ export class DocumentController {
             message: 'Documents retrieved successfully',
             data: documents,
         };
+    }
+    @Delete(':id')
+    async remove(@Param('id') id: string): Promise<DocumentEntity> {
+        return this.documentService.remove(id);
     }
 }

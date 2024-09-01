@@ -26,7 +26,6 @@ import { FormResponseModule } from './form-response/form-response.module';
 import { CitoyenModule } from './citoyen/citoyen.module';
 import { RendezvousModule } from './rendezvous/rendezvous.module';
 import { InstitutionModule } from './institution/institution.module';
-import { UserModule } from './user/user.module';
 import { AdminModule } from './admin/admin.module';
 import { RequestSchema } from './request/request.schema';
 @Module({
@@ -52,7 +51,6 @@ import { RequestSchema } from './request/request.schema';
         CitoyenModule,
         RendezvousModule,
         InstitutionModule,
-        UserModule,
         AdminModule,
     ],
     controllers: [],

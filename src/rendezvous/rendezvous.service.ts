@@ -1,26 +1,103 @@
-import { Injectable } from '@nestjs/common';
+import {
+    Injectable,
+    NotFoundException,
+    BadRequestException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model, Types } from 'mongoose';
+import { Rendezvous } from './rendezvous.schema';
 import { CreateRendezvousDto } from './dto/create-rendezvous.dto';
 import { UpdateRendezvousDto } from './dto/update-rendezvous.dto';
+import { InstitutionService } from '../institution/institution.service';
+import { CitoyenService } from 'src/citoyen/citoyen.service';
 
 @Injectable()
 export class RendezvousService {
-    create(createRendezvousDto: CreateRendezvousDto) {
-        return 'This action adds a new rendezvous';
+    constructor(
+        @InjectModel(Rendezvous.name)
+        private readonly rendezvousModel: Model<Rendezvous>,
+        private readonly citoyenService: CitoyenService,
+        private readonly institutionService: InstitutionService,
+    ) {}
+
+    async create(
+        createRendezvousDto: CreateRendezvousDto,
+    ): Promise<Rendezvous> {
+        const citoyen = await this.citoyenService.findOne(
+            createRendezvousDto.citoyen.toString(),
+        );
+        const institution = await this.institutionService.findOne(
+            createRendezvousDto.institution.toString(),
+        );
+
+        if (!citoyen || !institution) {
+            throw new BadRequestException('Citoyen or Institution not found');
+        }
+
+        const createdRendezvous = new this.rendezvousModel({
+            ...createRendezvousDto,
+            citoyen: citoyen._id,
+            institution: institution._id,
+        });
+
+        return createdRendezvous.save();
     }
 
-    findAll() {
-        return `This action returns all rendezvous`;
+    async findAll(): Promise<Rendezvous[]> {
+        return this.rendezvousModel
+            .find()
+            .populate('citoyen institution')
+            .exec();
     }
 
-    findOne(id: number) {
-        return `This action returns a #${id} rendezvous`;
+    async findOne(id: string): Promise<Rendezvous> {
+        const rendezvous = await this.rendezvousModel
+            .findById(id)
+            .populate('citoyen institution')
+            .exec();
+        if (!rendezvous) {
+            throw new NotFoundException('Rendezvous not found');
+        }
+        return rendezvous;
     }
 
-    update(id: number, updateRendezvousDto: UpdateRendezvousDto) {
-        return `This action updates a #${id} rendezvous`;
+    async update(
+        id: string,
+        updateRendezvousDto: UpdateRendezvousDto,
+    ): Promise<Rendezvous> {
+        const rendezvous = await this.rendezvousModel.findById(id);
+        if (!rendezvous) {
+            throw new NotFoundException('Rendezvous not found');
+        }
+
+        if (updateRendezvousDto.citoyen) {
+            const citoyen = await this.citoyenService.findOne(
+                updateRendezvousDto.citoyen.toString(),
+            );
+            if (!citoyen) {
+                throw new BadRequestException('Citoyen not found');
+            }
+            rendezvous.citoyen = citoyen;
+        }
+
+        if (updateRendezvousDto.institution) {
+            const institution = await this.institutionService.findOne(
+                updateRendezvousDto.institution.toString(),
+            );
+            if (!institution) {
+                throw new BadRequestException('Institution not found');
+            }
+            rendezvous.institution = institution;
+        }
+
+        Object.assign(rendezvous, updateRendezvousDto);
+        return rendezvous.save();
     }
 
-    remove(id: number) {
-        return `This action removes a #${id} rendezvous`;
+    async delete(id: string): Promise<void> {
+        const result = await this.rendezvousModel.deleteOne({ _id: id }).exec();
+        if (result.deletedCount === 0) {
+            throw new NotFoundException('Rendezvous not found');
+        }
     }
 }

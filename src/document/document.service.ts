@@ -31,4 +31,14 @@ export class DocumentService {
     async getAllDocuments(): Promise<DocumentEntity[]> {
         return this.documentModel.find().exec();
     }
+
+    async remove(id: string): Promise<DocumentEntity> {
+        const deletedDocument = await this.documentModel
+            .findByIdAndDelete(id)
+            .exec();
+        if (!deletedDocument) {
+            throw new NotFoundException(`Document with ID ${id} not found`);
+        }
+        return deletedDocument;
+    }
 }
