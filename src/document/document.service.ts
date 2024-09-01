@@ -1,10 +1,8 @@
-// document.service.ts
-
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { DocumentEntity } from './document.schema'; // Assurez-vous du chemin correct
-import { CreateDocumentDto } from './dto/create-document.dto'; // Assurez-vous du chemin correct
+import { DocumentEntity } from './document.schema';
+import { CreateDocumentDto } from './dto/create-document.dto';
 
 @Injectable()
 export class DocumentService {
@@ -24,6 +22,14 @@ export class DocumentService {
         const document = await this.documentModel.findById(id).exec();
         if (!document) {
             throw new NotFoundException(`Document with ID ${id} not found`);
+        }
+        return document;
+    }
+
+    async getDocumentByName(name: string): Promise<DocumentEntity> {
+        const document = await this.documentModel.findOne({ name }).exec();
+        if (!document) {
+            throw new NotFoundException(`Document with ID ${name} not found`);
         }
         return document;
     }

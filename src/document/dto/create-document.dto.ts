@@ -1,6 +1,11 @@
-// create-document.dto.ts
-
-import { IsString, IsNotEmpty, IsDate } from 'class-validator';
+import {
+    IsString,
+    IsNotEmpty,
+    IsDate,
+    IsOptional,
+    IsNumber,
+} from 'class-validator';
+import { Types } from 'mongoose';
 
 export class CreateDocumentDto {
     @IsString()
@@ -16,14 +21,18 @@ export class CreateDocumentDto {
 
     @IsString()
     @IsNotEmpty()
-    buffer: Buffer; // Buffer peut nécessiter une transformation pour les validations
+    buffer: Buffer;
 
     @IsString()
-    name?: string; // Facultatif
+    name?: string;
 
     @IsString()
-    path?: string; // Facultatif
+    path?: string;
 
     @IsDate()
-    date?: Date; // Facultatif
+    date?: Date;
+
+    @IsOptional()
+    @IsNotEmpty()
+    uploadedBy: Types.ObjectId;
 }

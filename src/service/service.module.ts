@@ -14,5 +14,6 @@ import { InstitutionModule } from 'src/institution/institution.module';
     ],
     providers: [ServiceService],
     controllers: [ServiceController],
+    exports: [ServiceService],
 })
 export class ServiceModule {}

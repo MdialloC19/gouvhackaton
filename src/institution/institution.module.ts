@@ -12,6 +12,6 @@ import { InstitutionController } from './institution.controller';
     ],
     controllers: [InstitutionController],
     providers: [InstitutionService],
-    exports: [InstitutionService], // Exporter si vous avez besoin d'utiliser ce service dans d'autres modules
+    exports: [InstitutionService],
 })
 export class InstitutionModule {}

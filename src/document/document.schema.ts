@@ -1,32 +1,33 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, Types } from 'mongoose';
+import { Citoyen } from 'src/citoyen/citoyen.schema';
+import { User } from 'src/user/user.schema';
 
 @Schema()
 export class DocumentEntity extends Document {
-    @Prop() // Ce champ est optionnel
-    id: string; // Peut être utilisé comme un identifiant alternatif
+    @Prop({ type: Types.ObjectId, ref: 'User', required: true })
+    uploadedBy: Types.ObjectId;
 
-    @Prop() // Nom du document
+    @Prop()
     name: string;
 
-    @Prop() // Chemin du fichier si stocké sur le système de fichiers
+    @Prop()
     path: string;
 
-    @Prop() // Date de création ou d'upload du document
+    @Prop()
     date: Date;
 
-    // Champs pour gérer le contenu du fichier
     @Prop({ required: true })
-    originalname: string; // Nom original du fichier
+    originalname: string;
 
     @Prop({ required: true })
-    mimetype: string; // Type MIME du fichier
+    mimetype: string;
 
     @Prop({ required: true })
-    size: number; // Taille du fichier en octets
+    size: number;
 
     @Prop({ required: true, type: Buffer })
-    buffer: Buffer; // Contenu du fichier en mémoire
+    buffer: Buffer;
 }
 
 export const DocumentSchema = SchemaFactory.createForClass(DocumentEntity);

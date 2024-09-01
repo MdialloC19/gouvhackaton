@@ -1,4 +1,3 @@
-// document.controller.ts
 import { Response } from 'express';
 import {
     Controller,
@@ -10,11 +9,13 @@ import {
     NotFoundException,
     Res,
     Delete,
+    Query,
 } from '@nestjs/common';
-import { DocumentService } from './document.service'; // Assurez-vous du chemin correct
-import { CreateDocumentDto } from './dto/create-document.dto'; // Assurez-vous du chemin correct
+import { DocumentService } from './document.service';
+import { CreateDocumentDto } from './dto/create-document.dto';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { DocumentEntity } from './document.schema';
+import { Types } from 'mongoose';
 
 @Controller('documents')
 export class DocumentController {
@@ -22,15 +23,19 @@ export class DocumentController {
 
     @Post('upload')
     @UseInterceptors(FileInterceptor('file'))
-    async uploadFile(@UploadedFile() file: Express.Multer.File) {
+    async uploadFile(
+        @UploadedFile() file: Express.Multer.File,
+        @Query('userId') userId: string,
+    ) {
         const documentData: CreateDocumentDto = {
             originalname: file.originalname,
             mimetype: file.mimetype,
             size: file.size,
             buffer: file.buffer,
-            name: file.originalname, // Exemple de nom
-            path: '', // Exemple de chemin, à adapter selon vos besoins
-            date: new Date(), // Date actuelle
+            name: file.originalname,
+            path: '',
+            date: new Date(),
+            uploadedBy: new Types.ObjectId(userId),
         };
         return this.documentService.createDocument(documentData);
     }

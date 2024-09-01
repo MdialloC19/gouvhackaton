@@ -22,7 +22,7 @@ export class CreateAdminDto {
     readonly job?: string;
 
     @IsString()
-    readonly sex: string; // EnumSex, replace this string type with the actual enum if available
+    readonly sex: string;
 
     @IsString()
     readonly password: string;

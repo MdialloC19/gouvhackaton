@@ -92,7 +92,7 @@ export class ServiceService {
         }
 
         const institutionIndex = service.institutions.findIndex(
-            (inst) => inst._id.toString() === institution._id.toString(), // Assurez-vous que la comparaison est correcte
+            (inst) => inst._id.toString() === institution._id.toString(),
         );
 
         if (institutionIndex === -1) {

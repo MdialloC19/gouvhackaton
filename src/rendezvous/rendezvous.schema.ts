@@ -15,16 +15,16 @@ export class Rendezvous extends Document {
     dateAndHour: Date;
 
     @Prop()
-    duration: number; // Durée du rendez-vous en minutes
+    duration: number;
 
     @Prop({ default: 'pending' })
-    state: string; // Exemple: 'pending', 'confirmed', 'canceled'
+    state: string;
 
     @Prop()
     priority: string; // Exemple: 'low', 'medium', 'high'
 
     @Prop()
-    type: string; // Type de rendez-vous, par exemple 'initial', 'follow-up'
+    type: string;
 
     @Prop()
     comment: string;
