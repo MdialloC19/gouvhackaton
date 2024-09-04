@@ -5,7 +5,7 @@ import { RequestController } from './request.controller';
 import { Request, RequestSchema } from './request.schema';
 import { DocumentModule } from '../document/document.module';
 import { ServiceModule } from '../service/service.module';
-
+import { FonctionnaireModule } from 'src/fonctionnaire/fonctionnaire.module';
 @Module({
     imports: [
         MongooseModule.forFeature([
@@ -13,6 +13,7 @@ import { ServiceModule } from '../service/service.module';
         ]),
         DocumentModule,
         ServiceModule,
+        FonctionnaireModule,
     ],
     providers: [RequestService],
     controllers: [RequestController],

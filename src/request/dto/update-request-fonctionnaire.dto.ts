@@ -1,35 +1,19 @@
-import { Type } from 'class-transformer';
 import {
     IsNotEmpty,
     IsEnum,
     IsOptional,
     IsArray,
     IsMongoId,
-    ValidateNested,
 } from 'class-validator';
-import { CreateDocumentDto } from 'src/document/dto/create-document.dto';
+import { Types } from 'mongoose';
+
 enum RequestState {
     EnCours = 'en-cours',
-    Confirme = 'confirmé',
     Termine = 'terminé',
     Rejete = 'rejeté',
 }
-export class CreateRequestDto {
-    @IsNotEmpty()
-    @IsMongoId()
-    citoyen: string;
 
-    @IsNotEmpty()
-    @IsMongoId()
-    service: string;
-
-    @IsNotEmpty()
-    @IsMongoId()
-    institution: string;
-
-    @IsOptional()
-    dateAndHour: Date;
-
+export class UpdateRequestDto {
     @IsOptional()
     dateAndHourTreatment: Date;
 
@@ -38,14 +22,14 @@ export class CreateRequestDto {
     state: RequestState;
 
     @IsOptional()
-    comment: string;
+    commentByAgent: string;
 
     @IsOptional()
     @IsArray()
     @IsMongoId({ each: true })
-    documents: string[];
+    documentsByAgent: string[];
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsArray()
     @IsMongoId({ each: true })
     processedBy: string[];

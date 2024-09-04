@@ -2,8 +2,6 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Citoyen } from '../citoyen/citoyen.schema';
 import { Service } from '../service/service.schema';
-import { DocumentEntity } from '../document/document.schema';
-import { Fonctionnaire } from '../fonctionnaire/fonctionnaire.schema';
 import { Institution } from 'src/institution/institution.schema';
 
 enum RequestState {
@@ -31,16 +29,25 @@ export class Request extends Document {
     state: string;
 
     @Prop()
-    comment: string;
+    commentByAgent: string;
+
+    @Prop()
+    commentByCitoyen: string;
 
     @Prop({ type: [{ type: Types.ObjectId }] })
-    documents: Types.Array<Types.ObjectId>;
+    documentsByAgent: Types.Array<Types.ObjectId>;
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Fonctionnaire' }] })
     processedBy: Types.Array<Types.ObjectId>;
 
     @Prop({ type: Types.ObjectId, ref: 'Institution', required: true })
     institution: Institution;
+
+    @Prop({ type: Map, of: String })
+    textResponses: Map<string, string>;
+
+    @Prop({ type: Map, of: Types.ObjectId })
+    documentResponses: Map<string, Types.ObjectId>;
 }
 
 export const RequestSchema = SchemaFactory.createForClass(Request);

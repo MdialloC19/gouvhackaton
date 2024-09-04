@@ -28,8 +28,8 @@ export class Service extends Document {
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Institution' }] })
     institutions: Institution[];
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Field' }] })
-    fields: Types.Array<Types.ObjectId>;
+    @Prop({ type: [{ type: Object }] })
+    fields: Field[];
 }
 
 export const ServiceSchema = SchemaFactory.createForClass(Service);
