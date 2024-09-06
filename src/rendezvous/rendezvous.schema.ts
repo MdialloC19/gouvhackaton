@@ -21,7 +21,7 @@ export class Rendezvous extends Document {
     state: string;
 
     @Prop()
-    priority: string; // Exemple: 'low', 'medium', 'high'
+    priority: string; 
 
     @Prop()
     type: string;
@@ -30,10 +30,10 @@ export class Rendezvous extends Document {
     comment: string;
 
     @Prop()
-    createdAt: Date; // Date de création du rendez-vous
+    createdAt: Date; 
 
     @Prop()
-    updatedAt: Date; // Date de la dernière mise à jour du rendez-vous
+    updatedAt: Date; 
 }
 
 export const RendezvousSchema = SchemaFactory.createForClass(Rendezvous);

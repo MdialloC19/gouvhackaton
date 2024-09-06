@@ -7,6 +7,7 @@ import { UpdateCitoyenDto } from './dto/update-citoyen.dto';
 
 @Injectable()
 export class CitoyenService {
+    institutionModel: any;
     constructor(
         @InjectModel(Citoyen.name) private citoyenModel: Model<Citoyen>,
     ) {}
@@ -17,11 +18,11 @@ export class CitoyenService {
     }
 
     async findAll(): Promise<Citoyen[]> {
-        return this.citoyenModel.find().exec();
+        return this.citoyenModel.find().select('-password').exec();
     }
 
     async findOne(id: string): Promise<Citoyen> {
-        const citoyen = await this.citoyenModel.findById(id).exec();
+        const citoyen = await this.citoyenModel.findById(id).select('-password').exec();
         if (!citoyen) {
             throw new NotFoundException(`Citoyen with ID ${id} not found`);
         }
@@ -35,7 +36,7 @@ export class CitoyenService {
         const updatedCitoyen = await this.citoyenModel
             .findByIdAndUpdate(id, updateCitoyenDto, {
                 new: true,
-            })
+            }).select('-password')
             .exec();
         if (!updatedCitoyen) {
             throw new NotFoundException(`Citoyen with ID ${id} not found`);
@@ -48,5 +49,14 @@ export class CitoyenService {
         if (!result) {
             throw new NotFoundException(`Citoyen with ID ${id} not found`);
         }
+    }
+
+    async findByPhoneNumber(phoneNumber: string): Promise<Citoyen | null> {
+        return this.citoyenModel.findOne({ phoneNumber }).select('-password').exec();
+    }
+    
+    
+    async findByCNI(CNI: string): Promise<Citoyen | null> {
+        return this.citoyenModel.findOne({ CNI }).select('-password').exec();
     }
 }

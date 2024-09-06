@@ -7,7 +7,6 @@ export class Citoyen extends User {
     fathersName: string;
     @Prop()
     fathersSurname: string;
-
     @Prop()
     mothersName: string;
     @Prop()

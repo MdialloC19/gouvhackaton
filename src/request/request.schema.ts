@@ -45,7 +45,7 @@ export class Request extends Document {
 
     @Prop({ type: Map, of: String })
     textResponses: Map<string, string>;
-
+    
     @Prop({ type: Map, of: Types.ObjectId })
     documentResponses: Map<string, Types.ObjectId>;
 }

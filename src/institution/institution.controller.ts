@@ -8,9 +8,9 @@ import {
     Delete,
     BadRequestException,
     NotFoundException,
+    InternalServerErrorException,
 } from '@nestjs/common';
 import { InstitutionService } from './institution.service';
-import { Institution } from './institution.schema';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
 import { UpdateInstitutionDto } from './dto/update-institution.dto';
 
@@ -31,23 +31,49 @@ export class InstitutionController {
                 data: createdInstitution,
             };
         } catch (error) {
-            throw new BadRequestException(error.message);
+            throw new BadRequestException({
+                statusCode: 400,
+                message: 'Failed to create institution',
+                error: error.message,
+            });
         }
     }
 
     @Get()
     async findAll(): Promise<any> {
-        const institutions = await this.institutionService.findAll();
-        return {
-            statusCode: 200,
-            message: 'Institutions retrieved successfully',
-            data: institutions,
-        };
+        try {
+            const institutions = await this.institutionService.findAll();
+            return {
+                statusCode: 200,
+                message: 'Institutions retrieved successfully',
+                data: institutions,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                statusCode: 500,
+                message: 'Failed to retrieve institutions',
+                error: error.message,
+            });
+        }
     }
-
+     
+    // Don't have schema so for domains so any is 
     @Get('domains')
-    async getDistinctDomains(): Promise<string[]> {
-        return this.institutionService.getDistinctDomains();
+    async getDistinctDomains(): Promise<any> {
+        try {
+            const domains = await this.institutionService.getDistinctDomains();
+            return {
+                statusCode: 200,
+                message: 'Domains retrieved successfully',
+                data: domains,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                statusCode: 500,
+                message: 'Failed to retrieve domains',
+                error: error.message,
+            });
+        }
     }
 
     @Get(':id')
@@ -60,7 +86,11 @@ export class InstitutionController {
                 data: institution,
             };
         } catch (error) {
-            throw new NotFoundException(error.message);
+            throw new NotFoundException({
+                statusCode: 404,
+                message: `Institution with ID ${id} not found`,
+                error: error.message,
+            });
         }
     }
 
@@ -80,7 +110,11 @@ export class InstitutionController {
                 data: updatedInstitution,
             };
         } catch (error) {
-            throw new NotFoundException(error.message);
+            throw new NotFoundException({
+                statusCode: 404,
+                message: `Institution with ID ${id} not found`,
+                error: error.message,
+            });
         }
     }
 
@@ -93,12 +127,29 @@ export class InstitutionController {
                 message: 'Institution deleted successfully',
             };
         } catch (error) {
-            throw new NotFoundException(error.message);
+            throw new NotFoundException({
+                statusCode: 404,
+                message: `Institution with ID ${id} not found`,
+                error: error.message,
+            });
         }
     }
 
-    @Get('searchbydomaine/:domaine')
-    async findByDomain(@Param('domaine') domain: string) {
-        return this.institutionService.findByDomain(domain);
+    @Get('searchbydomain/:domain')
+    async findByDomain(@Param('domain') domain: string): Promise<any> {
+        try {
+            const institutions = await this.institutionService.findByDomain(domain);
+            return {
+                statusCode: 200,
+                message: 'Institutions retrieved successfully',
+                data: institutions,
+            };
+        } catch (error) {
+            throw new NotFoundException({
+                statusCode: 404,
+                message: `No institutions found for domain ${domain}`,
+                error: error.message,
+            });
+        }
     }
 }

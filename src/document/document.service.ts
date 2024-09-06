@@ -25,7 +25,7 @@ export class DocumentService {
         }
         return document;
     }
-
+    
     async getDocumentByName(name: string): Promise<DocumentEntity> {
         const document = await this.documentModel.findOne({ name }).exec();
         if (!document) {
@@ -47,4 +47,15 @@ export class DocumentService {
         }
         return deletedDocument;
     }
+
+    async getDocumentsByUploadedBy(userId: string): Promise<DocumentEntity[]> {
+        const documents = await this.documentModel
+            .find({ uploadedBy: userId })
+            .exec();
+        if (!documents || documents.length === 0) {
+            throw new NotFoundException(`No documents found for user with ID ${userId}`);
+        }
+        return documents;
+    }
+
 }

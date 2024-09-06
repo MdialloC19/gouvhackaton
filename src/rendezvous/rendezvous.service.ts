@@ -1,15 +1,11 @@
-import {
-    Injectable,
-    NotFoundException,
-    BadRequestException,
-} from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
-import { Rendezvous } from './rendezvous.schema';
-import { CreateRendezvousDto } from './dto/create-rendezvous.dto';
-import { UpdateRendezvousDto } from './dto/update-rendezvous.dto';
-import { InstitutionService } from '../institution/institution.service';
-import { CitoyenService } from 'src/citoyen/citoyen.service';
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
+import { InjectModel } from "@nestjs/mongoose";
+import { Model } from "mongoose";
+import { CitoyenService } from "src/citoyen/citoyen.service";
+import { InstitutionService } from "src/institution/institution.service";
+import { CreateRendezvousDto } from "./dto/create-rendezvous.dto";
+import { UpdateRendezvousDto } from "./dto/update-rendezvous.dto";
+import { Rendezvous } from "./rendezvous.schema";
 
 @Injectable()
 export class RendezvousService {
@@ -57,6 +53,38 @@ export class RendezvousService {
             .exec();
         if (!rendezvous) {
             throw new NotFoundException('Rendezvous not found');
+        }
+        return rendezvous;
+    }
+
+    async findByInstitution(institutionId: string): Promise<Rendezvous[]> {
+        const institution = await this.institutionService.findOne(institutionId);
+        if (!institution) {
+            throw new NotFoundException('Institution not found');
+        }
+        const rendezvous = await this.rendezvousModel
+            .find({ institution: institutionId })
+            .populate('citoyen institution')
+            .exec();
+
+        if (rendezvous.length === 0) {
+            throw new NotFoundException('No rendezvous found for this institution');
+        }
+        return rendezvous;
+    }
+
+    async findByCitoyen(citoyenId: string): Promise<Rendezvous[]> {
+        const citoyen = await this.citoyenService.findOne(citoyenId);
+        if (!citoyen) {
+            throw new NotFoundException('Citoyen not found');
+        }
+        const rendezvous = await this.rendezvousModel
+            .find({ citoyen: citoyenId })
+            .populate('citoyen institution')
+            .exec();
+
+        if (rendezvous.length === 0) {
+            throw new NotFoundException('No rendezvous found for this citoyen');
         }
         return rendezvous;
     }
