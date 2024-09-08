@@ -13,20 +13,24 @@ import { RequestService } from './request.service';
 import { CreateRequestDto } from './dto/create-request-citoyen.dto';
 import { Request } from './request.schema';
 import { UpdateRequestDto } from './dto/update-request-fonctionnaire.dto';
-import { ApiResponse } from '../interface/apiResponses.interface';
+import { ApiResponse as SwaggerApiResponse, ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
+import { ApiResponse } from 'src/interface/apiResponses.interface';
 
+@ApiTags('Requests')
 @Controller('requests')
 export class RequestController {
     constructor(private readonly requestService: RequestService) {}
 
-    // Admin
     @Post()
+    @ApiOperation({ summary: 'Créer une nouvelle demande' })
+    @ApiBody({ type: CreateRequestDto })
+    @SwaggerApiResponse({ status: 201, description: 'Demande créée avec succès.', type: Request })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la création de la demande.' })
     async createRequest(
         @Body() createRequestDto: CreateRequestDto,
     ): Promise<ApiResponse<Request | null>> {
         try {
-            const request =
-                await this.requestService.createRequest(createRequestDto);
+            const request = await this.requestService.createRequest(createRequestDto);
             return {
                 status: 'success',
                 message: 'Request created successfully',
@@ -41,8 +45,10 @@ export class RequestController {
         }
     }
 
-    // Admin
     @Get()
+    @ApiOperation({ summary: 'Obtenir toutes les demandes' })
+    @SwaggerApiResponse({ status: 200, description: 'Demandes récupérées avec succès.', type: [Request] })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération des demandes.' })
     async findAll(): Promise<ApiResponse<Request[] | null>> {
         const requests = await this.requestService.findAll();
         return {
@@ -52,8 +58,12 @@ export class RequestController {
         };
     }
 
-    // Citoyen, Fonctionnaire , Admin
     @Get(':id')
+    @ApiOperation({ summary: 'Obtenir une demande par ID' })
+    @ApiParam({ name: 'id', description: 'ID de la demande', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Demande récupérée avec succès.', type: Request })
+    @SwaggerApiResponse({ status: 404, description: 'Demande non trouvée.' })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la récupération de la demande.' })
     async findById(
         @Param('id') id: string,
     ): Promise<ApiResponse<Request | null>> {
@@ -80,17 +90,19 @@ export class RequestController {
         }
     }
 
-    //Fonctionnaire
     @Put(':id')
+    @ApiOperation({ summary: 'Mettre à jour une demande par ID' })
+    @ApiParam({ name: 'id', description: 'ID de la demande', type: String })
+    @ApiBody({ type: UpdateRequestDto })
+    @SwaggerApiResponse({ status: 200, description: 'Demande mise à jour avec succès.', type: Request })
+    @SwaggerApiResponse({ status: 404, description: 'Demande non trouvée.' })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la mise à jour de la demande.' })
     async update(
         @Param('id') id: string,
         @Body() updateRequestDto: UpdateRequestDto,
     ): Promise<ApiResponse<Request | null>> {
         try {
-            const updatedRequest = await this.requestService.update(
-                id,
-                updateRequestDto,
-            );
+            const updatedRequest = await this.requestService.update(id, updateRequestDto);
             return {
                 status: 'success',
                 message: 'Request updated successfully',
@@ -119,8 +131,12 @@ export class RequestController {
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
     @Get('citoyen/:citoyenId')
+    @ApiOperation({ summary: 'Obtenir les demandes pour un citoyen' })
+    @ApiParam({ name: 'citoyenId', description: 'ID du citoyen', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Demandes pour le citoyen récupérées avec succès.', type: [Request] })
+    @SwaggerApiResponse({ status: 404, description: 'Aucune demande trouvée pour ce citoyen.' })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la récupération des demandes pour le citoyen.' })
     async findByCitoyen(
         @Param('citoyenId') citoyenId: string,
     ): Promise<ApiResponse<Request[] | null>> {
@@ -147,8 +163,12 @@ export class RequestController {
         }
     }
 
-    //Fonctionnaire , Admin
     @Get('service/:serviceId')
+    @ApiOperation({ summary: 'Obtenir les demandes pour un service' })
+    @ApiParam({ name: 'serviceId', description: 'ID du service', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Demandes pour le service récupérées avec succès.', type: [Request] })
+    @SwaggerApiResponse({ status: 404, description: 'Aucune demande trouvée pour ce service.' })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la récupération des demandes pour le service.' })
     async findByService(
         @Param('serviceId') serviceId: string,
     ): Promise<ApiResponse<Request[] | null>> {
@@ -175,14 +195,17 @@ export class RequestController {
         }
     }
 
-    //Fonctionnaire , Admin
     @Get('institution/:institutionId')
+    @ApiOperation({ summary: 'Obtenir les demandes pour une institution' })
+    @ApiParam({ name: 'institutionId', description: 'ID de l\'institution', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Demandes pour l\'institution récupérées avec succès.', type: [Request] })
+    @SwaggerApiResponse({ status: 404, description: 'Aucune demande trouvée pour cette institution.' })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la récupération des demandes pour l\'institution.' })
     async findByInstitution(
         @Param('institutionId') institutionId: string,
     ): Promise<ApiResponse<Request[] | null>> {
         try {
-            const requests =
-                await this.requestService.findByInstitution(institutionId);
+            const requests = await this.requestService.findByInstitution(institutionId);
             return {
                 status: 'success',
                 message: 'Requests for institution retrieved successfully',
@@ -204,18 +227,20 @@ export class RequestController {
         }
     }
 
-    //Fonctionnaire , Admin
     @Get('processedby/:fonctionnaireId')
+    @ApiOperation({ summary: 'Obtenir les demandes traitées par un fonctionnaire' })
+    @ApiParam({ name: 'fonctionnaireId', description: 'ID du fonctionnaire', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Demandes traitées par le fonctionnaire récupérées avec succès.', type: [Request] })
+    @SwaggerApiResponse({ status: 404, description: 'Aucune demande trouvée pour ce fonctionnaire.' })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la récupération des demandes traitées par le fonctionnaire.' })
     async findByProcessedBy(
         @Param('fonctionnaireId') fonctionnaireId: string,
     ): Promise<ApiResponse<Request[] | null>> {
         try {
-            const requests =
-                await this.requestService.findByProcessedBy(fonctionnaireId);
+            const requests = await this.requestService.findByProcessedBy(fonctionnaireId);
             return {
                 status: 'success',
-                message:
-                    'Requests processed by fonctionnaire retrieved successfully',
+                message: 'Requests processed by fonctionnaire retrieved successfully',
                 data: requests,
             };
         } catch (error) {

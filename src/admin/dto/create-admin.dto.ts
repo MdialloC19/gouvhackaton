@@ -42,6 +42,7 @@ export class CreateAdminDto {
     @IsNotEmpty()
     readonly password: string;
 
+
     @IsEmail()
     @IsNotEmpty()
     readonly email: string;

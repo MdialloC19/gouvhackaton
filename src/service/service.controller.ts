@@ -13,22 +13,25 @@ import {
 import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
+import { ApiResponse as SwaggerApiResponse, ApiTags, ApiOperation, ApiBody, ApiParam } from '@nestjs/swagger';
 import { ApiResponse } from '../interface/apiResponses.interface';
 import { Service } from './service.schema';
 
+@ApiTags('Services')
 @Controller('services')
 export class ServiceController {
     constructor(private readonly serviceService: ServiceService) {}
 
-    //Admin
     @Post()
+    @ApiOperation({ summary: 'Créer un nouveau service' })
+    @ApiBody({ type: CreateServiceDto })
+    @SwaggerApiResponse({ status: 201, description: 'Service créé avec succès.', type: Service })
+    @SwaggerApiResponse({ status: 400, description: 'Échec de la création du service.' })
     async create(
         @Body() createServiceDto: CreateServiceDto,
     ): Promise<ApiResponse<Service>> {
         try {
-            const existingService = await this.serviceService.findByName(
-                createServiceDto.name,
-            );
+            const existingService = await this.serviceService.findByName(createServiceDto.name);
 
             if (existingService) {
                 return {
@@ -37,8 +40,7 @@ export class ServiceController {
                     data: null,
                 };
             }
-            const createdService =
-                await this.serviceService.create(createServiceDto);
+            const createdService = await this.serviceService.create(createServiceDto);
 
             return {
                 status: 'success',
@@ -54,8 +56,10 @@ export class ServiceController {
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
     @Get()
+    @ApiOperation({ summary: 'Obtenir tous les services' })
+    @SwaggerApiResponse({ status: 200, description: 'Services récupérés avec succès.', type: [Service] })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération des services.' })
     async findAll(): Promise<ApiResponse<Service[]>> {
         try {
             const services = await this.serviceService.findAll();
@@ -73,8 +77,11 @@ export class ServiceController {
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
     @Get(':id')
+    @ApiOperation({ summary: 'Obtenir un service par ID' })
+    @ApiParam({ name: 'id', description: 'ID du service', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Service récupéré avec succès.', type: Service })
+    @SwaggerApiResponse({ status: 404, description: 'Service non trouvé.' })
     async findOne(@Param('id') id: string): Promise<ApiResponse<Service>> {
         try {
             const service = await this.serviceService.findOne(id);
@@ -92,14 +99,17 @@ export class ServiceController {
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
     @Get('byInstitution/:institutionId')
+    @ApiOperation({ summary: 'Obtenir les services par institution' })
+    @ApiParam({ name: 'institutionId', description: 'ID de l\'institution', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Services récupérés pour l\'institution avec succès.', type: [Service] })
+    @SwaggerApiResponse({ status: 404, description: 'Aucun service trouvé pour cette institution.' })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération des services pour l\'institution.' })
     async findByInstitution(
         @Param('institutionId') institutionId: string,
     ): Promise<ApiResponse<Service[]>> {
         try {
-            const services =
-                await this.serviceService.findByInstitution(institutionId);
+            const services = await this.serviceService.findByInstitution(institutionId);
             if (services.length === 0) {
                 throw new NotFoundException({
                     status: 'error',
@@ -121,17 +131,18 @@ export class ServiceController {
         }
     }
 
-    // Admin
     @Put(':id')
+    @ApiOperation({ summary: 'Mettre à jour un service par ID' })
+    @ApiParam({ name: 'id', description: 'ID du service', type: String })
+    @ApiBody({ type: UpdateServiceDto })
+    @SwaggerApiResponse({ status: 200, description: 'Service mis à jour avec succès.', type: Service })
+    @SwaggerApiResponse({ status: 404, description: 'Service non trouvé.' })
     async update(
         @Param('id') id: string,
         @Body() updateServiceDto: UpdateServiceDto,
     ): Promise<ApiResponse<Service>> {
         try {
-            const updatedService = await this.serviceService.update(
-                id,
-                updateServiceDto,
-            );
+            const updatedService = await this.serviceService.update(id, updateServiceDto);
             return {
                 status: 'success',
                 message: 'Service updated successfully',
@@ -146,9 +157,11 @@ export class ServiceController {
         }
     }
 
-    //Admin
-
     @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer un service par ID' })
+    @ApiParam({ name: 'id', description: 'ID du service', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Service supprimé avec succès.' })
+    @SwaggerApiResponse({ status: 404, description: 'Service non trouvé.' })
     async remove(@Param('id') id: string): Promise<ApiResponse<null>> {
         try {
             await this.serviceService.remove(id);
@@ -166,18 +179,18 @@ export class ServiceController {
         }
     }
 
-    // Admin
     @Put(':id/add-institution')
+    @ApiOperation({ summary: 'Ajouter une institution à un service' })
+    @ApiParam({ name: 'id', description: 'ID du service', type: String })
+    @ApiBody({ type: Object, description: 'Contient l\'ID de l\'institution à ajouter' })
+    @SwaggerApiResponse({ status: 200, description: 'Institution ajoutée au service avec succès.', type: Service })
+    @SwaggerApiResponse({ status: 404, description: 'Échec de l\'ajout de l\'institution au service.' })
     async addInstitution(
         @Param('id') serviceId: string,
         @Body('institutionId') institutionId: string,
     ): Promise<ApiResponse<Service>> {
         try {
-            const updatedService =
-                await this.serviceService.addInstitutionToService(
-                    serviceId,
-                    institutionId,
-                );
+            const updatedService = await this.serviceService.addInstitutionToService(serviceId, institutionId);
             return {
                 status: 'success',
                 message: 'Institution added to service successfully',
@@ -192,18 +205,18 @@ export class ServiceController {
         }
     }
 
-    // Admin
     @Put(':serviceId/remove-institution/:institutionId')
+    @ApiOperation({ summary: 'Supprimer une institution d\'un service' })
+    @ApiParam({ name: 'serviceId', description: 'ID du service', type: String })
+    @ApiParam({ name: 'institutionId', description: 'ID de l\'institution', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Institution retirée du service avec succès.', type: Service })
+    @SwaggerApiResponse({ status: 404, description: 'Échec du retrait de l\'institution du service.' })
     async removeInstitutionFromService(
         @Param('serviceId') serviceId: string,
         @Param('institutionId') institutionId: string,
     ): Promise<ApiResponse<Service>> {
         try {
-            const updatedService =
-                await this.serviceService.removeInstitutionFromService(
-                    serviceId,
-                    institutionId,
-                );
+            const updatedService = await this.serviceService.removeInstitutionFromService(serviceId, institutionId);
             return {
                 status: 'success',
                 message: 'Institution removed from service successfully',

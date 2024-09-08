@@ -15,13 +15,26 @@ import { CreateCitoyenDto } from './dto/create-citoyen.dto';
 import { UpdateCitoyenDto } from './dto/update-citoyen.dto';
 import { Citoyen } from './citoyen.schema';
 import { ApiResponse } from '../interface/apiResponses.interface';
+import {
+    ApiTags,
+    ApiOperation,
+    ApiResponse as SwaggerApiResponse,
+    ApiBody,
+    ApiParam,
+    ApiQuery,
+} from '@nestjs/swagger';
 
+@ApiTags('Citoyens')
 @Controller('citoyens')
 export class CitoyenController {
     constructor(private readonly citoyenService: CitoyenService) {}
 
     // Citoyen
     @Post()
+    @ApiOperation({ summary: 'Créer un nouveau citoyen' })
+    @ApiBody({ type: CreateCitoyenDto })
+    @SwaggerApiResponse({ status: 201, description: 'Citoyen créé avec succès.', type: Citoyen })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la création du citoyen.' })
     async create(
         @Body() createCitoyenDto: CreateCitoyenDto,
     ): Promise<ApiResponse<Citoyen>> {
@@ -29,46 +42,53 @@ export class CitoyenController {
             const citoyen = await this.citoyenService.create(createCitoyenDto);
             return {
                 status: 'success',
-                message: 'Citoyen created successfully',
+                message: 'Citoyen créé avec succès',
                 data: citoyen,
             };
         } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Failed to create citoyen',
+                message: 'Échec de la création du citoyen',
                 data: null,
             });
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
-
+    // Citoyen, Fonctionnaire, Admin
     @Get()
+    @ApiOperation({ summary: 'Obtenir tous les citoyens' })
+    @SwaggerApiResponse({ status: 200, description: 'Citoyens récupérés avec succès.', type: [Citoyen] })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération des citoyens.' })
     async findAll(): Promise<ApiResponse<Citoyen[]>> {
         try {
             const citoyens = await this.citoyenService.findAll();
             return {
                 status: 'success',
-                message: 'Citoyens retrieved successfully',
+                message: 'Citoyens récupérés avec succès',
                 data: citoyens,
             };
         } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Failed to retrieve citoyens',
+                message: 'Échec de la récupération des citoyens',
                 data: null,
             });
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
+    // Citoyen, Fonctionnaire, Admin
     @Get(':id')
+    @ApiOperation({ summary: 'Obtenir un citoyen par ID' })
+    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Citoyen récupéré avec succès.', type: Citoyen })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération du citoyen.' })
     async findOne(@Param('id') id: string): Promise<ApiResponse<Citoyen>> {
         try {
             const citoyen = await this.citoyenService.findOne(id);
             return {
                 status: 'success',
-                message: 'Citoyen retrieved successfully',
+                message: 'Citoyen récupéré avec succès',
                 data: citoyen,
             };
         } catch (error) {
@@ -77,14 +97,20 @@ export class CitoyenController {
             }
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Failed to retrieve citoyen',
+                message: 'Échec de la récupération du citoyen',
                 data: null,
             });
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
+    // Citoyen, Fonctionnaire, Admin
     @Put(':id')
+    @ApiOperation({ summary: 'Mettre à jour un citoyen par ID' })
+    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
+    @ApiBody({ type: UpdateCitoyenDto })
+    @SwaggerApiResponse({ status: 200, description: 'Citoyen mis à jour avec succès.', type: Citoyen })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la mise à jour du citoyen.' })
     async update(
         @Param('id') id: string,
         @Body() updateCitoyenDto: UpdateCitoyenDto,
@@ -96,7 +122,7 @@ export class CitoyenController {
             );
             return {
                 status: 'success',
-                message: 'Citoyen updated successfully',
+                message: 'Citoyen mis à jour avec succès',
                 data: updatedCitoyen,
             };
         } catch (error) {
@@ -105,19 +131,25 @@ export class CitoyenController {
             }
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Failed to update citoyen',
+                message: 'Échec de la mise à jour du citoyen',
                 data: null,
             });
         }
     }
 
+    // Citoyen, Fonctionnaire, Admin
     @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer un citoyen par ID' })
+    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Citoyen supprimé avec succès.' })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la suppression du citoyen.' })
     async remove(@Param('id') id: string): Promise<ApiResponse<void>> {
         try {
             await this.citoyenService.remove(id);
             return {
                 status: 'success',
-                message: 'Citoyen deleted successfully',
+                message: 'Citoyen supprimé avec succès',
                 data: null,
             };
         } catch (error) {
@@ -126,14 +158,19 @@ export class CitoyenController {
             }
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Failed to delete citoyen',
+                message: 'Échec de la suppression du citoyen',
                 data: null,
             });
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
+    // Citoyen, Fonctionnaire, Admin
     @Get('phone')
+    @ApiOperation({ summary: 'Obtenir un citoyen par numéro de téléphone' })
+    @ApiQuery({ name: 'phoneNumber', description: 'Numéro de téléphone du citoyen', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Citoyen récupéré avec succès.', type: Citoyen })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération du citoyen par numéro de téléphone.' })
     async findByPhoneNumber(
         @Query('phoneNumber') phoneNumber: string,
     ): Promise<ApiResponse<Citoyen | null>> {
@@ -142,20 +179,25 @@ export class CitoyenController {
                 await this.citoyenService.findByPhoneNumber(phoneNumber);
             return {
                 status: 'success',
-                message: 'Citoyen retrieved successfully',
+                message: 'Citoyen récupéré avec succès',
                 data: citoyen,
             };
         } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Failed to retrieve citoyen by phone number',
+                message: 'Échec de la récupération du citoyen par numéro de téléphone',
                 data: null,
             });
         }
     }
 
-    // Citoyen, Fonctionnaire , Admin
+    // Citoyen, Fonctionnaire, Admin
     @Get('cni')
+    @ApiOperation({ summary: 'Obtenir un citoyen par CNI' })
+    @ApiQuery({ name: 'CNI', description: 'CNI du citoyen', type: String })
+    @SwaggerApiResponse({ status: 200, description: 'Citoyen récupéré avec succès.', type: Citoyen })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération du citoyen par CNI.' })
     async findByCNI(
         @Query('CNI') CNI: string,
     ): Promise<ApiResponse<Citoyen | null>> {
@@ -163,13 +205,13 @@ export class CitoyenController {
             const citoyen = await this.citoyenService.findByCNI(CNI);
             return {
                 status: 'success',
-                message: 'Citoyen retrieved successfully',
+                message: 'Citoyen récupéré avec succès',
                 data: citoyen,
             };
         } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Failed to retrieve citoyen by CNI',
+                message: 'Échec de la récupération du citoyen par CNI',
                 data: null,
             });
         }

@@ -1,15 +1,20 @@
-import { IsString, IsDate, IsOptional } from 'class-validator';
+import { IsString, IsDate, IsOptional, IsNotEmpty, IsPhoneNumber, IsStrongPassword } from 'class-validator';
 
 export class CreateCitoyenDto {
     @IsString()
+    @IsNotEmpty()
     readonly CNI: string;
 
+    @IsNotEmpty()
     @IsString()
+    @IsPhoneNumber()
     readonly phoneNumber: string;
 
+    @IsNotEmpty()
     @IsString()
     readonly name: string;
 
+    @IsNotEmpty()
     @IsString()
     readonly surname: string;
 
@@ -25,7 +30,10 @@ export class CreateCitoyenDto {
     readonly sex: string;
 
     @IsString()
+    @IsStrongPassword()
+    @IsNotEmpty()
     readonly password: string;
+
 
     @IsOptional()
     @IsString()
