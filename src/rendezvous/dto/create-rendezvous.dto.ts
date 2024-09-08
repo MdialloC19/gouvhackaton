@@ -3,29 +3,29 @@ import { Types } from 'mongoose';
 
 export class CreateRendezvousDto {
     @IsString()
-    readonly citoyen?: Types.ObjectId[]; // ID du citoyen
+    readonly citoyen?: Types.ObjectId;
 
     @IsString()
-    readonly institution?: Types.ObjectId[]; // ID de l'institution
+    readonly institution?: Types.ObjectId;
 
     @IsDate()
     readonly dateAndHour: Date;
 
     @IsOptional()
     @IsNumber()
-    readonly duration?: number; // Durée en minutes
+    readonly duration?: number;
 
     @IsOptional()
     @IsString()
-    readonly state?: string; // Etat du rendez-vous
+    readonly state?: string;
 
     @IsOptional()
     @IsString()
-    readonly priority?: string; // Priorité du rendez-vous
+    readonly priority?: string;
 
     @IsOptional()
     @IsString()
-    readonly type?: string; // Type de rendez-vous
+    readonly type?: string;
 
     @IsOptional()
     @IsString()

@@ -20,8 +20,11 @@ import { ApiResponse } from '../interface/apiResponses.interface';
 export class CitoyenController {
     constructor(private readonly citoyenService: CitoyenService) {}
 
+    // Citoyen
     @Post()
-    async create(@Body() createCitoyenDto: CreateCitoyenDto): Promise<ApiResponse<Citoyen>> {
+    async create(
+        @Body() createCitoyenDto: CreateCitoyenDto,
+    ): Promise<ApiResponse<Citoyen>> {
         try {
             const citoyen = await this.citoyenService.create(createCitoyenDto);
             return {
@@ -37,6 +40,8 @@ export class CitoyenController {
             });
         }
     }
+
+    // Citoyen, Fonctionnaire , Admin
 
     @Get()
     async findAll(): Promise<ApiResponse<Citoyen[]>> {
@@ -56,6 +61,7 @@ export class CitoyenController {
         }
     }
 
+    // Citoyen, Fonctionnaire , Admin
     @Get(':id')
     async findOne(@Param('id') id: string): Promise<ApiResponse<Citoyen>> {
         try {
@@ -77,13 +83,17 @@ export class CitoyenController {
         }
     }
 
+    // Citoyen, Fonctionnaire , Admin
     @Put(':id')
     async update(
         @Param('id') id: string,
         @Body() updateCitoyenDto: UpdateCitoyenDto,
     ): Promise<ApiResponse<Citoyen>> {
         try {
-            const updatedCitoyen = await this.citoyenService.update(id, updateCitoyenDto);
+            const updatedCitoyen = await this.citoyenService.update(
+                id,
+                updateCitoyenDto,
+            );
             return {
                 status: 'success',
                 message: 'Citoyen updated successfully',
@@ -122,10 +132,14 @@ export class CitoyenController {
         }
     }
 
+    // Citoyen, Fonctionnaire , Admin
     @Get('phone')
-    async findByPhoneNumber(@Query('phoneNumber') phoneNumber: string): Promise<ApiResponse<Citoyen | null>> {
+    async findByPhoneNumber(
+        @Query('phoneNumber') phoneNumber: string,
+    ): Promise<ApiResponse<Citoyen | null>> {
         try {
-            const citoyen = await this.citoyenService.findByPhoneNumber(phoneNumber);
+            const citoyen =
+                await this.citoyenService.findByPhoneNumber(phoneNumber);
             return {
                 status: 'success',
                 message: 'Citoyen retrieved successfully',
@@ -140,8 +154,11 @@ export class CitoyenController {
         }
     }
 
+    // Citoyen, Fonctionnaire , Admin
     @Get('cni')
-    async findByCNI(@Query('CNI') CNI: string): Promise<ApiResponse<Citoyen | null>> {
+    async findByCNI(
+        @Query('CNI') CNI: string,
+    ): Promise<ApiResponse<Citoyen | null>> {
         try {
             const citoyen = await this.citoyenService.findByCNI(CNI);
             return {

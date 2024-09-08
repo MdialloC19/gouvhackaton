@@ -19,15 +19,29 @@ export class DocumentService {
     }
 
     async getDocumentById(id: string): Promise<DocumentEntity> {
+        const document = await this.documentModel
+            .findById(id)
+            .select('-buffer')
+            .exec();
+        if (!document) {
+            throw new NotFoundException(`Document with ID ${id} not found`);
+        }
+        return document;
+    }
+
+    async getBuffer(id: string): Promise<DocumentEntity> {
         const document = await this.documentModel.findById(id).exec();
         if (!document) {
             throw new NotFoundException(`Document with ID ${id} not found`);
         }
         return document;
     }
-    
+
     async getDocumentByName(name: string): Promise<DocumentEntity> {
-        const document = await this.documentModel.findOne({ name }).exec();
+        const document = await this.documentModel
+            .findOne({ name })
+            .select('-buffer')
+            .exec();
         if (!document) {
             throw new NotFoundException(`Document with ID ${name} not found`);
         }
@@ -35,12 +49,13 @@ export class DocumentService {
     }
 
     async getAllDocuments(): Promise<DocumentEntity[]> {
-        return this.documentModel.find().exec();
+        return this.documentModel.find().select('-buffer').exec();
     }
 
     async remove(id: string): Promise<DocumentEntity> {
         const deletedDocument = await this.documentModel
             .findByIdAndDelete(id)
+            .select('-buffer')
             .exec();
         if (!deletedDocument) {
             throw new NotFoundException(`Document with ID ${id} not found`);
@@ -51,11 +66,13 @@ export class DocumentService {
     async getDocumentsByUploadedBy(userId: string): Promise<DocumentEntity[]> {
         const documents = await this.documentModel
             .find({ uploadedBy: userId })
+            .select('-buffer')
             .exec();
         if (!documents || documents.length === 0) {
-            throw new NotFoundException(`No documents found for user with ID ${userId}`);
+            throw new NotFoundException(
+                `No documents found for user with ID ${userId}`,
+            );
         }
         return documents;
     }
-
 }

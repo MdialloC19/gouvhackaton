@@ -2,6 +2,11 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { IsNotEmpty } from 'class-validator';
 import { Document } from 'mongoose';
 
+export enum EnumSex {
+    Homme = 'Homme',
+    Femme = 'Femme',
+}
+
 @Schema()
 export class User extends Document {
     @IsNotEmpty()
@@ -25,9 +30,9 @@ export class User extends Document {
 
     @Prop()
     job: string;
-     
+
     @Prop({ required: true })
-    sex: string; // EnumSex
+    sex: EnumSex;
 
     @Prop({ required: true })
     @IsNotEmpty()

@@ -20,7 +20,8 @@ export class RendezvousController {
     @Post()
     async create(@Body() createRendezvousDto: CreateRendezvousDto) {
         try {
-            const rendezvous = await this.rendezvousService.create(createRendezvousDto);
+            const rendezvous =
+                await this.rendezvousService.create(createRendezvousDto);
             return {
                 statusCode: 201,
                 message: 'Rendezvous created successfully',
@@ -77,7 +78,10 @@ export class RendezvousController {
         @Body() updateRendezvousDto: UpdateRendezvousDto,
     ) {
         try {
-            const updatedRendezvous = await this.rendezvousService.update(id, updateRendezvousDto);
+            const updatedRendezvous = await this.rendezvousService.update(
+                id,
+                updateRendezvousDto,
+            );
             return {
                 statusCode: 200,
                 message: 'Rendezvous updated successfully',
@@ -113,7 +117,8 @@ export class RendezvousController {
     @Get('institution/:institutionId')
     async findByInstitution(@Param('institutionId') institutionId: string) {
         try {
-            const rendezvous = await this.rendezvousService.findByInstitution(institutionId);
+            const rendezvous =
+                await this.rendezvousService.findByInstitution(institutionId);
             return {
                 statusCode: 200,
                 message: 'Rendezvous retrieved successfully by institution',
@@ -131,7 +136,8 @@ export class RendezvousController {
     @Get('citoyen/:citoyenId')
     async findByCitoyen(@Param('citoyenId') citoyenId: string) {
         try {
-            const rendezvous = await this.rendezvousService.findByCitoyen(citoyenId);
+            const rendezvous =
+                await this.rendezvousService.findByCitoyen(citoyenId);
             return {
                 statusCode: 200,
                 message: 'Rendezvous retrieved successfully by citoyen',

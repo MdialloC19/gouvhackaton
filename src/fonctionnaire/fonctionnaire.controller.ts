@@ -20,10 +20,15 @@ import { ApiResponse } from '../interface/apiResponses.interface';
 export class FonctionnaireController {
     constructor(private readonly fonctionnaireService: FonctionnaireService) {}
 
+    //Admin
     @Post()
-    async create(@Body() createFonctionnaireDto: CreateFonctionnaireDto): Promise<ApiResponse<Fonctionnaire | null>> {
+    async create(
+        @Body() createFonctionnaireDto: CreateFonctionnaireDto,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
         try {
-            const fonctionnaire = await this.fonctionnaireService.create(createFonctionnaireDto);
+            const fonctionnaire = await this.fonctionnaireService.create(
+                createFonctionnaireDto,
+            );
             return {
                 status: 'success',
                 message: 'Fonctionnaire created successfully',
@@ -38,6 +43,7 @@ export class FonctionnaireController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Get()
     async findAll(): Promise<ApiResponse<Fonctionnaire[] | null>> {
         try {
@@ -56,8 +62,11 @@ export class FonctionnaireController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Get(':id')
-    async findOne(@Param('id') id: string): Promise<ApiResponse<Fonctionnaire | null>> {
+    async findOne(
+        @Param('id') id: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
         try {
             const fonctionnaire = await this.fonctionnaireService.findOne(id);
             return {
@@ -77,13 +86,17 @@ export class FonctionnaireController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Put(':id')
     async update(
         @Param('id') id: string,
         @Body() updateFonctionnaireDto: UpdateFonctionnaireDto,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
         try {
-            const updatedFonctionnaire = await this.fonctionnaireService.update(id, updateFonctionnaireDto);
+            const updatedFonctionnaire = await this.fonctionnaireService.update(
+                id,
+                updateFonctionnaireDto,
+            );
             return {
                 status: 'success',
                 message: 'Fonctionnaire updated successfully',
@@ -101,10 +114,14 @@ export class FonctionnaireController {
         }
     }
 
+    //Admin
     @Delete(':id')
-    async remove(@Param('id') id: string): Promise<ApiResponse<Fonctionnaire | null>> {
+    async remove(
+        @Param('id') id: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
         try {
-            const deletedFonctionnaire = await this.fonctionnaireService.remove(id);
+            const deletedFonctionnaire =
+                await this.fonctionnaireService.remove(id);
             return {
                 status: 'success',
                 message: 'Fonctionnaire deleted successfully',
@@ -122,10 +139,14 @@ export class FonctionnaireController {
         }
     }
 
+    //Fonctionnaire
     @Get('email')
-    async findByEmail(@Query('email') email: string): Promise<ApiResponse<Fonctionnaire | null>> {
+    async findByEmail(
+        @Query('email') email: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
         try {
-            const fonctionnaire = await this.fonctionnaireService.findByEmail(email);
+            const fonctionnaire =
+                await this.fonctionnaireService.findByEmail(email);
             return {
                 status: 'success',
                 message: 'Fonctionnaire retrieved successfully',
@@ -140,10 +161,14 @@ export class FonctionnaireController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Get('idnumber')
-    async findByIdNumber(@Query('idNumber') idNumber: string): Promise<ApiResponse<Fonctionnaire | null>> {
+    async findByIdNumber(
+        @Query('idNumber') idNumber: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
         try {
-            const fonctionnaire = await this.fonctionnaireService.findByIdNumber(idNumber);
+            const fonctionnaire =
+                await this.fonctionnaireService.findByIdNumber(idNumber);
             return {
                 status: 'success',
                 message: 'Fonctionnaire retrieved successfully',
@@ -157,11 +182,16 @@ export class FonctionnaireController {
             });
         }
     }
-
+    //Fonctionnaire , Admin
     @Get('institution')
-    async findByInstitution(@Query('institutionId') institutionId: string): Promise<ApiResponse<Fonctionnaire[] | null>> {
+    async findByInstitution(
+        @Query('institutionId') institutionId: string,
+    ): Promise<ApiResponse<Fonctionnaire[] | null>> {
         try {
-            const fonctionnaires = await this.fonctionnaireService.findByInstitution(institutionId);
+            const fonctionnaires =
+                await this.fonctionnaireService.findByInstitution(
+                    institutionId,
+                );
             return {
                 status: 'success',
                 message: 'Fonctionnaires retrieved successfully',
@@ -176,10 +206,14 @@ export class FonctionnaireController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Get('cni')
-    async findByCNI(@Query('CNI') CNI: string): Promise<ApiResponse<Fonctionnaire | null>> {
+    async findByCNI(
+        @Query('CNI') CNI: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
         try {
-            const fonctionnaire = await this.fonctionnaireService.findByCNI(CNI);
+            const fonctionnaire =
+                await this.fonctionnaireService.findByCNI(CNI);
             return {
                 status: 'success',
                 message: 'Fonctionnaire retrieved successfully',

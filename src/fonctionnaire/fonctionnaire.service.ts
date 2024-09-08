@@ -18,7 +18,8 @@ export class FonctionnaireService {
         createFonctionnaireDto: CreateFonctionnaireDto,
     ): Promise<Fonctionnaire> {
         const { institutionName, ...rest } = createFonctionnaireDto;
-        const institution = await this.institutionService.findByName(institutionName);
+        const institution =
+            await this.institutionService.findByName(institutionName);
         if (!institution) {
             throw new NotFoundException(
                 `Institution with name ${institutionName} not found`,
@@ -32,7 +33,11 @@ export class FonctionnaireService {
     }
 
     async findAll(): Promise<Fonctionnaire[]> {
-        return this.fonctionnaireModel.find().populate('institution').select('-password').exec();
+        return this.fonctionnaireModel
+            .find()
+            .populate('institution')
+            .select('-password')
+            .exec();
     }
 
     async findOne(id: string): Promise<Fonctionnaire> {
@@ -56,7 +61,8 @@ export class FonctionnaireService {
         const updatedFonctionnaire = await this.fonctionnaireModel
             .findByIdAndUpdate(id, updateFonctionnaireDto, {
                 new: true,
-            }).select('-password')
+            })
+            .select('-password')
             .exec();
         if (!updatedFonctionnaire) {
             throw new NotFoundException(
@@ -84,7 +90,9 @@ export class FonctionnaireService {
             .select('-password')
             .exec();
         if (!fonctionnaire) {
-            throw new NotFoundException(`Fonctionnaire with email "${email}" not found`);
+            throw new NotFoundException(
+                `Fonctionnaire with email "${email}" not found`,
+            );
         }
         return fonctionnaire;
     }
@@ -96,7 +104,9 @@ export class FonctionnaireService {
             .select('-password')
             .exec();
         if (!fonctionnaire) {
-            throw new NotFoundException(`Fonctionnaire with ID number "${idNumber}" not found`);
+            throw new NotFoundException(
+                `Fonctionnaire with ID number "${idNumber}" not found`,
+            );
         }
         return fonctionnaire;
     }
@@ -108,7 +118,9 @@ export class FonctionnaireService {
             .select('-password')
             .exec();
         if (fonctionnaires.length === 0) {
-            throw new NotFoundException(`No fonctionnaires found for institution ID "${institutionId}"`);
+            throw new NotFoundException(
+                `No fonctionnaires found for institution ID "${institutionId}"`,
+            );
         }
         return fonctionnaires;
     }
@@ -120,7 +132,9 @@ export class FonctionnaireService {
             .select('-password')
             .exec();
         if (!fonctionnaire) {
-            throw new NotFoundException(`Fonctionnaire with CNI "${CNI}" not found`);
+            throw new NotFoundException(
+                `Fonctionnaire with CNI "${CNI}" not found`,
+            );
         }
         return fonctionnaire;
     }

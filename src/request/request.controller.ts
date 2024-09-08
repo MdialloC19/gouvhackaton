@@ -15,17 +15,18 @@ import { Request } from './request.schema';
 import { UpdateRequestDto } from './dto/update-request-fonctionnaire.dto';
 import { ApiResponse } from '../interface/apiResponses.interface';
 
-
 @Controller('requests')
 export class RequestController {
     constructor(private readonly requestService: RequestService) {}
 
+    // Admin
     @Post()
     async createRequest(
         @Body() createRequestDto: CreateRequestDto,
-    ): Promise<ApiResponse<Request|null>> {
+    ): Promise<ApiResponse<Request | null>> {
         try {
-            const request = await this.requestService.createRequest(createRequestDto);
+            const request =
+                await this.requestService.createRequest(createRequestDto);
             return {
                 status: 'success',
                 message: 'Request created successfully',
@@ -40,8 +41,9 @@ export class RequestController {
         }
     }
 
+    // Admin
     @Get()
-    async findAll(): Promise<ApiResponse<Request[]|null>> {
+    async findAll(): Promise<ApiResponse<Request[] | null>> {
         const requests = await this.requestService.findAll();
         return {
             status: 'success',
@@ -50,8 +52,11 @@ export class RequestController {
         };
     }
 
+    // Citoyen, Fonctionnaire , Admin
     @Get(':id')
-    async findById(@Param('id') id: string): Promise<ApiResponse<Request|null>> {
+    async findById(
+        @Param('id') id: string,
+    ): Promise<ApiResponse<Request | null>> {
         try {
             const request = await this.requestService.findById(id);
             return {
@@ -75,13 +80,17 @@ export class RequestController {
         }
     }
 
+    //Fonctionnaire
     @Put(':id')
     async update(
         @Param('id') id: string,
         @Body() updateRequestDto: UpdateRequestDto,
-    ): Promise<ApiResponse<Request|null>> {
+    ): Promise<ApiResponse<Request | null>> {
         try {
-            const updatedRequest = await this.requestService.update(id, updateRequestDto);
+            const updatedRequest = await this.requestService.update(
+                id,
+                updateRequestDto,
+            );
             return {
                 status: 'success',
                 message: 'Request updated successfully',
@@ -110,8 +119,11 @@ export class RequestController {
         }
     }
 
+    // Citoyen, Fonctionnaire , Admin
     @Get('citoyen/:citoyenId')
-    async findByCitoyen(@Param('citoyenId') citoyenId: string): Promise<ApiResponse<Request[]|null>> {
+    async findByCitoyen(
+        @Param('citoyenId') citoyenId: string,
+    ): Promise<ApiResponse<Request[] | null>> {
         try {
             const requests = await this.requestService.findByCitoyen(citoyenId);
             return {
@@ -135,8 +147,11 @@ export class RequestController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Get('service/:serviceId')
-    async findByService(@Param('serviceId') serviceId: string): Promise<ApiResponse<Request[]|null>> {
+    async findByService(
+        @Param('serviceId') serviceId: string,
+    ): Promise<ApiResponse<Request[] | null>> {
         try {
             const requests = await this.requestService.findByService(serviceId);
             return {
@@ -160,10 +175,14 @@ export class RequestController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Get('institution/:institutionId')
-    async findByInstitution(@Param('institutionId') institutionId: string): Promise<ApiResponse<Request[]|null>> {
+    async findByInstitution(
+        @Param('institutionId') institutionId: string,
+    ): Promise<ApiResponse<Request[] | null>> {
         try {
-            const requests = await this.requestService.findByInstitution(institutionId);
+            const requests =
+                await this.requestService.findByInstitution(institutionId);
             return {
                 status: 'success',
                 message: 'Requests for institution retrieved successfully',
@@ -185,13 +204,18 @@ export class RequestController {
         }
     }
 
+    //Fonctionnaire , Admin
     @Get('processedby/:fonctionnaireId')
-    async findByProcessedBy(@Param('fonctionnaireId') fonctionnaireId: string): Promise<ApiResponse<Request[]|null>> {
+    async findByProcessedBy(
+        @Param('fonctionnaireId') fonctionnaireId: string,
+    ): Promise<ApiResponse<Request[] | null>> {
         try {
-            const requests = await this.requestService.findByProcessedBy(fonctionnaireId);
+            const requests =
+                await this.requestService.findByProcessedBy(fonctionnaireId);
             return {
                 status: 'success',
-                message: 'Requests processed by fonctionnaire retrieved successfully',
+                message:
+                    'Requests processed by fonctionnaire retrieved successfully',
                 data: requests,
             };
         } catch (error) {

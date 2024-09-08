@@ -1,11 +1,15 @@
-import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
-import { InjectModel } from "@nestjs/mongoose";
-import { Model } from "mongoose";
-import { CitoyenService } from "src/citoyen/citoyen.service";
-import { InstitutionService } from "src/institution/institution.service";
-import { CreateRendezvousDto } from "./dto/create-rendezvous.dto";
-import { UpdateRendezvousDto } from "./dto/update-rendezvous.dto";
-import { Rendezvous } from "./rendezvous.schema";
+import {
+    BadRequestException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { CitoyenService } from 'src/citoyen/citoyen.service';
+import { InstitutionService } from 'src/institution/institution.service';
+import { CreateRendezvousDto } from './dto/create-rendezvous.dto';
+import { UpdateRendezvousDto } from './dto/update-rendezvous.dto';
+import { Rendezvous } from './rendezvous.schema';
 
 @Injectable()
 export class RendezvousService {
@@ -58,7 +62,8 @@ export class RendezvousService {
     }
 
     async findByInstitution(institutionId: string): Promise<Rendezvous[]> {
-        const institution = await this.institutionService.findOne(institutionId);
+        const institution =
+            await this.institutionService.findOne(institutionId);
         if (!institution) {
             throw new NotFoundException('Institution not found');
         }
@@ -68,7 +73,9 @@ export class RendezvousService {
             .exec();
 
         if (rendezvous.length === 0) {
-            throw new NotFoundException('No rendezvous found for this institution');
+            throw new NotFoundException(
+                'No rendezvous found for this institution',
+            );
         }
         return rendezvous;
     }

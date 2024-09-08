@@ -1,7 +1,4 @@
-import {
-    Injectable,
-    NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Institution } from './institution.schema';
@@ -15,8 +12,12 @@ export class InstitutionService {
         private readonly institutionModel: Model<Institution>,
     ) {}
 
-    async create(createInstitutionDto: CreateInstitutionDto): Promise<Institution> {
-        const createdInstitution = new this.institutionModel(createInstitutionDto);
+    async create(
+        createInstitutionDto: CreateInstitutionDto,
+    ): Promise<Institution> {
+        const createdInstitution = new this.institutionModel(
+            createInstitutionDto,
+        );
         return createdInstitution.save();
     }
 
@@ -31,41 +32,58 @@ export class InstitutionService {
     async findOne(id: string): Promise<Institution> {
         const institution = await this.institutionModel.findById(id).exec();
         if (!institution) {
-            throw new NotFoundException(`Institution with ID "${id}" not found`);
+            throw new NotFoundException(
+                `Institution with ID "${id}" not found`,
+            );
         }
         return institution;
     }
 
-    async findByName(name: string): Promise<Institution | null> {
-        const institution = await this.institutionModel.findOne({ name }).exec();
+    async findByName(name: string): Promise<Institution> {
+        const institution = await this.institutionModel
+            .findOne({ name })
+            .exec();
         if (!institution) {
-            throw new NotFoundException(`Institution with name "${name}" not found`);
+            throw new NotFoundException(
+                `Institution with name "${name}" not found`,
+            );
         }
         return institution;
     }
 
-    async update(id: string, updateInstitutionDto: UpdateInstitutionDto): Promise<Institution> {
+    async update(
+        id: string,
+        updateInstitutionDto: UpdateInstitutionDto,
+    ): Promise<Institution> {
         const updatedInstitution = await this.institutionModel
             .findByIdAndUpdate(id, updateInstitutionDto, { new: true })
             .exec();
         if (!updatedInstitution) {
-            throw new NotFoundException(`Institution with ID "${id}" not found`);
+            throw new NotFoundException(
+                `Institution with ID "${id}" not found`,
+            );
         }
         return updatedInstitution;
     }
 
-    async remove(id: string): Promise<any> {
+    async remove(id: string) {
         const result = await this.institutionModel.findByIdAndDelete(id).exec();
         if (!result) {
-            throw new NotFoundException(`Institution with ID "${id}" not found`);
+            throw new NotFoundException(
+                `Institution with ID "${id}" not found`,
+            );
         }
         return { message: 'Institution deleted successfully' };
     }
 
     async findByDomain(domain: string): Promise<Institution[]> {
-        const institutions = await this.institutionModel.find({ domain }).exec();
+        const institutions = await this.institutionModel
+            .find({ domain })
+            .exec();
         if (institutions.length === 0) {
-            throw new NotFoundException(`No institutions found for domain "${domain}"`);
+            throw new NotFoundException(
+                `No institutions found for domain "${domain}"`,
+            );
         }
         return institutions;
     }
@@ -73,7 +91,9 @@ export class InstitutionService {
     async getDistinctDomains(): Promise<string[]> {
         const institutions = await this.institutionModel.find().exec();
         if (institutions.length === 0) {
-            throw new NotFoundException('No institutions found to extract domains');
+            throw new NotFoundException(
+                'No institutions found to extract domains',
+            );
         }
         const domains = institutions.map((institution) => institution.domain);
         return [...new Set(domains)];

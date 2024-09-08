@@ -1,15 +1,28 @@
-import { IsString, IsEmail, IsOptional, IsDate } from 'class-validator';
+import {
+    IsString,
+    IsEmail,
+    IsOptional,
+    IsDate,
+    IsNotEmpty,
+    IsPhoneNumber,
+    IsStrongPassword,
+} from 'class-validator';
 
 export class CreateAdminDto {
     @IsString()
+    @IsNotEmpty()
     readonly CNI: string;
 
+    @IsNotEmpty()
     @IsString()
+    @IsPhoneNumber()
     readonly phoneNumber: string;
 
+    @IsNotEmpty()
     @IsString()
     readonly name: string;
 
+    @IsNotEmpty()
     @IsString()
     readonly surname: string;
 
@@ -25,8 +38,11 @@ export class CreateAdminDto {
     readonly sex: string;
 
     @IsString()
+    @IsStrongPassword()
+    @IsNotEmpty()
     readonly password: string;
 
     @IsEmail()
+    @IsNotEmpty()
     readonly email: string;
 }

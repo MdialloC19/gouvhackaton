@@ -172,7 +172,9 @@ export class RequestService {
             .populate('service institution processedBy')
             .exec();
         if (requests.length === 0) {
-            throw new NotFoundException(`No requests found for citoyen with ID ${citoyenId}`);
+            throw new NotFoundException(
+                `No requests found for citoyen with ID ${citoyenId}`,
+            );
         }
         return requests;
     }
@@ -183,7 +185,9 @@ export class RequestService {
             .populate('citoyen institution processedBy')
             .exec();
         if (requests.length === 0) {
-            throw new NotFoundException(`No requests found for service with ID ${serviceId}`);
+            throw new NotFoundException(
+                `No requests found for service with ID ${serviceId}`,
+            );
         }
         return requests;
     }
@@ -194,7 +198,9 @@ export class RequestService {
             .populate('citoyen service processedBy')
             .exec();
         if (requests.length === 0) {
-            throw new NotFoundException(`No requests found for institution with ID ${institutionId}`);
+            throw new NotFoundException(
+                `No requests found for institution with ID ${institutionId}`,
+            );
         }
         return requests;
     }
@@ -205,7 +211,9 @@ export class RequestService {
             .populate('citoyen service institution')
             .exec();
         if (requests.length === 0) {
-            throw new NotFoundException(`No requests found for fonctionnaire with ID ${fonctionnaireId}`);
+            throw new NotFoundException(
+                `No requests found for fonctionnaire with ID ${fonctionnaireId}`,
+            );
         }
         return requests;
     }

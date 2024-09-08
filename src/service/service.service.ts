@@ -108,7 +108,6 @@ export class ServiceService {
         return service;
     }
 
-    // Méthode pour ajouter une institution à un service
     async addInstitutionToService(
         serviceId: string,
         institutionId: string,
@@ -137,5 +136,9 @@ export class ServiceService {
         service.institutions.push(institution);
         await service.save();
         return service;
+    }
+
+    async findByName(name: string): Promise<Service> {
+        return this.serviceModel.findOne({ name }).exec();
     }
 }
