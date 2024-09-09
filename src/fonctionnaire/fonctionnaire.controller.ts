@@ -10,6 +10,7 @@ import {
     NotFoundException,
     InternalServerErrorException,
     ConflictException,
+    Res,
 } from '@nestjs/common';
 import { FonctionnaireService } from './fonctionnaire.service';
 import { CreateFonctionnaireDto } from './dto/create-fonctionnaire.dto';
@@ -24,10 +25,13 @@ import {
     ApiParam,
     ApiQuery,
 } from '@nestjs/swagger';
+import { Logger } from '@nestjs/common';
+import { Response } from 'express';
 
 @ApiTags('Fonctionnaires')
 @Controller('fonctionnaires')
 export class FonctionnaireController {
+    private readonly logger = new Logger(FonctionnaireController.name);
     constructor(private readonly fonctionnaireService: FonctionnaireService) {}
 
     // Admin
@@ -99,7 +103,147 @@ export class FonctionnaireController {
             });
         }
     }
-    
+
+    @Get('list')
+    @ApiOperation({
+        summary: 'Obtenir une liste de fonctionnaires avec pagination et tri',
+    })
+    @ApiQuery({
+        name: 'range',
+        required: false,
+        description: 'Plage des fonctionnaires à retourner',
+    })
+    @ApiQuery({
+        name: 'sort',
+        required: false,
+        description: 'Critère de tri des fonctionnaires',
+    })
+    @ApiQuery({
+        name: 'filter',
+        required: false,
+        description: 'Filtres à appliquer',
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Liste des fonctionnaires récupérée avec succès.',
+        type: [Fonctionnaire],
+    })
+    async getList(
+        @Res() response: Response,
+        @Query('range') range?: string,
+        @Query('sort') sort?: string,
+        @Query('filter') filter?: string,
+    ) {
+        try {
+            const args = {
+                field: sort ? JSON.parse(sort)[0] : undefined,
+                order: sort ? JSON.parse(sort)[1] : undefined,
+                skip: range ? JSON.parse(range)[0] : undefined,
+                take: range ? JSON.parse(range)[1] : undefined,
+            };
+
+            const fonctionnaires = await this.fonctionnaireService.getList(
+                range,
+                sort,
+                filter,
+            );
+            const total = await this.fonctionnaireService.countFiltered(filter);
+            const formattedFonctionnaires = fonctionnaires.map(
+                (fonctionnaire) => ({
+                    ...fonctionnaire.toObject(),
+                    id: fonctionnaire._id.toString(),
+                }),
+            );
+            // remove _id from response using rest operator
+            const fonctionnairesWithoutId = formattedFonctionnaires.map(
+                (fonctionnaire) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { _id, ...rest } = fonctionnaire;
+                    return rest;
+                },
+            );
+            if (args.order) {
+                const length = fonctionnaires.length;
+                response.set(
+                    'Content-Range',
+                    `doctors ${args.skip}-${args.skip + length}/${total}`,
+                );
+            }
+            response.json(fonctionnairesWithoutId);
+        } catch (err) {
+            this.logger.error(err);
+            // throw new InternalServerErrorException(
+            //     `Failed to get functionnaries due to ${err}`,
+            // );
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des fonctionnaires',
+                data: null,
+            });
+        }
+    }
+
+    // Admin
+    @Put(':id')
+    @ApiOperation({ summary: 'Mettre à jour un fonctionnaire par ID' })
+    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
+    @ApiBody({ type: UpdateFonctionnaireDto })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire mis à jour avec succès.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la mise à jour du fonctionnaire.',
+    })
+    async update(
+        @Param('id') id: string,
+        @Body() updateFonctionnaireDto: UpdateFonctionnaireDto,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
+        try {
+            const updatedFonctionnaire = await this.fonctionnaireService.update(
+                id,
+                updateFonctionnaireDto,
+            );
+            return {
+                status: 'success',
+                message: 'Fonctionnaire mis à jour avec succès',
+                data: updatedFonctionnaire,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la mise à jour du fonctionnaire',
+                data: null,
+            });
+        }
+    }
+
+    // Admin
+    @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer un fonctionnaire par ID' })
+    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire supprimé avec succès.',
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la suppression du fonctionnaire.',
+    })
+
     // Fonctionnaire, Admin
     @Get('email')
     @ApiOperation({ summary: 'Obtenir un fonctionnaire par email' })
@@ -260,44 +404,6 @@ export class FonctionnaireController {
         }
     }
 
-    @Get('list')
-    @ApiOperation({
-        summary: 'Obtenir une liste de fonctionnaires avec pagination et tri',
-    })
-    @ApiQuery({
-        name: 'range',
-        required: false,
-        description: 'Plage des fonctionnaires à retourner',
-    })
-    @ApiQuery({
-        name: 'sort',
-        required: false,
-        description: 'Critère de tri des fonctionnaires',
-    })
-    @ApiQuery({
-        name: 'filter',
-        required: false,
-        description: 'Filtres à appliquer',
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Liste des fonctionnaires récupérée avec succès.',
-        type: [Fonctionnaire],
-    })
-    async getList(
-        @Query('range') range?: string,
-        @Query('sort') sort?: string,
-        @Query('filter') filter?: string,
-    ): Promise<{ data: Fonctionnaire[]; total: number }> {
-        const fonctionnaires = await this.fonctionnaireService.getList(
-            range,
-            sort,
-            filter,
-        );
-        const total = await this.fonctionnaireService.countFiltered(filter);
-        return { data: fonctionnaires, total };
-    }
-
     @Get('many')
     @ApiOperation({ summary: 'Obtenir plusieurs fonctionnaires par leurs ID' })
     @ApiQuery({
@@ -410,50 +516,6 @@ export class FonctionnaireController {
     }
 
     // Admin
-    @Put(':id')
-    @ApiOperation({ summary: 'Mettre à jour un fonctionnaire par ID' })
-    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
-    @ApiBody({ type: UpdateFonctionnaireDto })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Fonctionnaire mis à jour avec succès.',
-        type: Fonctionnaire,
-    })
-    @SwaggerApiResponse({
-        status: 404,
-        description: 'Fonctionnaire non trouvé.',
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la mise à jour du fonctionnaire.',
-    })
-    async update(
-        @Param('id') id: string,
-        @Body() updateFonctionnaireDto: UpdateFonctionnaireDto,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
-        try {
-            const updatedFonctionnaire = await this.fonctionnaireService.update(
-                id,
-                updateFonctionnaireDto,
-            );
-            return {
-                status: 'success',
-                message: 'Fonctionnaire mis à jour avec succès',
-                data: updatedFonctionnaire,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la mise à jour du fonctionnaire',
-                data: null,
-            });
-        }
-    }
-
-    // Admin
     @Delete(':id')
     @ApiOperation({ summary: 'Supprimer un fonctionnaire par ID' })
     @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
@@ -491,5 +553,4 @@ export class FonctionnaireController {
             });
         }
     }
-
 }
