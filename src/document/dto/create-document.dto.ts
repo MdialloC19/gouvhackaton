@@ -35,7 +35,7 @@ export class CreateDocumentDto {
 
     @ApiProperty({
         description: 'Contenu du document en format binaire (buffer)',
-        example: 'Buffer data here',  
+        example: 'Buffer data here',
     })
     @IsString()
     @IsNotEmpty()
@@ -51,7 +51,7 @@ export class CreateDocumentDto {
     name?: string;
 
     @ApiProperty({
-        description: 'Chemin d\'accès du document (optionnel)',
+        description: "Chemin d'accès du document (optionnel)",
         example: '/documents/1234567890.pdf',
         required: false,
     })
@@ -69,7 +69,8 @@ export class CreateDocumentDto {
     date?: Date;
 
     @ApiProperty({
-        description: 'ID de l\'utilisateur ayant téléchargé le document (optionnel)',
+        description:
+            "ID de l'utilisateur ayant téléchargé le document (optionnel)",
         example: '603d4c2f9f1b2c001f8b4567',
         required: false,
     })

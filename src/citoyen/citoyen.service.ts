@@ -1,4 +1,9 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    BadRequestException,
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Citoyen } from './citoyen.schema';
@@ -13,6 +18,17 @@ export class CitoyenService {
     ) {}
 
     async create(createCitoyenDto: CreateCitoyenDto): Promise<Citoyen> {
+        const { CNI, phoneNumber } = createCitoyenDto;
+        const existingCni = await this.citoyenModel.findOne({ CNI }).exec();
+        if (existingCni) {
+            throw new ConflictException('CNI already exists');
+        }
+        const existingPhoneNumber = await this.citoyenModel
+            .findOne({ phoneNumber })
+            .exec();
+        if (existingPhoneNumber) {
+            throw new ConflictException('Phone number already exists');
+        }
         const createdCitoyen = new this.citoyenModel(createCitoyenDto);
         return createdCitoyen.save();
     }
@@ -64,5 +80,52 @@ export class CitoyenService {
 
     async findByCNI(CNI: string): Promise<Citoyen | null> {
         return this.citoyenModel.findOne({ CNI }).select('-password').exec();
+    }
+
+    async getList(
+        range?: string,
+        sort?: string,
+        filter?: string,
+    ): Promise<Citoyen[]> {
+        const query = this.citoyenModel
+            .find(JSON.parse(filter || '{}'))
+            .select('-password');
+
+        if (sort) {
+            const [field, order] = JSON.parse(sort);
+            query.sort({ [field]: order === 'ASC' ? 1 : -1 });
+        }
+
+        if (range) {
+            const [start, end] = JSON.parse(range);
+            query.skip(start).limit(end - start + 1);
+        }
+
+        return query.exec();
+    }
+
+    async countFiltered(filter?: string): Promise<number> {
+        return this.citoyenModel
+            .countDocuments(JSON.parse(filter || '{}'))
+            .exec();
+    }
+
+    async getMany(filter: string): Promise<Citoyen[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+        const ids = filterCriteria.id || [];
+
+        return this.citoyenModel
+            .find({ _id: { $in: ids } })
+            .select('-password')
+            .exec();
+    }
+
+    async getManyReference(filter: string): Promise<Citoyen[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+
+        return this.citoyenModel
+            .find(filterCriteria)
+            .select('-password')
+            .exec();
     }
 }

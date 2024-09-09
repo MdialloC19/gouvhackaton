@@ -77,7 +77,7 @@ export class CreateFonctionnaireDto {
     readonly password: string;
 
     @ApiProperty({
-        description: 'Numéro d\'identification du fonctionnaire',
+        description: "Numéro d'identification du fonctionnaire",
         example: 'ID123456',
     })
     @IsString()
@@ -101,7 +101,7 @@ export class CreateFonctionnaireDto {
     readonly role: string;
 
     @ApiProperty({
-        description: 'Nom de l\'institution où le fonctionnaire travaille',
+        description: "Nom de l'institution où le fonctionnaire travaille",
         example: 'Université de Dakar',
     })
     @IsString()

@@ -5,10 +5,10 @@ import { Institution } from '../institution/institution.schema';
 
 @Schema()
 export class Fonctionnaire extends User {
-    @Prop()
+    @Prop({ required: true, unique: true })
     idNumber: string;
 
-    @Prop()
+    @Prop({ required: true, unique: true })
     email: string;
 
     @Prop()

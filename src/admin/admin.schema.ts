@@ -4,7 +4,7 @@ import { User } from './../user/user.schema';
 
 @Schema()
 export class Admin extends User {
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     email: string;
 }
 

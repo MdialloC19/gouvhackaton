@@ -43,5 +43,5 @@ export class CreateServiceDto {
 
     @IsArray()
     @IsOptional()
-    fields?: Types.ObjectId[];
+    fields?: String[];
 }

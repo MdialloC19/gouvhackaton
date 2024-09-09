@@ -4,7 +4,7 @@ import { Service } from '../service/service.schema';
 
 @Schema()
 export class Institution extends Document {
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     name: string;
 
     @Prop({ required: true })

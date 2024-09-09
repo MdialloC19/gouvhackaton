@@ -3,7 +3,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 export class CreateInstitutionDto {
     @ApiProperty({
-        description: 'Nom de l\'institution',
+        description: "Nom de l'institution",
         example: 'Université Polytechnique',
     })
     @IsString()
@@ -11,7 +11,7 @@ export class CreateInstitutionDto {
     name: string;
 
     @ApiProperty({
-        description: 'Département de l\'institution',
+        description: "Département de l'institution",
         example: 'Informatique',
     })
     @IsString()
@@ -19,7 +19,7 @@ export class CreateInstitutionDto {
     department: string;
 
     @ApiProperty({
-        description: 'Domaine d\'expertise de l\'institution',
+        description: "Domaine d'expertise de l'institution",
         example: 'Éducation',
     })
     @IsString()
@@ -27,7 +27,7 @@ export class CreateInstitutionDto {
     domain: string;
 
     @ApiProperty({
-        description: 'Localité de l\'institution',
+        description: "Localité de l'institution",
         example: 'Dakar',
     })
     @IsString()

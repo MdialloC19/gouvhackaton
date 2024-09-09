@@ -9,6 +9,7 @@ import {
     Query,
     NotFoundException,
     InternalServerErrorException,
+    ConflictException,
 } from '@nestjs/common';
 import { FonctionnaireService } from './fonctionnaire.service';
 import { CreateFonctionnaireDto } from './dto/create-fonctionnaire.dto';
@@ -33,8 +34,15 @@ export class FonctionnaireController {
     @Post()
     @ApiOperation({ summary: 'Créer un nouveau fonctionnaire' })
     @ApiBody({ type: CreateFonctionnaireDto })
-    @SwaggerApiResponse({ status: 201, description: 'Fonctionnaire créé avec succès.', type: Fonctionnaire })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la création du fonctionnaire.' })
+    @SwaggerApiResponse({
+        status: 201,
+        description: 'Fonctionnaire créé avec succès.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la création du fonctionnaire.',
+    })
     async create(
         @Body() createFonctionnaireDto: CreateFonctionnaireDto,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
@@ -48,6 +56,13 @@ export class FonctionnaireController {
                 data: fonctionnaire,
             };
         } catch (error) {
+            if (error instanceof ConflictException) {
+                throw new ConflictException({
+                    status: 'error',
+                    message: error.message,
+                    data: null,
+                });
+            }
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la création du fonctionnaire',
@@ -59,8 +74,15 @@ export class FonctionnaireController {
     // Fonctionnaire, Admin
     @Get()
     @ApiOperation({ summary: 'Obtenir la liste de tous les fonctionnaires' })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaires récupérés avec succès.', type: [Fonctionnaire] })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération des fonctionnaires.' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaires récupérés avec succès.',
+        type: [Fonctionnaire],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des fonctionnaires.',
+    })
     async findAll(): Promise<ApiResponse<Fonctionnaire[] | null>> {
         try {
             const fonctionnaires = await this.fonctionnaireService.findAll();
@@ -82,9 +104,19 @@ export class FonctionnaireController {
     @Get(':id')
     @ApiOperation({ summary: 'Obtenir un fonctionnaire par ID' })
     @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaire récupéré avec succès.', type: Fonctionnaire })
-    @SwaggerApiResponse({ status: 404, description: 'Fonctionnaire non trouvé.' })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération du fonctionnaire.' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire récupéré avec succès.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération du fonctionnaire.',
+    })
     async findOne(
         @Param('id') id: string,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
@@ -112,9 +144,19 @@ export class FonctionnaireController {
     @ApiOperation({ summary: 'Mettre à jour un fonctionnaire par ID' })
     @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
     @ApiBody({ type: UpdateFonctionnaireDto })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaire mis à jour avec succès.', type: Fonctionnaire })
-    @SwaggerApiResponse({ status: 404, description: 'Fonctionnaire non trouvé.' })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la mise à jour du fonctionnaire.' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire mis à jour avec succès.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la mise à jour du fonctionnaire.',
+    })
     async update(
         @Param('id') id: string,
         @Body() updateFonctionnaireDto: UpdateFonctionnaireDto,
@@ -145,9 +187,18 @@ export class FonctionnaireController {
     @Delete(':id')
     @ApiOperation({ summary: 'Supprimer un fonctionnaire par ID' })
     @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaire supprimé avec succès.' })
-    @SwaggerApiResponse({ status: 404, description: 'Fonctionnaire non trouvé.' })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la suppression du fonctionnaire.' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire supprimé avec succès.',
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la suppression du fonctionnaire.',
+    })
     async remove(
         @Param('id') id: string,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
@@ -174,9 +225,20 @@ export class FonctionnaireController {
     // Fonctionnaire, Admin
     @Get('email')
     @ApiOperation({ summary: 'Obtenir un fonctionnaire par email' })
-    @ApiQuery({ name: 'email', description: 'Email du fonctionnaire', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaire récupéré avec succès par email.', type: Fonctionnaire })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération du fonctionnaire par email.' })
+    @ApiQuery({
+        name: 'email',
+        description: 'Email du fonctionnaire',
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire récupéré avec succès par email.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération du fonctionnaire par email.',
+    })
     async findByEmail(
         @Query('email') email: string,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
@@ -199,10 +261,25 @@ export class FonctionnaireController {
 
     // Fonctionnaire, Admin
     @Get('idnumber')
-    @ApiOperation({ summary: 'Obtenir un fonctionnaire par numéro d\'identification' })
-    @ApiQuery({ name: 'idNumber', description: 'Numéro d\'identification du fonctionnaire', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaire récupéré avec succès par numéro d\'identification.', type: Fonctionnaire })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération du fonctionnaire par numéro d\'identification.' })
+    @ApiOperation({
+        summary: "Obtenir un fonctionnaire par numéro d'identification",
+    })
+    @ApiQuery({
+        name: 'idNumber',
+        description: "Numéro d'identification du fonctionnaire",
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description:
+            "Fonctionnaire récupéré avec succès par numéro d'identification.",
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description:
+            "Échec de la récupération du fonctionnaire par numéro d'identification.",
+    })
     async findByIdNumber(
         @Query('idNumber') idNumber: string,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
@@ -217,7 +294,8 @@ export class FonctionnaireController {
         } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Échec de la récupération du fonctionnaire par numéro d\'identification',
+                message:
+                    "Échec de la récupération du fonctionnaire par numéro d'identification",
                 data: null,
             });
         }
@@ -225,10 +303,25 @@ export class FonctionnaireController {
 
     // Fonctionnaire, Admin
     @Get('institution')
-    @ApiOperation({ summary: 'Obtenir les fonctionnaires par ID d\'institution' })
-    @ApiQuery({ name: 'institutionId', description: 'ID de l\'institution', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaires récupérés avec succès pour l\'institution spécifiée.', type: [Fonctionnaire] })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération des fonctionnaires par institution.' })
+    @ApiOperation({
+        summary: "Obtenir les fonctionnaires par ID d'institution",
+    })
+    @ApiQuery({
+        name: 'institutionId',
+        description: "ID de l'institution",
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description:
+            "Fonctionnaires récupérés avec succès pour l'institution spécifiée.",
+        type: [Fonctionnaire],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description:
+            'Échec de la récupération des fonctionnaires par institution.',
+    })
     async findByInstitution(
         @Query('institutionId') institutionId: string,
     ): Promise<ApiResponse<Fonctionnaire[] | null>> {
@@ -245,7 +338,8 @@ export class FonctionnaireController {
         } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
-                message: 'Échec de la récupération des fonctionnaires par institution',
+                message:
+                    'Échec de la récupération des fonctionnaires par institution',
                 data: null,
             });
         }
@@ -254,9 +348,20 @@ export class FonctionnaireController {
     // Fonctionnaire, Admin
     @Get('cni')
     @ApiOperation({ summary: 'Obtenir un fonctionnaire par CNI' })
-    @ApiQuery({ name: 'CNI', description: 'CNI du fonctionnaire', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Fonctionnaire récupéré avec succès par CNI.', type: Fonctionnaire })
-    @SwaggerApiResponse({ status: 500, description: 'Échec de la récupération du fonctionnaire par CNI.' })
+    @ApiQuery({
+        name: 'CNI',
+        description: 'CNI du fonctionnaire',
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire récupéré avec succès par CNI.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération du fonctionnaire par CNI.',
+    })
     async findByCNI(
         @Query('CNI') CNI: string,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
@@ -272,6 +377,116 @@ export class FonctionnaireController {
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la récupération du fonctionnaire par CNI',
+                data: null,
+            });
+        }
+    }
+
+    @Get('list')
+    @ApiOperation({
+        summary: 'Obtenir une liste de fonctionnaires avec pagination et tri',
+    })
+    @ApiQuery({
+        name: 'range',
+        required: false,
+        description: 'Plage des fonctionnaires à retourner',
+    })
+    @ApiQuery({
+        name: 'sort',
+        required: false,
+        description: 'Critère de tri des fonctionnaires',
+    })
+    @ApiQuery({
+        name: 'filter',
+        required: false,
+        description: 'Filtres à appliquer',
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Liste des fonctionnaires récupérée avec succès.',
+        type: [Fonctionnaire],
+    })
+    async getList(
+        @Query('range') range?: string,
+        @Query('sort') sort?: string,
+        @Query('filter') filter?: string,
+    ): Promise<{ data: Fonctionnaire[]; total: number }> {
+        const fonctionnaires = await this.fonctionnaireService.getList(
+            range,
+            sort,
+            filter,
+        );
+        const total = await this.fonctionnaireService.countFiltered(filter);
+        return { data: fonctionnaires, total };
+    }
+
+    @Get('many')
+    @ApiOperation({ summary: 'Obtenir plusieurs fonctionnaires par leurs ID' })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Filtre basé sur les IDs',
+        required: true,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'fonctionnaires récupérés avec succès.',
+        type: [Fonctionnaire],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des fonctionnaires.',
+    })
+    async getMany(
+        @Query('filter') filter: string,
+    ): Promise<ApiResponse<Fonctionnaire[]>> {
+        try {
+            const fonctionnaires =
+                await this.fonctionnaireService.getMany(filter);
+            return {
+                status: 'success',
+                message: 'fonctionnaires récupérés avec succès',
+                data: fonctionnaires,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des fonctionnaires',
+                data: null,
+            });
+        }
+    }
+
+    @Get('manyReference')
+    @ApiOperation({ summary: 'Obtenir des fonctionnaires par référence' })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Filtre basé sur la référence (e.g. author_id)',
+        required: true,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'fonctionnaires récupérés avec succès.',
+        type: [Fonctionnaire],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des fonctionnaires.',
+    })
+    async getManyReference(
+        @Query('filter') filter: string,
+    ): Promise<ApiResponse<Fonctionnaire[]>> {
+        try {
+            const fonctionnaires =
+                await this.fonctionnaireService.getManyReference(filter);
+            return {
+                status: 'success',
+                message: 'fonctionnaires récupérés avec succès',
+                data: fonctionnaires,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des fonctionnaires',
                 data: null,
             });
         }

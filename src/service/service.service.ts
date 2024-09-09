@@ -19,7 +19,23 @@ export class ServiceService {
     ) {}
 
     async create(createServiceDto: CreateServiceDto): Promise<Service> {
-        const createdService = new this.serviceModel(createServiceDto);
+        const { name, link, ...rest } = createServiceDto;
+
+        const existingName = await this.serviceModel.findOne({ name }).exec();
+        if (existingName) {
+            throw new ConflictException(
+                'Service with this name already exists',
+            );
+        }
+
+        const existingLink = await this.serviceModel.findOne({ link }).exec();
+        if (existingLink) {
+            throw new ConflictException(
+                'Service with this link already exists',
+            );
+        }
+
+        const createdService = new this.serviceModel({ name, link, ...rest });
         return createdService.save();
     }
 
@@ -140,5 +156,44 @@ export class ServiceService {
 
     async findByName(name: string): Promise<Service> {
         return this.serviceModel.findOne({ name }).exec();
+    }
+
+    async getList(
+        range?: string,
+        sort?: string,
+        filter?: string,
+    ): Promise<Service[]> {
+        const query = this.serviceModel.find(JSON.parse(filter || '{}'));
+
+        if (sort) {
+            const [field, order] = JSON.parse(sort);
+            query.sort({ [field]: order === 'ASC' ? 1 : -1 });
+        }
+
+        if (range) {
+            const [start, end] = JSON.parse(range);
+            query.skip(start).limit(end - start + 1);
+        }
+
+        return query.exec();
+    }
+
+    async countFiltered(filter?: string): Promise<number> {
+        return this.serviceModel
+            .countDocuments(JSON.parse(filter || '{}'))
+            .exec();
+    }
+
+    async getMany(filter: string): Promise<Service[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+        const ids = filterCriteria.id || [];
+
+        return this.serviceModel.find({ _id: { $in: ids } }).exec();
+    }
+
+    async getManyReference(filter: string): Promise<Service[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+
+        return this.serviceModel.find(filterCriteria).exec();
     }
 }

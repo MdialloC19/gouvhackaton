@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+    ConflictException,
+    Injectable,
+    NotFoundException,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Fonctionnaire } from './fonctionnaire.schema';
@@ -17,7 +21,9 @@ export class FonctionnaireService {
     async create(
         createFonctionnaireDto: CreateFonctionnaireDto,
     ): Promise<Fonctionnaire> {
-        const { institutionName, ...rest } = createFonctionnaireDto;
+        const { institutionName, CNI, phoneNumber, email, idNumber, ...rest } =
+            createFonctionnaireDto;
+
         const institution =
             await this.institutionService.findByName(institutionName);
         if (!institution) {
@@ -25,6 +31,35 @@ export class FonctionnaireService {
                 `Institution with name ${institutionName} not found`,
             );
         }
+
+        const existingCni = await this.fonctionnaireModel
+            .findOne({ CNI })
+            .exec();
+        if (existingCni) {
+            throw new ConflictException('CNI already exists');
+        }
+
+        const existingPhoneNumber = await this.fonctionnaireModel
+            .findOne({ phoneNumber })
+            .exec();
+        if (existingPhoneNumber) {
+            throw new ConflictException('Phone number already exists');
+        }
+
+        const existingEmail = await this.fonctionnaireModel
+            .findOne({ email })
+            .exec();
+        if (existingEmail) {
+            throw new ConflictException('Email already exists');
+        }
+
+        const existingIdNumber = await this.fonctionnaireModel
+            .findOne({ idNumber })
+            .exec();
+        if (existingIdNumber) {
+            throw new ConflictException('ID number already exists');
+        }
+
         const fonctionnaire = new this.fonctionnaireModel({
             ...rest,
             institution: institution._id,
@@ -137,5 +172,52 @@ export class FonctionnaireService {
             );
         }
         return fonctionnaire;
+    }
+
+    async getList(
+        range?: string,
+        sort?: string,
+        filter?: string,
+    ): Promise<Fonctionnaire[]> {
+        const query = this.fonctionnaireModel
+            .find(JSON.parse(filter || '{}'))
+            .select('-password');
+
+        if (sort) {
+            const [field, order] = JSON.parse(sort);
+            query.sort({ [field]: order === 'ASC' ? 1 : -1 });
+        }
+
+        if (range) {
+            const [start, end] = JSON.parse(range);
+            query.skip(start).limit(end - start + 1);
+        }
+
+        return query.exec();
+    }
+
+    async countFiltered(filter?: string): Promise<number> {
+        return this.fonctionnaireModel
+            .countDocuments(JSON.parse(filter || '{}'))
+            .exec();
+    }
+
+    async getMany(filter: string): Promise<Fonctionnaire[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+        const ids = filterCriteria.id || [];
+
+        return this.fonctionnaireModel
+            .find({ _id: { $in: ids } })
+            .select('-password')
+            .exec();
+    }
+
+    async getManyReference(filter: string): Promise<Fonctionnaire[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+
+        return this.fonctionnaireModel
+            .find(filterCriteria)
+            .select('-password')
+            .exec();
     }
 }

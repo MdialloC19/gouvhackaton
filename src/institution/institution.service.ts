@@ -98,4 +98,43 @@ export class InstitutionService {
         const domains = institutions.map((institution) => institution.domain);
         return [...new Set(domains)];
     }
+
+    async getList(
+        range?: string,
+        sort?: string,
+        filter?: string,
+    ): Promise<Institution[]> {
+        const query = this.institutionModel.find(JSON.parse(filter || '{}'));
+
+        if (sort) {
+            const [field, order] = JSON.parse(sort);
+            query.sort({ [field]: order === 'ASC' ? 1 : -1 });
+        }
+
+        if (range) {
+            const [start, end] = JSON.parse(range);
+            query.skip(start).limit(end - start + 1);
+        }
+
+        return query.exec();
+    }
+
+    async countFiltered(filter?: string): Promise<number> {
+        return this.institutionModel
+            .countDocuments(JSON.parse(filter || '{}'))
+            .exec();
+    }
+
+    async getMany(filter: string): Promise<Institution[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+        const ids = filterCriteria.id || [];
+
+        return this.institutionModel.find({ _id: { $in: ids } }).exec();
+    }
+
+    async getManyReference(filter: string): Promise<Institution[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+
+        return this.institutionModel.find(filterCriteria).exec();
+    }
 }

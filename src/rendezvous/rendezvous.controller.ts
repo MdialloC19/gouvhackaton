@@ -12,7 +12,13 @@ import {
 import { RendezvousService } from './rendezvous.service';
 import { CreateRendezvousDto } from './dto/create-rendezvous.dto';
 import { UpdateRendezvousDto } from './dto/update-rendezvous.dto';
-import { ApiTags, ApiOperation, ApiBody, ApiParam, ApiResponse as SwaggerApiResponse } from '@nestjs/swagger';
+import {
+    ApiTags,
+    ApiOperation,
+    ApiBody,
+    ApiParam,
+    ApiResponse as SwaggerApiResponse,
+} from '@nestjs/swagger';
 
 @ApiTags('Rendezvous')
 @Controller('rendezvous')
@@ -22,11 +28,19 @@ export class RendezvousController {
     @Post()
     @ApiOperation({ summary: 'Créer un nouveau rendez-vous' })
     @ApiBody({ type: CreateRendezvousDto })
-    @SwaggerApiResponse({ status: 201, description: 'Rendez-vous créé avec succès.', type: CreateRendezvousDto })
-    @SwaggerApiResponse({ status: 400, description: 'Échec de la création du rendez-vous.' })
+    @SwaggerApiResponse({
+        status: 201,
+        description: 'Rendez-vous créé avec succès.',
+        type: CreateRendezvousDto,
+    })
+    @SwaggerApiResponse({
+        status: 400,
+        description: 'Échec de la création du rendez-vous.',
+    })
     async create(@Body() createRendezvousDto: CreateRendezvousDto) {
         try {
-            const rendezvous = await this.rendezvousService.create(createRendezvousDto);
+            const rendezvous =
+                await this.rendezvousService.create(createRendezvousDto);
             return {
                 statusCode: 201,
                 message: 'Rendezvous created successfully',
@@ -43,8 +57,15 @@ export class RendezvousController {
 
     @Get()
     @ApiOperation({ summary: 'Obtenir tous les rendez-vous' })
-    @SwaggerApiResponse({ status: 200, description: 'Rendez-vous récupérés avec succès.', type: [CreateRendezvousDto] })
-    @SwaggerApiResponse({ status: 404, description: 'Échec de la récupération des rendez-vous.' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Rendez-vous récupérés avec succès.',
+        type: [CreateRendezvousDto],
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Échec de la récupération des rendez-vous.',
+    })
     async findAll() {
         try {
             const rendezvousList = await this.rendezvousService.findAll();
@@ -65,7 +86,11 @@ export class RendezvousController {
     @Get(':id')
     @ApiOperation({ summary: 'Obtenir un rendez-vous par ID' })
     @ApiParam({ name: 'id', description: 'ID du rendez-vous', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Rendez-vous récupéré avec succès.', type: CreateRendezvousDto })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Rendez-vous récupéré avec succès.',
+        type: CreateRendezvousDto,
+    })
     @SwaggerApiResponse({ status: 404, description: 'Rendez-vous non trouvé.' })
     async findById(@Param('id') id: string) {
         try {
@@ -88,14 +113,21 @@ export class RendezvousController {
     @ApiOperation({ summary: 'Mettre à jour un rendez-vous par ID' })
     @ApiParam({ name: 'id', description: 'ID du rendez-vous', type: String })
     @ApiBody({ type: UpdateRendezvousDto })
-    @SwaggerApiResponse({ status: 200, description: 'Rendez-vous mis à jour avec succès.', type: UpdateRendezvousDto })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Rendez-vous mis à jour avec succès.',
+        type: UpdateRendezvousDto,
+    })
     @SwaggerApiResponse({ status: 404, description: 'Rendez-vous non trouvé.' })
     async update(
         @Param('id') id: string,
         @Body() updateRendezvousDto: UpdateRendezvousDto,
     ) {
         try {
-            const updatedRendezvous = await this.rendezvousService.update(id, updateRendezvousDto);
+            const updatedRendezvous = await this.rendezvousService.update(
+                id,
+                updateRendezvousDto,
+            );
             return {
                 statusCode: 200,
                 message: 'Rendezvous updated successfully',
@@ -113,7 +145,10 @@ export class RendezvousController {
     @Delete(':id')
     @ApiOperation({ summary: 'Supprimer un rendez-vous par ID' })
     @ApiParam({ name: 'id', description: 'ID du rendez-vous', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Rendez-vous supprimé avec succès.' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Rendez-vous supprimé avec succès.',
+    })
     @SwaggerApiResponse({ status: 404, description: 'Rendez-vous non trouvé.' })
     async delete(@Param('id') id: string) {
         try {
@@ -134,12 +169,24 @@ export class RendezvousController {
 
     @Get('institution/:institutionId')
     @ApiOperation({ summary: 'Obtenir les rendez-vous par institution' })
-    @ApiParam({ name: 'institutionId', description: 'ID de l\'institution', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Rendez-vous récupérés pour l\'institution avec succès.', type: [CreateRendezvousDto] })
-    @SwaggerApiResponse({ status: 404, description: 'Aucun rendez-vous trouvé pour cette institution.' })
+    @ApiParam({
+        name: 'institutionId',
+        description: "ID de l'institution",
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: "Rendez-vous récupérés pour l'institution avec succès.",
+        type: [CreateRendezvousDto],
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Aucun rendez-vous trouvé pour cette institution.',
+    })
     async findByInstitution(@Param('institutionId') institutionId: string) {
         try {
-            const rendezvous = await this.rendezvousService.findByInstitution(institutionId);
+            const rendezvous =
+                await this.rendezvousService.findByInstitution(institutionId);
             return {
                 statusCode: 200,
                 message: 'Rendezvous retrieved successfully by institution',
@@ -157,11 +204,19 @@ export class RendezvousController {
     @Get('citoyen/:citoyenId')
     @ApiOperation({ summary: 'Obtenir les rendez-vous par citoyen' })
     @ApiParam({ name: 'citoyenId', description: 'ID du citoyen', type: String })
-    @SwaggerApiResponse({ status: 200, description: 'Rendez-vous récupérés pour le citoyen avec succès.', type: [CreateRendezvousDto] })
-    @SwaggerApiResponse({ status: 404, description: 'Aucun rendez-vous trouvé pour ce citoyen.' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Rendez-vous récupérés pour le citoyen avec succès.',
+        type: [CreateRendezvousDto],
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Aucun rendez-vous trouvé pour ce citoyen.',
+    })
     async findByCitoyen(@Param('citoyenId') citoyenId: string) {
         try {
-            const rendezvous = await this.rendezvousService.findByCitoyen(citoyenId);
+            const rendezvous =
+                await this.rendezvousService.findByCitoyen(citoyenId);
             return {
                 statusCode: 200,
                 message: 'Rendezvous retrieved successfully by citoyen',

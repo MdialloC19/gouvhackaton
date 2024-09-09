@@ -10,11 +10,11 @@ export enum EnumSex {
 @Schema()
 export class User extends Document {
     @IsNotEmpty()
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     CNI: string;
 
     @IsNotEmpty()
-    @Prop()
+    @Prop({ unique: true })
     phoneNumber: string;
 
     @IsNotEmpty()

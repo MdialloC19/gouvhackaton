@@ -4,7 +4,7 @@ import { Institution } from '../institution/institution.schema';
 import { Field } from './field.schema';
 @Schema()
 export class Service extends Document {
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     name: string;
 
     @Prop({ required: true })
@@ -22,7 +22,7 @@ export class Service extends Document {
     @Prop({ required: true })
     description: string;
 
-    @Prop({ required: true })
+    @Prop({ required: true, unique: true })
     link: string;
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Institution' }] })

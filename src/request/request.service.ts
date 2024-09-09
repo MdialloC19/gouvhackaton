@@ -217,4 +217,43 @@ export class RequestService {
         }
         return requests;
     }
+
+    async getList(
+        range?: string,
+        sort?: string,
+        filter?: string,
+    ): Promise<Request[]> {
+        const query = this.requestModel.find(JSON.parse(filter || '{}'));
+
+        if (sort) {
+            const [field, order] = JSON.parse(sort);
+            query.sort({ [field]: order === 'ASC' ? 1 : -1 });
+        }
+
+        if (range) {
+            const [start, end] = JSON.parse(range);
+            query.skip(start).limit(end - start + 1);
+        }
+
+        return query.exec();
+    }
+
+    async countFiltered(filter?: string): Promise<number> {
+        return this.requestModel
+            .countDocuments(JSON.parse(filter || '{}'))
+            .exec();
+    }
+
+    async getMany(filter: string): Promise<Request[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+        const ids = filterCriteria.id || [];
+
+        return this.requestModel.find({ _id: { $in: ids } }).exec();
+    }
+
+    async getManyReference(filter: string): Promise<Request[]> {
+        const filterCriteria = filter ? JSON.parse(filter) : {};
+
+        return this.requestModel.find(filterCriteria).exec();
+    }
 }

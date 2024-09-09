@@ -1,4 +1,11 @@
-import { IsString, IsDate, IsOptional, IsNotEmpty, IsPhoneNumber, IsStrongPassword } from 'class-validator';
+import {
+    IsString,
+    IsDate,
+    IsOptional,
+    IsNotEmpty,
+    IsPhoneNumber,
+    IsStrongPassword,
+} from 'class-validator';
 
 export class CreateCitoyenDto {
     @IsString()
@@ -33,7 +40,6 @@ export class CreateCitoyenDto {
     @IsStrongPassword()
     @IsNotEmpty()
     readonly password: string;
-
 
     @IsOptional()
     @IsString()
