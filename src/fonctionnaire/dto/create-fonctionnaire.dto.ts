@@ -49,7 +49,7 @@ export class CreateFonctionnaireDto {
     })
     @IsOptional()
     @IsDate()
-    readonly birthday?: Date;
+    readonly birthDate?: Date;
 
     @ApiProperty({
         description: 'Profession du fonctionnaire',

@@ -50,7 +50,7 @@ export class CreateCitoyenDto {
     })
     @IsOptional()
     @IsDate()
-    readonly birthday?: Date;
+    readonly birthDate?: Date;
 
     @ApiProperty({
         description: 'Profession du citoyen',

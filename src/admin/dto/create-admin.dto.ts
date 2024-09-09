@@ -51,7 +51,7 @@ export class CreateAdminDto {
     })
     @IsOptional()
     @IsDate()
-    readonly birthday?: Date;
+    readonly birthDate?: Date;
 
     @ApiProperty({
         description: 'Profession du citoyen',
@@ -70,7 +70,7 @@ export class CreateAdminDto {
     readonly sex: string;
 
     @ApiProperty({
-        description: 'Mot de passe sécurisé pour l\'admin',
+        description: "Mot de passe sécurisé pour l'admin",
         example: 'Str0ngP@ssw0rd!',
     })
     @IsString()
@@ -79,7 +79,7 @@ export class CreateAdminDto {
     readonly password: string;
 
     @ApiProperty({
-        description: 'Adresse email de l\'admin',
+        description: "Adresse email de l'admin",
         example: 'aminata.diop@example.com',
     })
     @IsEmail()

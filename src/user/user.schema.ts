@@ -26,7 +26,7 @@ export class User extends Document {
     surname: string;
 
     @Prop()
-    birthday: Date;
+    birthDate: Date;
 
     @Prop()
     job: string;
