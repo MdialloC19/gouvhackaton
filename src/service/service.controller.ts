@@ -11,6 +11,8 @@ import {
     InternalServerErrorException,
     Query,
     ConflictException,
+    Res,
+    Logger,
 } from '@nestjs/common';
 import { ServiceService } from './service.service';
 import { CreateServiceDto } from './dto/create-service.dto';
@@ -25,10 +27,12 @@ import {
 } from '@nestjs/swagger';
 import { ApiResponse } from '../interface/apiResponses.interface';
 import { Service } from './service.schema';
+import { Response } from 'express';
 
 @ApiTags('Services')
 @Controller('services')
 export class ServiceController {
+    private readonly logger = new Logger(ServiceController.name);
     constructor(private readonly serviceService: ServiceService) {}
 
     @Post()
@@ -110,7 +114,6 @@ export class ServiceController {
         }
     }
 
-    
     @Get('list')
     @ApiOperation({
         summary: 'Obtenir une liste de services avec pagination et tri',
@@ -136,13 +139,49 @@ export class ServiceController {
         type: [Service],
     })
     async getList(
+        @Res() response: Response,
         @Query('range') range?: string,
         @Query('sort') sort?: string,
         @Query('filter') filter?: string,
-    ): Promise<{ data: Service[]; total: number }> {
-        const services = await this.serviceService.getList(range, sort, filter);
-        const total = await this.serviceService.countFiltered(filter);
-        return { data: services, total };
+    ) {
+        try {
+            const args = {
+                field: sort ? JSON.parse(sort)[0] : undefined,
+                order: sort ? JSON.parse(sort)[1] : undefined,
+                skip: range ? JSON.parse(range)[0] : undefined,
+                take: range ? JSON.parse(range)[1] : undefined,
+            };
+            const services = await this.serviceService.getList(
+                range,
+                sort,
+                filter,
+            );
+            const total = await this.serviceService.countFiltered(filter);
+            const formattedServices = services.map((service) => ({
+                ...service.toObject(),
+                id: service._id.toString(),
+            }));
+            const servicesWithoutId = formattedServices.map((service) => {
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { _id, ...rest } = service;
+                return rest;
+            });
+            if (args.order) {
+                const length = services.length;
+                response.set(
+                    'Content-Range',
+                    `services ${args.skip}-${args.skip + length}/${total}`,
+                );
+            }
+            response.json(servicesWithoutId);
+        } catch (err) {
+            this.logger.error(err);
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des services',
+                data: null,
+            });
+        }
     }
 
     @Get('many')
@@ -224,18 +263,24 @@ export class ServiceController {
         type: Service,
     })
     @SwaggerApiResponse({ status: 404, description: 'Service non trouvé.' })
-    async findOne(@Param('id') id: string): Promise<ApiResponse<Service>> {
+    async findOne(@Param('id') id: string) {
         try {
             const service = await this.serviceService.findOne(id);
-            return {
-                status: 'success',
-                message: 'Service retrieved successfully',
-                data: service,
-            };
+            if (!service) {
+                throw new NotFoundException(`Service with ID ${id} not found`);
+            }
+            const formattedService = service.toObject();
+            const { _id, ...serviceWithoutId } = formattedService;
+            const result = { id: _id.toString(), ...serviceWithoutId };
+            return result;
         } catch (error) {
-            throw new NotFoundException({
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            this.logger.error(error);
+            throw new InternalServerErrorException({
                 status: 'error',
-                message: `Service with ID ${id} not found`,
+                message: `Échec de la récupération du service ${id}`,
                 data: null,
             });
         }
@@ -302,21 +347,23 @@ export class ServiceController {
     async update(
         @Param('id') id: string,
         @Body() updateServiceDto: UpdateServiceDto,
-    ): Promise<ApiResponse<Service>> {
+    ) {
         try {
             const updatedService = await this.serviceService.update(
                 id,
                 updateServiceDto,
             );
-            return {
-                status: 'success',
-                message: 'Service updated successfully',
-                data: updatedService,
-            };
+            const { _id, ...serviceWithoutId } = updatedService;
+            const result = { id: _id.toString(), ...serviceWithoutId };
+            return result;
         } catch (error) {
-            throw new NotFoundException({
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            this.logger.error(error);
+            throw new InternalServerErrorException({
                 status: 'error',
-                message: `Service with ID ${id} not found`,
+                message: `Échec de la mise à jour du service ${id}`,
                 data: null,
             });
         }
@@ -427,5 +474,4 @@ export class ServiceController {
             });
         }
     }
-
 }
