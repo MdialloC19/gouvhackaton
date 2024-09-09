@@ -200,21 +200,20 @@ export class FonctionnaireController {
     async update(
         @Param('id') id: string,
         @Body() updateFonctionnaireDto: UpdateFonctionnaireDto,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
+    ) {
         try {
             const updatedFonctionnaire = await this.fonctionnaireService.update(
                 id,
                 updateFonctionnaireDto,
             );
-            return {
-                status: 'success',
-                message: 'Fonctionnaire mis à jour avec succès',
-                data: updatedFonctionnaire,
-            };
+            const { _id, ...fonctionnaireWithoutId } = updatedFonctionnaire;
+            const result = { id: _id.toString(), ...fonctionnaireWithoutId };
+            return result;
         } catch (error) {
             if (error instanceof NotFoundException) {
                 throw error;
             }
+            this.logger.error(error);
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la mise à jour du fonctionnaire',

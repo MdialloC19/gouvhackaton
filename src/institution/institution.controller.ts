@@ -10,6 +10,8 @@ import {
     NotFoundException,
     InternalServerErrorException,
     Query,
+    Res,
+    Logger,
 } from '@nestjs/common';
 import { InstitutionService } from './institution.service';
 import { CreateInstitutionDto } from './dto/create-institution.dto';
@@ -25,10 +27,12 @@ import {
     ApiQuery,
 } from '@nestjs/swagger';
 import { Citoyen } from 'src/citoyen/citoyen.schema';
+import { Response } from 'express';
 
 @ApiTags('Institutions')
 @Controller('institutions')
 export class InstitutionController {
+    private readonly logger = new Logger(InstitutionController.name);
     constructor(private readonly institutionService: InstitutionService) {}
 
     // Admin
@@ -133,7 +137,7 @@ export class InstitutionController {
             });
         }
     }
-    
+
     @Get('list')
     @ApiOperation({
         summary: "Obtenir une liste d'institution avec pagination et tri",
@@ -159,17 +163,51 @@ export class InstitutionController {
         type: [Institution],
     })
     async getList(
+        @Res() response: Response,
         @Query('range') range?: string,
         @Query('sort') sort?: string,
         @Query('filter') filter?: string,
-    ): Promise<{ data: Institution[]; total: number }> {
-        const institutions = await this.institutionService.getList(
-            range,
-            sort,
-            filter,
-        );
-        const total = await this.institutionService.countFiltered(filter);
-        return { data: institutions, total };
+    ) {
+        try {
+            const args = {
+                field: sort ? JSON.parse(sort)[0] : undefined,
+                order: sort ? JSON.parse(sort)[1] : undefined,
+                skip: range ? JSON.parse(range)[0] : undefined,
+                take: range ? JSON.parse(range)[1] : undefined,
+            };
+            const institutions = await this.institutionService.getList(
+                range,
+                sort,
+                filter,
+            );
+            const total = await this.institutionService.countFiltered(filter);
+            const formattedInstitutions = institutions.map((institution) => ({
+                ...institution.toObject(),
+                id: institution._id.toString(),
+            }));
+            const institutionsWithoutId = formattedInstitutions.map(
+                (institution) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { _id, ...rest } = institution;
+                    return rest;
+                },
+            );
+            if (args.order) {
+                const length = institutions.length;
+                response.set(
+                    'Content-Range',
+                    `institutions ${args.skip}-${args.skip + length}/${total}`,
+                );
+            }
+            response.json(institutionsWithoutId);
+        } catch (err) {
+            this.logger.error(err);
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des institutions',
+                data: null,
+            });
+        }
     }
 
     @Get('many')
@@ -256,14 +294,18 @@ export class InstitutionController {
         status: 404,
         description: 'Institution non trouvée.',
     })
-    async findOne(@Param('id') id: string): Promise<ApiResponse<Institution>> {
+    async findOne(@Param('id') id: string) {
         try {
             const institution = await this.institutionService.findOne(id);
-            return {
-                status: 'success',
-                message: 'Institution récupérée avec succès',
-                data: institution,
-            };
+            if (!institution) {
+                throw new NotFoundException(
+                    `Institution with ID ${id} not found`,
+                );
+            }
+            const formattedInstitution = institution.toObject();
+            const { _id, ...institutionWithoutId } = formattedInstitution;
+            const result = { id: _id.toString(), ...institutionWithoutId };
+            return result;
         } catch (error) {
             throw new NotFoundException({
                 status: 'error',
@@ -290,21 +332,23 @@ export class InstitutionController {
     async update(
         @Param('id') id: string,
         @Body() updateInstitutionDto: UpdateInstitutionDto,
-    ): Promise<ApiResponse<Institution>> {
+    ) {
         try {
             const updatedInstitution = await this.institutionService.update(
                 id,
                 updateInstitutionDto,
             );
-            return {
-                status: 'success',
-                message: 'Institution mise à jour avec succès',
-                data: updatedInstitution,
-            };
+            const { _id, ...institutionWithoutId } = updatedInstitution;
+            const result = { id: _id.toString(), ...institutionWithoutId };
+            return result;
         } catch (error) {
-            throw new NotFoundException({
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            this.logger.error(error);
+            throw new InternalServerErrorException({
                 status: 'error',
-                message: `Institution avec l'ID ${id} non trouvée`,
+                message: `Échec de la mise à jour de l'institution ${id}`,
                 data: null,
             });
         }
@@ -376,5 +420,4 @@ export class InstitutionController {
             });
         }
     }
-
 }
