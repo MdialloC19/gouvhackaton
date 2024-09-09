@@ -66,7 +66,7 @@ export class SmsService {
         try {
             const receiverIDs = [];
             for (const msisdn of msisdns) {
-                const user = await this.userModel.findOne({ phone: msisdn });
+                const user = await this.userModel.findOne({ number: msisdn });
                 if (user) {
                     receiverIDs.push(user._id);
                 } else {
