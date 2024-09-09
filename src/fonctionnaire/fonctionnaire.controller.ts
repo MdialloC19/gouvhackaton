@@ -154,7 +154,6 @@ export class FonctionnaireController {
                     id: fonctionnaire._id.toString(),
                 }),
             );
-            // remove _id from response using rest operator
             const fonctionnairesWithoutId = formattedFonctionnaires.map(
                 (fonctionnaire) => {
                     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -172,9 +171,6 @@ export class FonctionnaireController {
             response.json(fonctionnairesWithoutId);
         } catch (err) {
             this.logger.error(err);
-            // throw new InternalServerErrorException(
-            //     `Failed to get functionnaries due to ${err}`,
-            // );
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la récupération des fonctionnaires',
