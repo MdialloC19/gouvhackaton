@@ -82,44 +82,6 @@ export class RequestController {
         };
     }
 
-    @Get(':id')
-    @ApiOperation({ summary: 'Obtenir une demande par ID' })
-    @ApiParam({ name: 'id', description: 'ID de la demande', type: String })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Demande récupérée avec succès.',
-        type: Request,
-    })
-    @SwaggerApiResponse({ status: 404, description: 'Demande non trouvée.' })
-    @SwaggerApiResponse({
-        status: 400,
-        description: 'Échec de la récupération de la demande.',
-    })
-    async findById(
-        @Param('id') id: string,
-    ): Promise<ApiResponse<Request | null>> {
-        try {
-            const request = await this.requestService.findById(id);
-            return {
-                status: 'success',
-                message: 'Request retrieved successfully',
-                data: request,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw new NotFoundException({
-                    status: 'error',
-                    message: error.message,
-                    data: null,
-                });
-            }
-            throw new BadRequestException({
-                status: 'error',
-                message: 'An unexpected error occurred',
-                data: null,
-            });
-        }
-    }
 
     @Put(':id')
     @ApiOperation({ summary: 'Mettre à jour une demande par ID' })
@@ -455,6 +417,45 @@ export class RequestController {
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la récupération des requests',
+                data: null,
+            });
+        }
+    }
+    
+    @Get(':id')
+    @ApiOperation({ summary: 'Obtenir une demande par ID' })
+    @ApiParam({ name: 'id', description: 'ID de la demande', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Demande récupérée avec succès.',
+        type: Request,
+    })
+    @SwaggerApiResponse({ status: 404, description: 'Demande non trouvée.' })
+    @SwaggerApiResponse({
+        status: 400,
+        description: 'Échec de la récupération de la demande.',
+    })
+    async findById(
+        @Param('id') id: string,
+    ): Promise<ApiResponse<Request | null>> {
+        try {
+            const request = await this.requestService.findById(id);
+            return {
+                status: 'success',
+                message: 'Request retrieved successfully',
+                data: request,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new NotFoundException({
+                    status: 'error',
+                    message: error.message,
+                    data: null,
+                });
+            }
+            throw new BadRequestException({
+                status: 'error',
+                message: 'An unexpected error occurred',
                 data: null,
             });
         }

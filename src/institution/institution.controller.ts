@@ -133,6 +133,115 @@ export class InstitutionController {
             });
         }
     }
+    
+    @Get('list')
+    @ApiOperation({
+        summary: "Obtenir une liste d'institution avec pagination et tri",
+    })
+    @ApiQuery({
+        name: 'range',
+        required: false,
+        description: 'Plage des institution à retourner',
+    })
+    @ApiQuery({
+        name: 'sort',
+        required: false,
+        description: 'Critère de tri des institution',
+    })
+    @ApiQuery({
+        name: 'filter',
+        required: false,
+        description: 'Filtres à appliquer',
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Liste des institution récupérée avec succès.',
+        type: [Institution],
+    })
+    async getList(
+        @Query('range') range?: string,
+        @Query('sort') sort?: string,
+        @Query('filter') filter?: string,
+    ): Promise<{ data: Institution[]; total: number }> {
+        const institutions = await this.institutionService.getList(
+            range,
+            sort,
+            filter,
+        );
+        const total = await this.institutionService.countFiltered(filter);
+        return { data: institutions, total };
+    }
+
+    @Get('many')
+    @ApiOperation({ summary: 'Obtenir plusieurs institution par leurs ID' })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Filtre basé sur les IDs',
+        required: true,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'institution récupérés avec succès.',
+        type: [Institution],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des institution.',
+    })
+    async getMany(
+        @Query('filter') filter: string,
+    ): Promise<ApiResponse<Institution[]>> {
+        try {
+            const institution = await this.institutionService.getMany(filter);
+            return {
+                status: 'success',
+                message: 'Citoyens récupérés avec succès',
+                data: institution,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des citoyens',
+                data: null,
+            });
+        }
+    }
+
+    @Get('manyReference')
+    @ApiOperation({ summary: 'Obtenir des institutions par référence' })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Filtre basé sur la référence (e.g. author_id)',
+        required: true,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'institutions récupérés avec succès.',
+        type: [Citoyen],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des institutions.',
+    })
+    async getManyReference(
+        @Query('filter') filter: string,
+    ): Promise<ApiResponse<Institution[]>> {
+        try {
+            const institutions =
+                await this.institutionService.getManyReference(filter);
+            return {
+                status: 'success',
+                message: 'institutions récupérés avec succès',
+                data: institutions,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des institutions',
+                data: null,
+            });
+        }
+    }
 
     // Citoyen, Fonctionnaire, Admin
     @Get(':id')
@@ -268,112 +377,4 @@ export class InstitutionController {
         }
     }
 
-    @Get('list')
-    @ApiOperation({
-        summary: "Obtenir une liste d'institution avec pagination et tri",
-    })
-    @ApiQuery({
-        name: 'range',
-        required: false,
-        description: 'Plage des institution à retourner',
-    })
-    @ApiQuery({
-        name: 'sort',
-        required: false,
-        description: 'Critère de tri des institution',
-    })
-    @ApiQuery({
-        name: 'filter',
-        required: false,
-        description: 'Filtres à appliquer',
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Liste des institution récupérée avec succès.',
-        type: [Institution],
-    })
-    async getList(
-        @Query('range') range?: string,
-        @Query('sort') sort?: string,
-        @Query('filter') filter?: string,
-    ): Promise<{ data: Institution[]; total: number }> {
-        const institutions = await this.institutionService.getList(
-            range,
-            sort,
-            filter,
-        );
-        const total = await this.institutionService.countFiltered(filter);
-        return { data: institutions, total };
-    }
-
-    @Get('many')
-    @ApiOperation({ summary: 'Obtenir plusieurs institution par leurs ID' })
-    @ApiQuery({
-        name: 'filter',
-        description: 'Filtre basé sur les IDs',
-        required: true,
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'institution récupérés avec succès.',
-        type: [Institution],
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la récupération des institution.',
-    })
-    async getMany(
-        @Query('filter') filter: string,
-    ): Promise<ApiResponse<Institution[]>> {
-        try {
-            const institution = await this.institutionService.getMany(filter);
-            return {
-                status: 'success',
-                message: 'Citoyens récupérés avec succès',
-                data: institution,
-            };
-        } catch (error) {
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la récupération des citoyens',
-                data: null,
-            });
-        }
-    }
-
-    @Get('manyReference')
-    @ApiOperation({ summary: 'Obtenir des institutions par référence' })
-    @ApiQuery({
-        name: 'filter',
-        description: 'Filtre basé sur la référence (e.g. author_id)',
-        required: true,
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'institutions récupérés avec succès.',
-        type: [Citoyen],
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la récupération des institutions.',
-    })
-    async getManyReference(
-        @Query('filter') filter: string,
-    ): Promise<ApiResponse<Institution[]>> {
-        try {
-            const institutions =
-                await this.institutionService.getManyReference(filter);
-            return {
-                status: 'success',
-                message: 'institutions récupérés avec succès',
-                data: institutions,
-            };
-        } catch (error) {
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la récupération des institutions',
-                data: null,
-            });
-        }
-    }
 }

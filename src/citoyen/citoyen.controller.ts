@@ -69,143 +69,7 @@ export class CitoyenController {
         }
     }
 
-    // Citoyen, Fonctionnaire, Admin
-    @Get()
-    @ApiOperation({ summary: 'Obtenir tous les citoyens' })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Citoyens récupérés avec succès.',
-        type: [Citoyen],
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la récupération des citoyens.',
-    })
-    async findAll(): Promise<ApiResponse<Citoyen[]>> {
-        try {
-            const citoyens = await this.citoyenService.findAll();
-            return {
-                status: 'success',
-                message: 'Citoyens récupérés avec succès',
-                data: citoyens,
-            };
-        } catch (error) {
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la récupération des citoyens',
-                data: null,
-            });
-        }
-    }
-
-    // Citoyen, Fonctionnaire, Admin
-    @Get(':id')
-    @ApiOperation({ summary: 'Obtenir un citoyen par ID' })
-    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Citoyen récupéré avec succès.',
-        type: Citoyen,
-    })
-    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la récupération du citoyen.',
-    })
-    async findOne(@Param('id') id: string): Promise<ApiResponse<Citoyen>> {
-        try {
-            const citoyen = await this.citoyenService.findOne(id);
-            return {
-                status: 'success',
-                message: 'Citoyen récupéré avec succès',
-                data: citoyen,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la récupération du citoyen',
-                data: null,
-            });
-        }
-    }
-
-    // Citoyen, Fonctionnaire, Admin
-    @Put(':id')
-    @ApiOperation({ summary: 'Mettre à jour un citoyen par ID' })
-    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
-    @ApiBody({ type: UpdateCitoyenDto })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Citoyen mis à jour avec succès.',
-        type: Citoyen,
-    })
-    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la mise à jour du citoyen.',
-    })
-    async update(
-        @Param('id') id: string,
-        @Body() updateCitoyenDto: UpdateCitoyenDto,
-    ): Promise<ApiResponse<Citoyen>> {
-        try {
-            const updatedCitoyen = await this.citoyenService.update(
-                id,
-                updateCitoyenDto,
-            );
-            return {
-                status: 'success',
-                message: 'Citoyen mis à jour avec succès',
-                data: updatedCitoyen,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la mise à jour du citoyen',
-                data: null,
-            });
-        }
-    }
-
-    // Citoyen, Fonctionnaire, Admin
-    @Delete(':id')
-    @ApiOperation({ summary: 'Supprimer un citoyen par ID' })
-    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Citoyen supprimé avec succès.',
-    })
-    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la suppression du citoyen.',
-    })
-    async remove(@Param('id') id: string): Promise<ApiResponse<void>> {
-        try {
-            await this.citoyenService.remove(id);
-            return {
-                status: 'success',
-                message: 'Citoyen supprimé avec succès',
-                data: null,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la suppression du citoyen',
-                data: null,
-            });
-        }
-    }
-
+    
     // Citoyen, Fonctionnaire, Admin
     @Get('phone')
     @ApiOperation({ summary: 'Obtenir un citoyen par numéro de téléphone' })
@@ -382,4 +246,142 @@ export class CitoyenController {
             });
         }
     }
+
+    // Citoyen, Fonctionnaire, Admin
+    @Get()
+    @ApiOperation({ summary: 'Obtenir tous les citoyens' })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Citoyens récupérés avec succès.',
+        type: [Citoyen],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des citoyens.',
+    })
+    async findAll(): Promise<ApiResponse<Citoyen[]>> {
+        try {
+            const citoyens = await this.citoyenService.findAll();
+            return {
+                status: 'success',
+                message: 'Citoyens récupérés avec succès',
+                data: citoyens,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des citoyens',
+                data: null,
+            });
+        }
+    }
+
+    // Citoyen, Fonctionnaire, Admin
+    @Get(':id')
+    @ApiOperation({ summary: 'Obtenir un citoyen par ID' })
+    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Citoyen récupéré avec succès.',
+        type: Citoyen,
+    })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération du citoyen.',
+    })
+    async findOne(@Param('id') id: string): Promise<ApiResponse<Citoyen>> {
+        try {
+            const citoyen = await this.citoyenService.findOne(id);
+            return {
+                status: 'success',
+                message: 'Citoyen récupéré avec succès',
+                data: citoyen,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération du citoyen',
+                data: null,
+            });
+        }
+    }
+
+    // Citoyen, Fonctionnaire, Admin
+    @Put(':id')
+    @ApiOperation({ summary: 'Mettre à jour un citoyen par ID' })
+    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
+    @ApiBody({ type: UpdateCitoyenDto })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Citoyen mis à jour avec succès.',
+        type: Citoyen,
+    })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la mise à jour du citoyen.',
+    })
+    async update(
+        @Param('id') id: string,
+        @Body() updateCitoyenDto: UpdateCitoyenDto,
+    ): Promise<ApiResponse<Citoyen>> {
+        try {
+            const updatedCitoyen = await this.citoyenService.update(
+                id,
+                updateCitoyenDto,
+            );
+            return {
+                status: 'success',
+                message: 'Citoyen mis à jour avec succès',
+                data: updatedCitoyen,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la mise à jour du citoyen',
+                data: null,
+            });
+        }
+    }
+
+    // Citoyen, Fonctionnaire, Admin
+    @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer un citoyen par ID' })
+    @ApiParam({ name: 'id', description: 'ID du citoyen', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Citoyen supprimé avec succès.',
+    })
+    @SwaggerApiResponse({ status: 404, description: 'Citoyen non trouvé.' })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la suppression du citoyen.',
+    })
+    async remove(@Param('id') id: string): Promise<ApiResponse<void>> {
+        try {
+            await this.citoyenService.remove(id);
+            return {
+                status: 'success',
+                message: 'Citoyen supprimé avec succès',
+                data: null,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la suppression du citoyen',
+                data: null,
+            });
+        }
+    }
+
 }

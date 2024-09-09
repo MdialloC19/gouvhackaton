@@ -99,129 +99,7 @@ export class FonctionnaireController {
             });
         }
     }
-
-    // Fonctionnaire, Admin
-    @Get(':id')
-    @ApiOperation({ summary: 'Obtenir un fonctionnaire par ID' })
-    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Fonctionnaire récupéré avec succès.',
-        type: Fonctionnaire,
-    })
-    @SwaggerApiResponse({
-        status: 404,
-        description: 'Fonctionnaire non trouvé.',
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la récupération du fonctionnaire.',
-    })
-    async findOne(
-        @Param('id') id: string,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
-        try {
-            const fonctionnaire = await this.fonctionnaireService.findOne(id);
-            return {
-                status: 'success',
-                message: 'Fonctionnaire récupéré avec succès',
-                data: fonctionnaire,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la récupération du fonctionnaire',
-                data: null,
-            });
-        }
-    }
-
-    // Admin
-    @Put(':id')
-    @ApiOperation({ summary: 'Mettre à jour un fonctionnaire par ID' })
-    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
-    @ApiBody({ type: UpdateFonctionnaireDto })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Fonctionnaire mis à jour avec succès.',
-        type: Fonctionnaire,
-    })
-    @SwaggerApiResponse({
-        status: 404,
-        description: 'Fonctionnaire non trouvé.',
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la mise à jour du fonctionnaire.',
-    })
-    async update(
-        @Param('id') id: string,
-        @Body() updateFonctionnaireDto: UpdateFonctionnaireDto,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
-        try {
-            const updatedFonctionnaire = await this.fonctionnaireService.update(
-                id,
-                updateFonctionnaireDto,
-            );
-            return {
-                status: 'success',
-                message: 'Fonctionnaire mis à jour avec succès',
-                data: updatedFonctionnaire,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la mise à jour du fonctionnaire',
-                data: null,
-            });
-        }
-    }
-
-    // Admin
-    @Delete(':id')
-    @ApiOperation({ summary: 'Supprimer un fonctionnaire par ID' })
-    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Fonctionnaire supprimé avec succès.',
-    })
-    @SwaggerApiResponse({
-        status: 404,
-        description: 'Fonctionnaire non trouvé.',
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la suppression du fonctionnaire.',
-    })
-    async remove(
-        @Param('id') id: string,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
-        try {
-            const deletedFonctionnaire =
-                await this.fonctionnaireService.remove(id);
-            return {
-                status: 'success',
-                message: 'Fonctionnaire supprimé avec succès',
-                data: deletedFonctionnaire,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la suppression du fonctionnaire',
-                data: null,
-            });
-        }
-    }
-
+    
     // Fonctionnaire, Admin
     @Get('email')
     @ApiOperation({ summary: 'Obtenir un fonctionnaire par email' })
@@ -491,4 +369,127 @@ export class FonctionnaireController {
             });
         }
     }
+
+    // Fonctionnaire, Admin
+    @Get(':id')
+    @ApiOperation({ summary: 'Obtenir un fonctionnaire par ID' })
+    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire récupéré avec succès.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération du fonctionnaire.',
+    })
+    async findOne(
+        @Param('id') id: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
+        try {
+            const fonctionnaire = await this.fonctionnaireService.findOne(id);
+            return {
+                status: 'success',
+                message: 'Fonctionnaire récupéré avec succès',
+                data: fonctionnaire,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération du fonctionnaire',
+                data: null,
+            });
+        }
+    }
+
+    // Admin
+    @Put(':id')
+    @ApiOperation({ summary: 'Mettre à jour un fonctionnaire par ID' })
+    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
+    @ApiBody({ type: UpdateFonctionnaireDto })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire mis à jour avec succès.',
+        type: Fonctionnaire,
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la mise à jour du fonctionnaire.',
+    })
+    async update(
+        @Param('id') id: string,
+        @Body() updateFonctionnaireDto: UpdateFonctionnaireDto,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
+        try {
+            const updatedFonctionnaire = await this.fonctionnaireService.update(
+                id,
+                updateFonctionnaireDto,
+            );
+            return {
+                status: 'success',
+                message: 'Fonctionnaire mis à jour avec succès',
+                data: updatedFonctionnaire,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la mise à jour du fonctionnaire',
+                data: null,
+            });
+        }
+    }
+
+    // Admin
+    @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer un fonctionnaire par ID' })
+    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire supprimé avec succès.',
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la suppression du fonctionnaire.',
+    })
+    async remove(
+        @Param('id') id: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
+        try {
+            const deletedFonctionnaire =
+                await this.fonctionnaireService.remove(id);
+            return {
+                status: 'success',
+                message: 'Fonctionnaire supprimé avec succès',
+                data: deletedFonctionnaire,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la suppression du fonctionnaire',
+                data: null,
+            });
+        }
+    }
+
 }

@@ -82,6 +82,70 @@ export class RendezvousController {
             });
         }
     }
+    
+    @Get('institution/:institutionId')
+    @ApiOperation({ summary: 'Obtenir les rendez-vous par institution' })
+    @ApiParam({
+        name: 'institutionId',
+        description: "ID de l'institution",
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: "Rendez-vous récupérés pour l'institution avec succès.",
+        type: [CreateRendezvousDto],
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Aucun rendez-vous trouvé pour cette institution.',
+    })
+    async findByInstitution(@Param('institutionId') institutionId: string) {
+        try {
+            const rendezvous =
+                await this.rendezvousService.findByInstitution(institutionId);
+            return {
+                statusCode: 200,
+                message: 'Rendezvous retrieved successfully by institution',
+                data: rendezvous,
+            };
+        } catch (error) {
+            throw new NotFoundException({
+                statusCode: 404,
+                message: `No rendezvous found for institution with ID ${institutionId}`,
+                data: null,
+            });
+        }
+    }
+
+    @Get('citoyen/:citoyenId')
+    @ApiOperation({ summary: 'Obtenir les rendez-vous par citoyen' })
+    @ApiParam({ name: 'citoyenId', description: 'ID du citoyen', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Rendez-vous récupérés pour le citoyen avec succès.',
+        type: [CreateRendezvousDto],
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Aucun rendez-vous trouvé pour ce citoyen.',
+    })
+    async findByCitoyen(@Param('citoyenId') citoyenId: string) {
+        try {
+            const rendezvous =
+                await this.rendezvousService.findByCitoyen(citoyenId);
+            return {
+                statusCode: 200,
+                message: 'Rendezvous retrieved successfully by citoyen',
+                data: rendezvous,
+            };
+        } catch (error) {
+            throw new NotFoundException({
+                statusCode: 404,
+                message: `No rendezvous found for citoyen with ID ${citoyenId}`,
+                data: null,
+            });
+        }
+    }
 
     @Get(':id')
     @ApiOperation({ summary: 'Obtenir un rendez-vous par ID' })
@@ -167,67 +231,4 @@ export class RendezvousController {
         }
     }
 
-    @Get('institution/:institutionId')
-    @ApiOperation({ summary: 'Obtenir les rendez-vous par institution' })
-    @ApiParam({
-        name: 'institutionId',
-        description: "ID de l'institution",
-        type: String,
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: "Rendez-vous récupérés pour l'institution avec succès.",
-        type: [CreateRendezvousDto],
-    })
-    @SwaggerApiResponse({
-        status: 404,
-        description: 'Aucun rendez-vous trouvé pour cette institution.',
-    })
-    async findByInstitution(@Param('institutionId') institutionId: string) {
-        try {
-            const rendezvous =
-                await this.rendezvousService.findByInstitution(institutionId);
-            return {
-                statusCode: 200,
-                message: 'Rendezvous retrieved successfully by institution',
-                data: rendezvous,
-            };
-        } catch (error) {
-            throw new NotFoundException({
-                statusCode: 404,
-                message: `No rendezvous found for institution with ID ${institutionId}`,
-                data: null,
-            });
-        }
-    }
-
-    @Get('citoyen/:citoyenId')
-    @ApiOperation({ summary: 'Obtenir les rendez-vous par citoyen' })
-    @ApiParam({ name: 'citoyenId', description: 'ID du citoyen', type: String })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Rendez-vous récupérés pour le citoyen avec succès.',
-        type: [CreateRendezvousDto],
-    })
-    @SwaggerApiResponse({
-        status: 404,
-        description: 'Aucun rendez-vous trouvé pour ce citoyen.',
-    })
-    async findByCitoyen(@Param('citoyenId') citoyenId: string) {
-        try {
-            const rendezvous =
-                await this.rendezvousService.findByCitoyen(citoyenId);
-            return {
-                statusCode: 200,
-                message: 'Rendezvous retrieved successfully by citoyen',
-                data: rendezvous,
-            };
-        } catch (error) {
-            throw new NotFoundException({
-                statusCode: 404,
-                message: `No rendezvous found for citoyen with ID ${citoyenId}`,
-                data: null,
-            });
-        }
-    }
 }

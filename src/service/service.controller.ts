@@ -110,6 +110,111 @@ export class ServiceController {
         }
     }
 
+    
+    @Get('list')
+    @ApiOperation({
+        summary: 'Obtenir une liste de services avec pagination et tri',
+    })
+    @ApiQuery({
+        name: 'range',
+        required: false,
+        description: 'Plage des services à retourner',
+    })
+    @ApiQuery({
+        name: 'sort',
+        required: false,
+        description: 'Critère de tri des services',
+    })
+    @ApiQuery({
+        name: 'filter',
+        required: false,
+        description: 'Filtres à appliquer',
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Liste des services récupérée avec succès.',
+        type: [Service],
+    })
+    async getList(
+        @Query('range') range?: string,
+        @Query('sort') sort?: string,
+        @Query('filter') filter?: string,
+    ): Promise<{ data: Service[]; total: number }> {
+        const services = await this.serviceService.getList(range, sort, filter);
+        const total = await this.serviceService.countFiltered(filter);
+        return { data: services, total };
+    }
+
+    @Get('many')
+    @ApiOperation({ summary: 'Obtenir plusieurs services par leurs ID' })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Filtre basé sur les IDs',
+        required: true,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'services récupérés avec succès.',
+        type: [Service],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des services.',
+    })
+    async getMany(
+        @Query('filter') filter: string,
+    ): Promise<ApiResponse<Service[]>> {
+        try {
+            const services = await this.serviceService.getMany(filter);
+            return {
+                status: 'success',
+                message: 'services récupérés avec succès',
+                data: services,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des services',
+                data: null,
+            });
+        }
+    }
+
+    @Get('manyReference')
+    @ApiOperation({ summary: 'Obtenir des services par référence' })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Filtre basé sur la référence (e.g. author_id)',
+        required: true,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'services récupérés avec succès.',
+        type: [Service],
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des services.',
+    })
+    async getManyReference(
+        @Query('filter') filter: string,
+    ): Promise<ApiResponse<Service[]>> {
+        try {
+            const services = await this.serviceService.getManyReference(filter);
+            return {
+                status: 'success',
+                message: 'services récupérés avec succès',
+                data: services,
+            };
+        } catch (error) {
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des services',
+                data: null,
+            });
+        }
+    }
+
     @Get(':id')
     @ApiOperation({ summary: 'Obtenir un service par ID' })
     @ApiParam({ name: 'id', description: 'ID du service', type: String })
@@ -323,107 +428,4 @@ export class ServiceController {
         }
     }
 
-    @Get('list')
-    @ApiOperation({
-        summary: 'Obtenir une liste de services avec pagination et tri',
-    })
-    @ApiQuery({
-        name: 'range',
-        required: false,
-        description: 'Plage des services à retourner',
-    })
-    @ApiQuery({
-        name: 'sort',
-        required: false,
-        description: 'Critère de tri des services',
-    })
-    @ApiQuery({
-        name: 'filter',
-        required: false,
-        description: 'Filtres à appliquer',
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Liste des services récupérée avec succès.',
-        type: [Service],
-    })
-    async getList(
-        @Query('range') range?: string,
-        @Query('sort') sort?: string,
-        @Query('filter') filter?: string,
-    ): Promise<{ data: Service[]; total: number }> {
-        const services = await this.serviceService.getList(range, sort, filter);
-        const total = await this.serviceService.countFiltered(filter);
-        return { data: services, total };
-    }
-
-    @Get('many')
-    @ApiOperation({ summary: 'Obtenir plusieurs services par leurs ID' })
-    @ApiQuery({
-        name: 'filter',
-        description: 'Filtre basé sur les IDs',
-        required: true,
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'services récupérés avec succès.',
-        type: [Service],
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la récupération des services.',
-    })
-    async getMany(
-        @Query('filter') filter: string,
-    ): Promise<ApiResponse<Service[]>> {
-        try {
-            const services = await this.serviceService.getMany(filter);
-            return {
-                status: 'success',
-                message: 'services récupérés avec succès',
-                data: services,
-            };
-        } catch (error) {
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la récupération des services',
-                data: null,
-            });
-        }
-    }
-
-    @Get('manyReference')
-    @ApiOperation({ summary: 'Obtenir des services par référence' })
-    @ApiQuery({
-        name: 'filter',
-        description: 'Filtre basé sur la référence (e.g. author_id)',
-        required: true,
-    })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'services récupérés avec succès.',
-        type: [Service],
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la récupération des services.',
-    })
-    async getManyReference(
-        @Query('filter') filter: string,
-    ): Promise<ApiResponse<Service[]>> {
-        try {
-            const services = await this.serviceService.getManyReference(filter);
-            return {
-                status: 'success',
-                message: 'services récupérés avec succès',
-                data: services,
-            };
-        } catch (error) {
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la récupération des services',
-                data: null,
-            });
-        }
-    }
 }
