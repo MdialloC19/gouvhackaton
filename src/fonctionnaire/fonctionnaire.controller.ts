@@ -165,7 +165,7 @@ export class FonctionnaireController {
                 const length = fonctionnaires.length;
                 response.set(
                     'Content-Range',
-                    `doctors ${args.skip}-${args.skip + length}/${total}`,
+                    `fonctionnaires ${args.skip}-${args.skip + length}/${total}`,
                 );
             }
             response.json(fonctionnairesWithoutId);
@@ -489,16 +489,22 @@ export class FonctionnaireController {
         status: 500,
         description: 'Échec de la récupération du fonctionnaire.',
     })
-    async findOne(
-        @Param('id') id: string,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
+    async findOne(@Param('id') id: string) {
         try {
             const fonctionnaire = await this.fonctionnaireService.findOne(id);
-            return {
-                status: 'success',
-                message: 'Fonctionnaire récupéré avec succès',
-                data: fonctionnaire,
-            };
+
+            if (!fonctionnaire) {
+                throw new NotFoundException(
+                    `Fonctionnaire with ID ${id} not found`,
+                );
+            }
+
+            const formattedFonctionnaire = fonctionnaire.toObject();
+
+            // Map `_id` to `id` and remove `_id`
+            const { _id, ...fonctionnaireWithoutId } = formattedFonctionnaire;
+            const result = { id: _id.toString(), ...fonctionnaireWithoutId };
+            return result;
         } catch (error) {
             if (error instanceof NotFoundException) {
                 throw error;
