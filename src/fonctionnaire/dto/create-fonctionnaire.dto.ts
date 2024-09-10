@@ -3,8 +3,6 @@ import {
     IsNotEmpty,
     IsDate,
     IsOptional,
-    IsPhoneNumber,
-    IsStrongPassword,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -23,7 +21,6 @@ export class CreateFonctionnaireDto {
     })
     @IsNotEmpty()
     @IsString()
-    @IsPhoneNumber()
     readonly phoneNumber: string;
 
     @ApiProperty({
@@ -72,7 +69,6 @@ export class CreateFonctionnaireDto {
         example: 'Str0ngP@ssw0rd!',
     })
     @IsString()
-    @IsStrongPassword()
     @IsNotEmpty()
     readonly password: string;
 
@@ -106,5 +102,5 @@ export class CreateFonctionnaireDto {
     })
     @IsString()
     @IsNotEmpty()
-    readonly institutionName: string;
+    readonly institutionId: string;
 }

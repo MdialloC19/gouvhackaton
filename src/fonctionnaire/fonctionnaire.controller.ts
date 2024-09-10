@@ -50,6 +50,8 @@ export class FonctionnaireController {
     async create(
         @Body() createFonctionnaireDto: CreateFonctionnaireDto,
     ): Promise<ApiResponse<Fonctionnaire | null>> {
+
+    
         try {
             const fonctionnaire = await this.fonctionnaireService.create(
                 createFonctionnaireDto,
@@ -67,6 +69,7 @@ export class FonctionnaireController {
                     data: null,
                 });
             }
+            else
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la création du fonctionnaire',
@@ -99,6 +102,43 @@ export class FonctionnaireController {
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la récupération des fonctionnaires',
+                data: null,
+            });
+        }
+    }
+    @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer un fonctionnaire par ID' })
+    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fonctionnaire supprimé avec succès.',
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: 'Fonctionnaire non trouvé.',
+    })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la suppression du fonctionnaire.',
+    })
+    async remove(
+        @Param('id') id: string,
+    ): Promise<ApiResponse<Fonctionnaire | null>> {
+        try {
+            const deletedFonctionnaire =
+                await this.fonctionnaireService.remove(id);
+            return {
+                status: 'success',
+                message: 'Fonctionnaire supprimé avec succès',
+                data: deletedFonctionnaire,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw error;
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la suppression du fonctionnaire',
                 data: null,
             });
         }
@@ -516,42 +556,5 @@ export class FonctionnaireController {
         }
     }
 
-    // Admin
-    @Delete(':id')
-    @ApiOperation({ summary: 'Supprimer un fonctionnaire par ID' })
-    @ApiParam({ name: 'id', description: 'ID du fonctionnaire', type: String })
-    @SwaggerApiResponse({
-        status: 200,
-        description: 'Fonctionnaire supprimé avec succès.',
-    })
-    @SwaggerApiResponse({
-        status: 404,
-        description: 'Fonctionnaire non trouvé.',
-    })
-    @SwaggerApiResponse({
-        status: 500,
-        description: 'Échec de la suppression du fonctionnaire.',
-    })
-    async remove(
-        @Param('id') id: string,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
-        try {
-            const deletedFonctionnaire =
-                await this.fonctionnaireService.remove(id);
-            return {
-                status: 'success',
-                message: 'Fonctionnaire supprimé avec succès',
-                data: deletedFonctionnaire,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw error;
-            }
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la suppression du fonctionnaire',
-                data: null,
-            });
-        }
-    }
+    
 }

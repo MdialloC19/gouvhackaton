@@ -228,7 +228,8 @@ export class RequestService {
         if (sort) {
             const [field, order] = JSON.parse(sort);
             query.sort({ [field]: order === 'ASC' ? 1 : -1 });
-        }
+        }   
+        
 
         if (range) {
             const [start, end] = JSON.parse(range);

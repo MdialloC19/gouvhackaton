@@ -50,7 +50,7 @@ export class InstitutionController {
     })
     async create(
         @Body() createInstitutionDto: CreateInstitutionDto,
-    ): Promise<any> {
+    ): Promise<ApiResponse<Institution | null>> {
         try {
             const existingInstitution =
                 await this.institutionService.findByName(
