@@ -3,6 +3,8 @@ import { Document, Types } from 'mongoose';
 import { Citoyen } from '../citoyen/citoyen.schema';
 import { Service } from '../service/service.schema';
 import { Institution } from 'src/institution/institution.schema';
+import { Fonctionnaire } from 'src/fonctionnaire/fonctionnaire.schema';
+
 
 enum RequestState {
     EnCours = 'en-cours',
@@ -38,7 +40,7 @@ export class Request extends Document {
     documentsByAgent: Types.Array<Types.ObjectId>;
 
     @Prop({ type: [{ type: Types.ObjectId, ref: 'Fonctionnaire' }] })
-    processedBy: Types.Array<Types.ObjectId>;
+    processedBy: Types.ObjectId[];
 
     @Prop({ type: Types.ObjectId, ref: 'Institution', required: true })
     institution: Institution;

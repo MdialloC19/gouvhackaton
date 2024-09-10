@@ -31,7 +31,7 @@ export class RequestService {
             documentResponses,
         } = createRequestDto;
 
-        const service = await this.serviceService.findOne(serviceId);
+        const service = await this.serviceService.findOne(serviceId.toString());
         if (!service) {
             throw new NotFoundException(
                 `Service with ID ${serviceId} not found`,
@@ -130,7 +130,7 @@ export class RequestService {
         if (processedBy) {
             for (const fonctionnaireId of processedBy) {
                 const fonctionnaireExists =
-                    await this.fonctionnaireService.findOne(fonctionnaireId);
+                    await this.fonctionnaireService.findOne(fonctionnaireId.toString());
                 if (!fonctionnaireExists) {
                     throw new NotFoundException(
                         `Fonctionnaire with ID ${fonctionnaireId} not found`,
@@ -151,15 +151,16 @@ export class RequestService {
     async findAll(): Promise<Request[]> {
         return this.requestModel
             .find()
-            .populate('citoyen service institution processedBy')
+            .populate('institution citoyen service processedBy') 
             .exec();
     }
 
     async findById(id: string): Promise<Request> {
         const request = await this.requestModel
             .findById(id)
-            .populate('service institution processedBy')
+            .populate('service institution processedBy citoyen')
             .exec();
+            console.log(request); 
         if (!request) {
             throw new NotFoundException(`Request with ID ${id} not found`);
         }
@@ -169,7 +170,7 @@ export class RequestService {
     async findByCitoyen(citoyenId: string): Promise<Request[]> {
         const requests = await this.requestModel
             .find({ citoyen: new Types.ObjectId(citoyenId) })
-            .populate('service institution processedBy')
+            .populate('service institution processedBy citoyen')
             .exec();
         if (requests.length === 0) {
             throw new NotFoundException(
@@ -181,8 +182,8 @@ export class RequestService {
 
     async findByService(serviceId: string): Promise<Request[]> {
         const requests = await this.requestModel
-            .find({ service: new Types.ObjectId(serviceId) })
-            .populate('citoyen institution processedBy')
+            .find({ service: serviceId})
+            .populate('service institution processedBy citoyen')
             .exec();
         if (requests.length === 0) {
             throw new NotFoundException(
@@ -195,7 +196,7 @@ export class RequestService {
     async findByInstitution(institutionId: string): Promise<Request[]> {
         const requests = await this.requestModel
             .find({ institution: new Types.ObjectId(institutionId) })
-            .populate('citoyen service processedBy')
+            .populate('service institution processedBy citoyen')
             .exec();
         if (requests.length === 0) {
             throw new NotFoundException(
@@ -208,7 +209,7 @@ export class RequestService {
     async findByProcessedBy(fonctionnaireId: string): Promise<Request[]> {
         const requests = await this.requestModel
             .find({ processedBy: new Types.ObjectId(fonctionnaireId) })
-            .populate('citoyen service institution')
+            .populate('service institution processedBy citoyen')
             .exec();
         if (requests.length === 0) {
             throw new NotFoundException(

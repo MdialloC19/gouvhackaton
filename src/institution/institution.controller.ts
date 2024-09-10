@@ -187,7 +187,6 @@ export class InstitutionController {
             }));
             const institutionsWithoutId = formattedInstitutions.map(
                 (institution) => {
-                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { _id, ...rest } = institution;
                     return rest;
                 },

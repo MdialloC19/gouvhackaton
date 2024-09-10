@@ -10,7 +10,7 @@ export class CreateRequestDto {
     })
     @IsNotEmpty()
     @IsMongoId()
-    citoyen: string;
+    citoyen: Types.ObjectId;
 
     @ApiProperty({
         description: "ID du service demandé",
@@ -18,7 +18,7 @@ export class CreateRequestDto {
     })
     @IsNotEmpty()
     @IsMongoId()
-    service: string;
+    service: Types.ObjectId;
 
     @ApiProperty({
         description: "ID de l'institution ,fournissant le service , choisie par le citoyen",
@@ -26,7 +26,7 @@ export class CreateRequestDto {
     })
     @IsNotEmpty()
     @IsMongoId()
-    institution: string;
+    institution: Types.ObjectId;
 
     @ApiProperty({
         description: "Commentaire facultatif laissé par le citoyen",
