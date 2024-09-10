@@ -14,7 +14,7 @@ export class User extends Document {
     CNI: string;
 
     @IsNotEmpty()
-    @Prop({  })
+    @Prop({})
     phoneNumber: string;
 
     @IsNotEmpty()

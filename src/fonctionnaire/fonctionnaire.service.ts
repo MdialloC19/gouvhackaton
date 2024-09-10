@@ -1,6 +1,7 @@
 import {
     ConflictException,
     Injectable,
+    Logger,
     NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -12,6 +13,7 @@ import { InstitutionService } from '../institution/institution.service';
 
 @Injectable()
 export class FonctionnaireService {
+    private readonly logger = new Logger(FonctionnaireService.name);
     constructor(
         @InjectModel(Fonctionnaire.name)
         private readonly fonctionnaireModel: Model<Fonctionnaire>,
@@ -76,12 +78,10 @@ export class FonctionnaireService {
             ...rest,
         });
 
-        console.log('Data before saving:', fonctionnaire);
-
         try {
             return await fonctionnaire.save();
         } catch (error) {
-            console.log('Error saving fonctionnaire:', error);
+            this.logger.error(error);
             throw error;
         }
     }
