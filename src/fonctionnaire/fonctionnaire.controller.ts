@@ -47,20 +47,16 @@ export class FonctionnaireController {
         status: 500,
         description: 'Échec de la création du fonctionnaire.',
     })
-    async create(
-        @Body() createFonctionnaireDto: CreateFonctionnaireDto,
-    ): Promise<ApiResponse<Fonctionnaire | null>> {
-
-    
+    async create(@Body() createFonctionnaireDto: CreateFonctionnaireDto) {
         try {
             const fonctionnaire = await this.fonctionnaireService.create(
                 createFonctionnaireDto,
             );
-            return {
-                status: 'success',
-                message: 'Fonctionnaire créé avec succès',
-                data: fonctionnaire,
-            };
+            // Align w/ react admin requirements (it does not support _id so replace it with id)
+            const { _id, ...fonctionnaireWithoutId } = fonctionnaire;
+            const result = { id: _id.toString(), ...fonctionnaireWithoutId };
+
+            return result;
         } catch (error) {
             if (error instanceof ConflictException) {
                 throw new ConflictException({
@@ -68,13 +64,12 @@ export class FonctionnaireController {
                     message: error.message,
                     data: null,
                 });
-            }
-            else
-            throw new InternalServerErrorException({
-                status: 'error',
-                message: 'Échec de la création du fonctionnaire',
-                data: null,
-            });
+            } else
+                throw new InternalServerErrorException({
+                    status: 'error',
+                    message: 'Échec de la création du fonctionnaire',
+                    data: null,
+                });
         }
     }
 
@@ -555,6 +550,4 @@ export class FonctionnaireController {
             });
         }
     }
-
-    
 }

@@ -18,31 +18,51 @@ export class FonctionnaireService {
         private readonly institutionService: InstitutionService,
     ) {}
 
- 
-    async create(createFonctionnaireDto: CreateFonctionnaireDto): Promise<Fonctionnaire> {
-        const { institutionId, CNI, phoneNumber, email, idNumber,birthDate, ...rest } = createFonctionnaireDto;
+    async create(
+        createFonctionnaireDto: CreateFonctionnaireDto,
+    ): Promise<Fonctionnaire> {
+        const {
+            institutionId,
+            CNI,
+            phoneNumber,
+            email,
+            idNumber,
+            birthDate,
+            ...rest
+        } = createFonctionnaireDto;
 
-        const institution = await this.institutionService.findOne(institutionId);
+        const institution =
+            await this.institutionService.findOne(institutionId);
         if (!institution) {
-            throw new NotFoundException(`Institution with Id ${institutionId} not found`);
+            throw new NotFoundException(
+                `Institution with Id ${institutionId} not found`,
+            );
         }
 
-        const existingCni = await this.fonctionnaireModel.findOne({ CNI }).exec();
+        const existingCni = await this.fonctionnaireModel
+            .findOne({ CNI })
+            .exec();
         if (existingCni) {
             throw new ConflictException('CNI already exists');
         }
 
-        const existingPhoneNumber = await this.fonctionnaireModel.findOne({ phoneNumber }).exec();
+        const existingPhoneNumber = await this.fonctionnaireModel
+            .findOne({ phoneNumber })
+            .exec();
         if (existingPhoneNumber) {
             throw new ConflictException('Phone number already exists');
         }
 
-        const existingEmail = await this.fonctionnaireModel.findOne({ email }).exec();
+        const existingEmail = await this.fonctionnaireModel
+            .findOne({ email })
+            .exec();
         if (existingEmail) {
             throw new ConflictException('Email already exists');
         }
 
-        const existingIdNumber = await this.fonctionnaireModel.findOne({ idNumber }).exec();
+        const existingIdNumber = await this.fonctionnaireModel
+            .findOne({ idNumber })
+            .exec();
         if (existingIdNumber) {
             throw new ConflictException('ID number already exists');
         }
@@ -53,7 +73,7 @@ export class FonctionnaireService {
             idNumber,
             institution: institution._id,
             birthDate: birthDate ? new Date(birthDate) : undefined,
-            ...rest
+            ...rest,
         });
 
         console.log('Data before saving:', fonctionnaire);
@@ -62,7 +82,7 @@ export class FonctionnaireService {
             return await fonctionnaire.save();
         } catch (error) {
             console.log('Error saving fonctionnaire:', error);
-            throw error; 
+            throw error;
         }
     }
 

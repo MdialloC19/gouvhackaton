@@ -226,16 +226,22 @@ export class InstitutionController {
         status: 500,
         description: 'Échec de la récupération des institution.',
     })
-    async getMany(
-        @Query('filter') filter: string,
-    ): Promise<ApiResponse<Institution[]>> {
+    async getMany(@Res() response: Response, @Query('filter') filter: string) {
         try {
-            const institution = await this.institutionService.getMany(filter);
-            return {
-                status: 'success',
-                message: 'Citoyens récupérés avec succès',
-                data: institution,
-            };
+            const institutions = await this.institutionService.getMany(filter);
+
+            const formattedInstitutions = institutions.map((institution) => ({
+                ...institution.toObject(),
+                id: institution._id.toString(),
+            }));
+            const institutionsWithoutId = formattedInstitutions.map(
+                (institution) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                    const { _id, ...rest } = institution;
+                    return rest;
+                },
+            );
+            response.json(institutionsWithoutId);
         } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
