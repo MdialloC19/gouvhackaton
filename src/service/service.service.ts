@@ -4,12 +4,11 @@ import {
     NotFoundException,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model, Types } from 'mongoose';
+import { Model } from 'mongoose';
 import { Service } from './service.schema';
 import { CreateServiceDto } from './dto/create-service.dto';
 import { UpdateServiceDto } from './dto/update-service.dto';
 import { InstitutionService } from '../institution/institution.service';
-import { Institution } from 'src/institution/institution.schema';
 
 @Injectable()
 export class ServiceService {

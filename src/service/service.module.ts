@@ -4,6 +4,7 @@ import { Service, ServiceSchema } from './service.schema';
 import { ServiceService } from './service.service';
 import { ServiceController } from './service.controller';
 import { InstitutionModule } from 'src/institution/institution.module';
+import { FieldTypesController } from './field-types/field-types.controller';
 
 @Module({
     imports: [
@@ -13,7 +14,7 @@ import { InstitutionModule } from 'src/institution/institution.module';
         InstitutionModule,
     ],
     providers: [ServiceService],
-    controllers: [ServiceController],
+    controllers: [ServiceController, FieldTypesController],
     exports: [ServiceService],
 })
 export class ServiceModule {}
