@@ -11,6 +11,7 @@ import {
     InternalServerErrorException,
     ConflictException,
     Res,
+    BadRequestException,
 } from '@nestjs/common';
 import { FonctionnaireService } from './fonctionnaire.service';
 import { CreateFonctionnaireDto } from './dto/create-fonctionnaire.dto';
@@ -27,6 +28,7 @@ import {
 } from '@nestjs/swagger';
 import { Logger } from '@nestjs/common';
 import { Response } from 'express';
+import { Service } from 'src/service/service.schema';
 
 @ApiTags('Fonctionnaires')
 @Controller('fonctionnaires')
@@ -546,6 +548,52 @@ export class FonctionnaireController {
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Échec de la récupération du fonctionnaire',
+                data: null,
+            });
+        }
+    }
+
+    @Get(':fonctionnaireId/services')
+    @ApiOperation({ summary: 'Obtenir les services pour un fonctionnaire' })
+    @ApiParam({
+        name: 'fonctionnaireId',
+        description: 'ID du fonctionnaire',
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Services pour le fonctionnaire récupérés avec succès.',
+        type: [Service],
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description:
+            "Aucun service trouvé pour l'institution du fonctionnaire.",
+    })
+    async getServiceForFonctionnaire(
+        @Param('fonctionnaireId') fonctionnaireId: string,
+    ): Promise<ApiResponse<Service[]>> {
+        try {
+            const services =
+                await this.fonctionnaireService.getServiceForFonctionnaire(
+                    fonctionnaireId,
+                );
+            return {
+                status: 'success',
+                message: 'Services for fonctionnaire retrieved successfully',
+                data: services,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new NotFoundException({
+                    status: 'error',
+                    message: error.message,
+                    data: null,
+                });
+            }
+            throw new InternalServerErrorException({
+                status: 'error',
+                message: 'Échec de la récupération des services',
                 data: null,
             });
         }

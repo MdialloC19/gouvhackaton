@@ -69,7 +69,6 @@ export class CitoyenController {
         }
     }
 
-    
     // Citoyen, Fonctionnaire, Admin
     @Get('phone')
     @ApiOperation({ summary: 'Obtenir un citoyen par numéro de téléphone' })
@@ -383,5 +382,4 @@ export class CitoyenController {
             });
         }
     }
-
 }

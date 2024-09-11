@@ -82,7 +82,6 @@ export class RequestController {
         };
     }
 
-
     @Put(':id')
     @ApiOperation({ summary: 'Mettre à jour une demande par ID' })
     @ApiParam({ name: 'id', description: 'ID de la demande', type: String })
@@ -175,15 +174,37 @@ export class RequestController {
             });
         }
     }
-    
     @Get('service/:serviceId/fonctionnaire/:fonctionnaireId')
-    @ApiOperation({ summary: 'Obtenir les demandes pour un service et un fonctionnaire avec des options de pagination et de filtrage' })
+    @ApiOperation({
+        summary:
+            'Obtenir les demandes pour un service et un fonctionnaire avec des options de pagination et de filtrage',
+    })
     @ApiParam({ name: 'serviceId', description: 'ID du service', type: String })
-    @ApiParam({ name: 'fonctionnaireId', description: 'ID du fonctionnaire', type: String })
-    @ApiQuery({ name: 'status', description: 'Filtrer par statut de la demande', required: false })
-    @ApiQuery({ name: 'range', description: 'Plage de résultats à récupérer', required: false })
-    @ApiQuery({ name: 'sort', description: 'Critère de tri des résultats', required: false })
-    @ApiQuery({ name: 'filter', description: 'Critères de filtrage supplémentaires', required: false })
+    @ApiParam({
+        name: 'fonctionnaireId',
+        description: 'ID du fonctionnaire',
+        type: String,
+    })
+    @ApiQuery({
+        name: 'status',
+        description: 'Filtrer par statut de la demande',
+        required: false,
+    })
+    @ApiQuery({
+        name: 'range',
+        description: 'Plage de résultats à récupérer',
+        required: false,
+    })
+    @ApiQuery({
+        name: 'sort',
+        description: 'Critère de tri des résultats',
+        required: false,
+    })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Critères de filtrage supplémentaires',
+        required: false,
+    })
     async findByServiceAndStatus(
         @Param('serviceId') serviceId: string,
         @Param('fonctionnaireId') fonctionnaireId: string,
@@ -193,10 +214,18 @@ export class RequestController {
         @Query('filter') filter?: string,
     ): Promise<ApiResponse<Request[] | null>> {
         try {
-            const requests = await this.requestService.findByServiceAndStatus(serviceId, fonctionnaireId, status, range, sort, filter);
+            const requests = await this.requestService.findByServiceAndStatus(
+                serviceId,
+                fonctionnaireId,
+                status,
+                range,
+                sort,
+                filter,
+            );
             return {
                 status: 'success',
-                message: 'Requests for service and fonctionnaire retrieved successfully',
+                message:
+                    'Requests for service and fonctionnaire retrieved successfully',
                 data: requests,
             };
         } catch (error) {
@@ -418,7 +447,7 @@ export class RequestController {
             });
         }
     }
-    
+
     @Get(':id')
     @ApiOperation({ summary: 'Obtenir une demande par ID' })
     @ApiParam({ name: 'id', description: 'ID de la demande', type: String })

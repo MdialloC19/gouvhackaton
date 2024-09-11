@@ -1,4 +1,10 @@
-import { IsString, IsDate, IsOptional, IsNumber, IsMongoId } from 'class-validator';
+import {
+    IsString,
+    IsDate,
+    IsOptional,
+    IsNumber,
+    IsMongoId,
+} from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
@@ -11,7 +17,8 @@ export class CreateRendezvousDto {
     readonly citoyen?: Types.ObjectId;
 
     @ApiProperty({
-        description: 'ID de l\'institution administrative où le rendez-vous est prévu',
+        description:
+            "ID de l'institution administrative où le rendez-vous est prévu",
         example: '603d4c2f9f1b2c001f8b4567',
     })
     @IsMongoId()
@@ -34,7 +41,8 @@ export class CreateRendezvousDto {
     readonly duration?: number;
 
     @ApiProperty({
-        description: 'État actuel du rendez-vous (ex: Confirmé, Annulé) (optionnel)',
+        description:
+            'État actuel du rendez-vous (ex: Confirmé, Annulé) (optionnel)',
         example: 'Confirmé',
         required: false,
     })
@@ -52,7 +60,8 @@ export class CreateRendezvousDto {
     readonly priority?: string;
 
     @ApiProperty({
-        description: 'Type de rendez-vous (ex: Renouvellement de passeport, Dépôt de dossier) (optionnel)',
+        description:
+            'Type de rendez-vous (ex: Renouvellement de passeport, Dépôt de dossier) (optionnel)',
         example: 'Renouvellement de passeport',
         required: false,
     })
@@ -61,7 +70,8 @@ export class CreateRendezvousDto {
     readonly type?: string;
 
     @ApiProperty({
-        description: 'Commentaire sur le rendez-vous (ex: Documents à apporter, autres précisions) (optionnel)',
+        description:
+            'Commentaire sur le rendez-vous (ex: Documents à apporter, autres précisions) (optionnel)',
         example: 'Le citoyen doit apporter une copie de son passeport.',
         required: false,
     })

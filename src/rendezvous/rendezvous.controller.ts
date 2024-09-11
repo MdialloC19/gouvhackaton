@@ -82,7 +82,7 @@ export class RendezvousController {
             });
         }
     }
-    
+
     @Get('institution/:institutionId')
     @ApiOperation({ summary: 'Obtenir les rendez-vous par institution' })
     @ApiParam({
@@ -230,5 +230,4 @@ export class RendezvousController {
             });
         }
     }
-
 }

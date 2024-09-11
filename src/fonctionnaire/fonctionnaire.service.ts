@@ -9,6 +9,8 @@ import { Fonctionnaire } from './fonctionnaire.schema';
 import { CreateFonctionnaireDto } from './dto/create-fonctionnaire.dto';
 import { UpdateFonctionnaireDto } from './dto/update-fonctionnaire.dto';
 import { InstitutionService } from '../institution/institution.service';
+import { ServiceService } from 'src/service/service.service';
+import { Service } from 'src/service/service.schema';
 
 @Injectable()
 export class FonctionnaireService {
@@ -16,6 +18,7 @@ export class FonctionnaireService {
         @InjectModel(Fonctionnaire.name)
         private readonly fonctionnaireModel: Model<Fonctionnaire>,
         private readonly institutionService: InstitutionService,
+        private readonly serviceService: ServiceService,
     ) {}
 
     async create(
@@ -238,5 +241,31 @@ export class FonctionnaireService {
             .find(filterCriteria)
             .select('-password')
             .exec();
+    }
+
+    async getServiceForFonctionnaire(
+        fonctionnaireId: string,
+    ): Promise<Service[]> {
+        const fonctionnaire = await this.fonctionnaireModel
+            .findOne({ _id: fonctionnaireId })
+            .exec();
+        if (!fonctionnaire) {
+            throw new NotFoundException(
+                `Fonctionnaire with ID ${fonctionnaireId} not found.`,
+            );
+        }
+
+        const fonctionnaireInstitutionId = fonctionnaire.institution;
+
+        const services = this.serviceService.findByInstitution(
+            fonctionnaireInstitutionId.toString(),
+        );
+        if (!services || (await services).length === 0) {
+            throw new NotFoundException(
+                `No services found for institution with ID ${fonctionnaireInstitutionId}`,
+            );
+        }
+
+        return services;
     }
 }

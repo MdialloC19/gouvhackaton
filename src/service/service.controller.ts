@@ -94,7 +94,6 @@ export class ServiceController {
         type: [Service],
     })
     @SwaggerApiResponse({
-        
         status: 500,
         description: 'Échec de la récupération des services.',
     })

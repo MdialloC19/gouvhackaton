@@ -130,7 +130,9 @@ export class RequestService {
         if (processedBy) {
             for (const fonctionnaireId of processedBy) {
                 const fonctionnaireExists =
-                    await this.fonctionnaireService.findOne(fonctionnaireId.toString());
+                    await this.fonctionnaireService.findOne(
+                        fonctionnaireId.toString(),
+                    );
                 if (!fonctionnaireExists) {
                     throw new NotFoundException(
                         `Fonctionnaire with ID ${fonctionnaireId} not found`,
@@ -151,16 +153,16 @@ export class RequestService {
     async findAll(): Promise<Request[]> {
         return this.requestModel
             .find()
-            .populate('institution citoyen service processedBy') 
+            .populate('institution citoyen service processedBy')
             .exec();
     }
- 
+
     async findById(id: string): Promise<Request> {
         const request = await this.requestModel
             .findById(id)
             .populate('service institution processedBy citoyen')
             .exec();
-            console.log(request); 
+        console.log(request);
         if (!request) {
             throw new NotFoundException(`Request with ID ${id} not found`);
         }
@@ -185,21 +187,26 @@ export class RequestService {
         status?: string,
         range?: string,
         sort?: string,
-        filter?: string
+        filter?: string,
     ): Promise<Request[]> {
-        const fonctionnaire = await this.fonctionnaireService.findOne(fonctionnaireId);
+        const fonctionnaire =
+            await this.fonctionnaireService.findOne(fonctionnaireId);
         if (!fonctionnaire) {
-            throw new NotFoundException(`Fonctionnaire with ID ${fonctionnaireId} not found.`);
+            throw new NotFoundException(
+                `Fonctionnaire with ID ${fonctionnaireId} not found.`,
+            );
         }
 
         const service = await this.serviceService.findOne(serviceId);
         if (!service) {
-            throw new NotFoundException(`Service with ID ${serviceId} not found.`);
+            throw new NotFoundException(
+                `Service with ID ${serviceId} not found.`,
+            );
         }
         const query = this.requestModel.find({
-            service: serviceId,                      
-            institution: fonctionnaire.institution._id.toString(),    
-        }); 
+            service: serviceId,
+            institution: fonctionnaire.institution._id.toString(),
+        });
         if (status) {
             query.where({ state: status });
         }
@@ -223,7 +230,9 @@ export class RequestService {
             .exec();
 
         if (!requests || requests.length === 0) {
-            throw new NotFoundException(`No requests found for service with ID ${serviceId}`);
+            throw new NotFoundException(
+                `No requests found for service with ID ${serviceId}`,
+            );
         }
 
         return requests;
@@ -265,8 +274,7 @@ export class RequestService {
         if (sort) {
             const [field, order] = JSON.parse(sort);
             query.sort({ [field]: order === 'ASC' ? 1 : -1 });
-        }   
-        
+        }
 
         if (range) {
             const [start, end] = JSON.parse(range);

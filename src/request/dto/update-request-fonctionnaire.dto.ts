@@ -33,7 +33,8 @@ export class UpdateRequestDto {
     state: RequestState;
 
     @ApiProperty({
-        description: "Commentaire ajouté par l'agent traitant la demande (optionnel)",
+        description:
+            "Commentaire ajouté par l'agent traitant la demande (optionnel)",
         example: 'Le dossier est complet et en cours de traitement.',
         required: false,
     })
@@ -41,7 +42,8 @@ export class UpdateRequestDto {
     commentByAgent: string;
 
     @ApiProperty({
-        description: "Documents ajoutés par l'agent traitant (optionnel), il faut d'abord ajouter les documents avec l'endpoint documents",
+        description:
+            "Documents ajoutés par l'agent traitant (optionnel), il faut d'abord ajouter les documents avec l'endpoint documents",
         example: ['603d4c2f9f1b2c001f8b4571', '603d4c2f9f1b2c001f8b4572'],
         required: false,
         type: [String],
@@ -52,7 +54,7 @@ export class UpdateRequestDto {
     documentsByAgent: string[];
 
     @ApiProperty({
-        description: "Liste des agents ayant traité la demande",
+        description: 'Liste des agents ayant traité la demande',
         example: ['603d4c2f9f1b2c001f8b4573', '603d4c2f9f1b2c001f8b4574'],
         type: [String],
     })

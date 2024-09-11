@@ -61,7 +61,7 @@ export class CreateServiceDto {
     description: string;
 
     @ApiProperty({
-        description: 'Lien vers plus d\'informations sur le service',
+        description: "Lien vers plus d'informations sur le service",
         example: 'https://example.com/services/renouvellement-passeport',
     })
     @IsString()
@@ -69,7 +69,8 @@ export class CreateServiceDto {
     link: string;
 
     @ApiProperty({
-        description: 'Liste des institutions fournissant ce service (optionnel)',
+        description:
+            'Liste des institutions fournissant ce service (optionnel)',
         example: ['603d4c2f9f1b2c001f8b4567', '603d4c2f9f1b2c001f8b4568'],
         required: false,
         type: [String],
@@ -86,14 +87,20 @@ export class CreateServiceDto {
             type: 'object',
             properties: {
                 label: { type: 'string', example: 'Nom complet' },
-                fieldType: { 
-                    type: 'string', 
-                    enum: ['INPUT', 'SELECT', 'UPLOAD_FILE', 'UPLOAD_IMAGE', 'DATE'],
+                fieldType: {
+                    type: 'string',
+                    enum: [
+                        'INPUT',
+                        'SELECT',
+                        'UPLOAD_FILE',
+                        'UPLOAD_IMAGE',
+                        'DATE',
+                    ],
                     example: EnumFieldType.TEXT,
                 },
                 required: { type: 'boolean', example: true },
-                options: { 
-                    type: 'array', 
+                options: {
+                    type: 'array',
                     items: { type: 'string' },
                     example: ['Option 1', 'Option 2'],
                 },

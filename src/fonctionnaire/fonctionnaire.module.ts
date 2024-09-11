@@ -4,6 +4,7 @@ import { FonctionnaireService } from './fonctionnaire.service';
 import { FonctionnaireController } from './fonctionnaire.controller';
 import { Fonctionnaire, FonctionnaireSchema } from './fonctionnaire.schema';
 import { InstitutionModule } from '../institution/institution.module';
+import { ServiceModule } from '../service/service.module';
 
 @Module({
     imports: [
@@ -11,6 +12,7 @@ import { InstitutionModule } from '../institution/institution.module';
             { name: Fonctionnaire.name, schema: FonctionnaireSchema },
         ]),
         InstitutionModule,
+        ServiceModule,
     ],
     controllers: [FonctionnaireController],
     providers: [FonctionnaireService],
