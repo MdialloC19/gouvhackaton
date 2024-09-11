@@ -154,7 +154,7 @@ export class RequestService {
             .populate('institution citoyen service processedBy') 
             .exec();
     }
-
+ 
     async findById(id: string): Promise<Request> {
         const request = await this.requestModel
             .findById(id)
@@ -179,17 +179,53 @@ export class RequestService {
         }
         return requests;
     }
+    async findByServiceAndStatus(
+        serviceId: string,
+        fonctionnaireId: string,
+        status?: string,
+        range?: string,
+        sort?: string,
+        filter?: string
+    ): Promise<Request[]> {
+        const fonctionnaire = await this.fonctionnaireService.findOne(fonctionnaireId);
+        if (!fonctionnaire) {
+            throw new NotFoundException(`Fonctionnaire with ID ${fonctionnaireId} not found.`);
+        }
 
-    async findByService(serviceId: string): Promise<Request[]> {
-        const requests = await this.requestModel
-            .find({ service: serviceId})
+        const service = await this.serviceService.findOne(serviceId);
+        if (!service) {
+            throw new NotFoundException(`Service with ID ${serviceId} not found.`);
+        }
+        const query = this.requestModel.find({
+            service: serviceId,                      
+            institution: fonctionnaire.institution._id.toString(),    
+        }); 
+        if (status) {
+            query.where({ state: status });
+        }
+
+        if (filter) {
+            query.where(JSON.parse(filter));
+        }
+
+        if (sort) {
+            const [field, order] = JSON.parse(sort);
+            query.sort({ [field]: order === 'ASC' ? 1 : -1 });
+        }
+
+        if (range) {
+            const [start, end] = JSON.parse(range);
+            query.skip(start).limit(end - start + 1);
+        }
+
+        const requests = await query
             .populate('service institution processedBy citoyen')
             .exec();
-        if (requests.length === 0) {
-            throw new NotFoundException(
-                `No requests found for service with ID ${serviceId}`,
-            );
+
+        if (!requests || requests.length === 0) {
+            throw new NotFoundException(`No requests found for service with ID ${serviceId}`);
         }
+
         return requests;
     }
 

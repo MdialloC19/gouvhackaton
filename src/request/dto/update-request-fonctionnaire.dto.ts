@@ -59,5 +59,5 @@ export class UpdateRequestDto {
     @IsNotEmpty()
     @IsArray()
     @IsMongoId({ each: true })
-    processedBy: String[];
+    processedBy: Types.ObjectId[];
 }

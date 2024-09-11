@@ -39,7 +39,7 @@ export class Request extends Document {
     @Prop({ type: [{ type: Types.ObjectId }] })
     documentsByAgent: Types.Array<Types.ObjectId>;
 
-    @Prop({ type: [{ type: Types.ObjectId, ref: 'Fonctionnaire' }] })
+    @Prop({ type: [{ type: Object }] })
     processedBy: Types.ObjectId[];
 
     @Prop({ type: Types.ObjectId, ref: 'Institution', required: true })
