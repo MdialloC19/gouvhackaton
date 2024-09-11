@@ -48,9 +48,7 @@ export class InstitutionController {
         status: 400,
         description: "Échec de la création de l'institution.",
     })
-    async create(
-        @Body() createInstitutionDto: CreateInstitutionDto,
-    ): Promise<ApiResponse<Institution | null>> {
+    async create(@Body() createInstitutionDto: CreateInstitutionDto) {
         try {
             const existingInstitution =
                 await this.institutionService.findByName(
@@ -67,11 +65,9 @@ export class InstitutionController {
 
             const createdInstitution =
                 await this.institutionService.create(createInstitutionDto);
-            return {
-                status: 'success',
-                message: 'Institution créée avec succès',
-                data: createdInstitution,
-            };
+            const { _id, ...institutionWithoutId } = createdInstitution;
+            const result = { id: _id.toString(), ...institutionWithoutId };
+            return result;
         } catch (error) {
             throw new BadRequestException({
                 status: 'error',
@@ -187,6 +183,7 @@ export class InstitutionController {
             }));
             const institutionsWithoutId = formattedInstitutions.map(
                 (institution) => {
+                    // eslint-disable-next-line @typescript-eslint/no-unused-vars
                     const { _id, ...rest } = institution;
                     return rest;
                 },
