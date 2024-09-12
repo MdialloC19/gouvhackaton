@@ -5,7 +5,7 @@ import { RendezvousService } from './rendezvous.service';
 import { RendezvousController } from './rendezvous.controller';
 import { CitoyenModule } from '../citoyen/citoyen.module';
 import { InstitutionModule } from '../institution/institution.module';
-import { FonctionnaireService } from 'src/fonctionnaire/fonctionnaire.service';
+import { FonctionnaireModule } from 'src/fonctionnaire/fonctionnaire.module';
 
 @Module({
     imports: [
@@ -14,7 +14,7 @@ import { FonctionnaireService } from 'src/fonctionnaire/fonctionnaire.service';
         ]),
         CitoyenModule,
         InstitutionModule,
-        FonctionnaireService
+        FonctionnaireModule
     ],
     providers: [RendezvousService],
     controllers: [RendezvousController],
