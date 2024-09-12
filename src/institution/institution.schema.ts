@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document, Types } from 'mongoose';
-import { Service } from '../service/service.schema';
+import { Document } from 'mongoose';
 
 @Schema()
 export class Institution extends Document {

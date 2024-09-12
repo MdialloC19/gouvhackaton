@@ -47,9 +47,7 @@ export class ServiceController {
         status: 400,
         description: 'Échec de la création du service.',
     })
-    async create(
-        @Body() createServiceDto: CreateServiceDto,
-    ): Promise<ApiResponse<Service>> {
+    async create(@Body() createServiceDto: CreateServiceDto) {
         try {
             const existingService = await this.serviceService.findByName(
                 createServiceDto.name,
@@ -65,11 +63,9 @@ export class ServiceController {
             const createdService =
                 await this.serviceService.create(createServiceDto);
 
-            return {
-                status: 'success',
-                message: 'Service created successfully',
-                data: createdService,
-            };
+            const { _id, ...serviceWithoutId } = createdService;
+            const result = { id: _id.toString(), ...serviceWithoutId };
+            return result;
         } catch (error) {
             if (error instanceof ConflictException) {
                 throw new ConflictException({
@@ -78,6 +74,7 @@ export class ServiceController {
                     data: null,
                 });
             }
+            this.logger.error(error);
             throw new BadRequestException({
                 status: 'error',
                 message: 'Failed to create service',

@@ -4,11 +4,39 @@ import {
     IsOptional,
     IsNumber,
     IsArray,
-    IsEnum,
+    IsUUID,
+    ValidateNested,
+    IsBoolean,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 import { EnumFieldType } from '../field.schema';
+import { Type } from 'class-transformer';
+
+class FieldTypeDto {
+    @IsString()
+    typeName: string;
+
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    options?: string[];
+}
+
+class FormFieldDto {
+    @IsUUID()
+    uuid: string;
+
+    @IsString()
+    name: string;
+
+    @ValidateNested()
+    @Type(() => FieldTypeDto)
+    type: FieldTypeDto;
+
+    @IsBoolean()
+    required: boolean;
+}
 
 export class CreateServiceDto {
     @ApiProperty({
@@ -77,7 +105,7 @@ export class CreateServiceDto {
     })
     @IsArray()
     @IsOptional()
-    institutions?: Types.ObjectId[];
+    institutionsIds?: Types.ObjectId[];
 
     @ApiProperty({
         description: 'Liste des champs requis pour ce service (optionnel)',
@@ -112,5 +140,11 @@ export class CreateServiceDto {
         },
     })
     @IsArray()
-    fields: string[];
+    @ValidateNested({ each: true })
+    @Type(() => FormFieldDto)
+    formFields: FormFieldDto[];
+
+    // @IsArray()
+    // @IsString({ each: true })
+    // availableInstitutionsIds: string[];
 }
