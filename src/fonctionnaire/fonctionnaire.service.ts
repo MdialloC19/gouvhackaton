@@ -79,12 +79,9 @@ export class FonctionnaireService {
             ...rest,
         });
 
-        console.log('Data before saving:', fonctionnaire);
-
         try {
             return await fonctionnaire.save();
         } catch (error) {
-            console.log('Error saving fonctionnaire:', error);
             throw error;
         }
     }

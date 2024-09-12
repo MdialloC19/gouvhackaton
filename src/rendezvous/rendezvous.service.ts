@@ -44,10 +44,22 @@ export class RendezvousService {
     }
 
     async findAll(): Promise<Rendezvous[]> {
-        return this.rendezvousModel
-            .find()
-            .populate('citoyen institution')
-            .exec();
+        await this.rendezvousModel.deleteMany({});
+        try {
+            const rendezvous = await this.rendezvousModel
+                .find()
+                .populate('citoyen institution')
+                .exec();
+
+            if (!rendezvous || rendezvous.length === 0) {
+                throw new NotFoundException('Rendezvous not found');
+            }
+
+            return rendezvous;
+        } catch (error) {
+            console.log(error);
+            throw new Error(`Failed to retrieve rendezvous: ${error.message}`);
+        }
     }
 
     async findOne(id: string): Promise<Rendezvous> {

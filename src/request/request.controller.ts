@@ -177,7 +177,7 @@ export class RequestController {
     @Get('service/:serviceId/fonctionnaire/:fonctionnaireId')
     @ApiOperation({
         summary:
-            'Obtenir les demandes pour un service et un fonctionnaire avec des options de pagination et de filtrage',
+            'Obtenir les demandes pour un service et un fonctionnaire avec pagination, tri et filtrage',
     })
     @ApiParam({ name: 'serviceId', description: 'ID du service', type: String })
     @ApiParam({
@@ -191,34 +191,41 @@ export class RequestController {
         required: false,
     })
     @ApiQuery({
-        name: 'range',
-        description: 'Plage de résultats à récupérer',
+        name: 'page',
+        description: 'Numéro de la page pour la pagination',
+        required: false,
+    })
+    @ApiQuery({
+        name: 'limit',
+        description: 'Nombre de résultats par page (par défaut 30)',
         required: false,
     })
     @ApiQuery({
         name: 'sort',
-        description: 'Critère de tri des résultats',
+        description: 'Critère de tri des résultats, ex: +name,-price',
         required: false,
     })
     @ApiQuery({
         name: 'filter',
-        description: 'Critères de filtrage supplémentaires',
+        description: 'Critères de filtrage supplémentaires en JSON',
         required: false,
     })
     async findByServiceAndStatus(
         @Param('serviceId') serviceId: string,
         @Param('fonctionnaireId') fonctionnaireId: string,
         @Query('status') status?: string,
-        @Query('range') range?: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 30,
         @Query('sort') sort?: string,
         @Query('filter') filter?: string,
-    ): Promise<ApiResponse<Request[] | null>> {
+    ) {
         try {
-            const requests = await this.requestService.findByServiceAndStatus(
+            const result = await this.requestService.findByServiceAndStatus(
                 serviceId,
                 fonctionnaireId,
                 status,
-                range,
+                page,
+                limit,
                 sort,
                 filter,
             );
@@ -226,7 +233,8 @@ export class RequestController {
                 status: 'success',
                 message:
                     'Requests for service and fonctionnaire retrieved successfully',
-                data: requests,
+                data: result.data,
+                metadata: result.metadata,
             };
         } catch (error) {
             if (error instanceof NotFoundException) {

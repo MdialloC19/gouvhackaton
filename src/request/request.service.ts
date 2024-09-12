@@ -63,7 +63,6 @@ export class RequestService {
         const responses: any = {
             textResponses: {},
             documentResponses: {},
-            createdAt: new Date(),
         };
 
         for (const [fieldLabel, response] of Object.entries(textResponses)) {
@@ -94,7 +93,7 @@ export class RequestService {
 
         const newRequest = new this.requestModel({
             ...createRequestDto,
-            dateAndHour: new Date(),
+            createdAt: new Date(),
             state: 'en-cours',
         });
         return await newRequest.save();
@@ -162,7 +161,6 @@ export class RequestService {
             .findById(id)
             .populate('service institution processedBy citoyen')
             .exec();
-        console.log(request);
         if (!request) {
             throw new NotFoundException(`Request with ID ${id} not found`);
         }
@@ -181,14 +179,16 @@ export class RequestService {
         }
         return requests;
     }
+
     async findByServiceAndStatus(
         serviceId: string,
         fonctionnaireId: string,
         status?: string,
-        range?: string,
+        page: number = 1,
+        limit: number = 20,
         sort?: string,
         filter?: string,
-    ): Promise<Request[]> {
+    ) {
         const fonctionnaire =
             await this.fonctionnaireService.findOne(fonctionnaireId);
         if (!fonctionnaire) {
@@ -203,10 +203,25 @@ export class RequestService {
                 `Service with ID ${serviceId} not found.`,
             );
         }
+
+        const sortFields = {};
+
+        if (sort) {
+            const sortArray = sort.split(',');
+            sortArray.forEach((field) => {
+                const direction = field.startsWith('-') ? -1 : 1;
+                const fieldName = field.substring(1);
+                sortFields[fieldName] = direction;
+            });
+        } else {
+            sortFields['createdAt'] = 1;
+        }
+
         const query = this.requestModel.find({
             service: serviceId,
             institution: fonctionnaire.institution._id.toString(),
         });
+
         if (status) {
             query.where({ state: status });
         }
@@ -215,17 +230,19 @@ export class RequestService {
             query.where(JSON.parse(filter));
         }
 
-        if (sort) {
-            const [field, order] = JSON.parse(sort);
-            query.sort({ [field]: order === 'ASC' ? 1 : -1 });
-        }
-
-        if (range) {
-            const [start, end] = JSON.parse(range);
-            query.skip(start).limit(end - start + 1);
-        }
+        const totalCount = await this.requestModel
+            .countDocuments({
+                service: serviceId,
+                institution: fonctionnaire.institution._id.toString(),
+                ...(status ? { state: status } : {}),
+                ...(filter ? JSON.parse(filter) : {}),
+            })
+            .exec();
 
         const requests = await query
+            .skip((page - 1) * limit)
+            .limit(limit)
+            .sort(sortFields)
             .populate('service institution processedBy citoyen')
             .exec();
 
@@ -235,7 +252,14 @@ export class RequestService {
             );
         }
 
-        return requests;
+        return {
+            status: 'success',
+            message: 'Requests retrieved successfully',
+            data: requests,
+            metadata: {
+                total_count: totalCount,
+            },
+        };
     }
 
     async findByInstitution(institutionId: string): Promise<Request[]> {

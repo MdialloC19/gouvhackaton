@@ -21,7 +21,7 @@ export class Request extends Document {
     service: Service;
 
     @Prop()
-    dateAndHour: Date;
+    createdAt: Date;
 
     @Prop()
     dateAndHourTreatment: Date;
