@@ -47,11 +47,9 @@ export class RendezvousService {
     }
 
     async findAll(): Promise<Rendezvous[]> {
-        await this.rendezvousModel.deleteMany({});
         try {
             const rendezvous = await this.rendezvousModel
                 .find()
-                .populate('citoyen institution')
                 .exec();
 
             if (!rendezvous || rendezvous.length === 0) {
