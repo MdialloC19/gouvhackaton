@@ -8,6 +8,7 @@ import {
     Param,
     NotFoundException,
     BadRequestException,
+    Query,
 } from '@nestjs/common';
 import { RendezvousService } from './rendezvous.service';
 import { CreateRendezvousDto } from './dto/create-rendezvous.dto';
@@ -18,7 +19,9 @@ import {
     ApiBody,
     ApiParam,
     ApiResponse as SwaggerApiResponse,
+    ApiQuery,
 } from '@nestjs/swagger';
+import { ApiResponse } from 'src/interface/apiResponses.interface';
 
 @ApiTags('Rendezvous')
 @Controller('rendezvous')
@@ -78,6 +81,75 @@ export class RendezvousController {
             throw new NotFoundException({
                 statusCode: 404,
                 message: 'Failed to retrieve rendezvous',
+                data: null,
+            });
+        }
+    }
+    @Get('fonctionnaire/:fonctionnaireId')
+    @ApiOperation({
+        summary: 'Obtenir les rendez-vous pour un fonctionnaire avec des options de pagination, de tri et de filtrage',
+    })
+    @ApiParam({
+        name: 'fonctionnaireId',
+        description: 'ID du fonctionnaire',
+        type: String,
+    })
+    @ApiQuery({
+        name: 'status',
+        description: 'Filtrer par état du rendez-vous',
+        required: false,
+    })
+    @ApiQuery({
+        name: 'page',
+        description: 'Numéro de la page pour la pagination',
+        required: false,
+        example: 1,
+    })
+    @ApiQuery({
+        name: 'limit',
+        description: 'Nombre de rendez-vous par page',
+        required: false,
+        example: 20,
+    })
+    @ApiQuery({
+        name: 'sort',
+        description: 'Critères de tri des résultats, ex: "+field,-field"',
+        required: false,
+    })
+    @ApiQuery({
+        name: 'filter',
+        description: 'Critères de filtrage supplémentaires en JSON',
+        required: false,
+    })
+    async findByServiceAndStatus(
+        @Param('fonctionnaireId') fonctionnaireId: string,
+        @Query('status') status?: string,
+        @Query('page') page: number = 1,
+        @Query('limit') limit: number = 20,
+        @Query('sort') sort?: string,
+        @Query('filter') filter?: string,
+    ): Promise<ApiResponse<any>> {
+        try {
+            const result = await this.rendezvousService.findByServiceAndStatus(
+                fonctionnaireId,
+                status,
+                page,
+                limit,
+                sort,
+                filter,
+            );
+            return result;
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new NotFoundException({
+                    status: 'error',
+                    message: error.message,
+                    data: null,
+                });
+            }
+            throw new BadRequestException({
+                status: 'error',
+                message: 'An unexpected error occurred',
                 data: null,
             });
         }
