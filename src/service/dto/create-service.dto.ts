@@ -7,6 +7,7 @@ import {
     IsUUID,
     ValidateNested,
     IsBoolean,
+    IsUrl,
 } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
@@ -92,7 +93,7 @@ export class CreateServiceDto {
         description: "Lien vers plus d'informations sur le service",
         example: 'https://example.com/services/renouvellement-passeport',
     })
-    @IsString()
+    @IsUrl()
     @IsNotEmpty()
     link: string;
 
