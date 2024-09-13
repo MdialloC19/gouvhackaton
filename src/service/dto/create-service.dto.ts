@@ -144,8 +144,5 @@ export class CreateServiceDto {
     @ValidateNested({ each: true })
     @Type(() => FormFieldDto)
     formFields: FormFieldDto[];
-
-    // @IsArray()
-    // @IsString({ each: true })
-    // availableInstitutionsIds: string[];
+    
 }

@@ -130,4 +130,20 @@ export class CreateCitoyenDto {
     @IsOptional()
     @IsString()
     readonly address?: string;
+    
+    @ApiProperty({
+        description: 'Pays de naissance',
+        example: 'Senegal',
+    })
+    @IsOptional()
+    @IsString()
+    readonly birthCountry?: string;
+
+    @ApiProperty({
+        description: 'Departement de naissance',
+        example: 'Dakar',
+    })
+    @IsOptional()
+    @IsString()
+    readonly birthDepartment?: string;
 }
