@@ -110,7 +110,6 @@ export class ServiceController {
             });
         }
     }
-
     @Get('list')
     @ApiOperation({
         summary: 'Obtenir une liste de services avec pagination et tri',

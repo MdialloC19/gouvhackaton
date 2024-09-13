@@ -50,6 +50,7 @@ export class RendezvousService {
         try {
             const rendezvous = await this.rendezvousModel
                 .find()
+                .populate('citoyen institution')
                 .exec();
 
             if (!rendezvous || rendezvous.length === 0) {
