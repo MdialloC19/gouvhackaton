@@ -400,4 +400,85 @@ export class ServiceController {
             });
         }
     }
+
+    @Put(':id/add-institution')
+    @ApiOperation({ summary: 'Ajouter une institution à un service' })
+    @ApiParam({ name: 'id', description: 'ID du service', type: String })
+    @ApiBody({
+        type: Object,
+        description: "Contient l'ID de l'institution à ajouter",
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Institution ajoutée au service avec succès.',
+        type: Service,
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: "Échec de l'ajout de l'institution au service.",
+    })
+    async addInstitution(
+        @Param('id') serviceId: string,
+        @Body('institutionId') institutionId: string,
+    ): Promise<ApiResponse<Service>> {
+        try {
+            const updatedService =
+                await this.serviceService.addInstitutionToService(
+                    serviceId,
+                    institutionId,
+                );
+            return {
+                status: 'success',
+                message: 'Institution added to service successfully',
+                data: updatedService,
+            };
+        } catch (error) {
+            throw new NotFoundException({
+                status: 'error',
+                message: `Failed to add institution to service with ID ${serviceId}`,
+                data: null,
+            });
+        }
+    }
+
+    @Put(':serviceId/remove-institution/:institutionId')
+    @ApiOperation({ summary: "Supprimer une institution d'un service" })
+    @ApiParam({ name: 'serviceId', description: 'ID du service', type: String })
+    @ApiParam({
+        name: 'institutionId',
+        description: "ID de l'institution",
+        type: String,
+    })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Institution retirée du service avec succès.',
+        type: Service,
+    })
+    @SwaggerApiResponse({
+        status: 404,
+        description: "Échec du retrait de l'institution du service.",
+    })
+    async removeInstitutionFromService(
+        @Param('serviceId') serviceId: string,
+        @Param('institutionId') institutionId: string,
+    ): Promise<ApiResponse<Service>> {
+        try {
+            const updatedService =
+                await this.serviceService.removeInstitutionFromService(
+                    serviceId,
+                    institutionId,
+                );
+            return {
+                status: 'success',
+                message: 'Institution removed from service successfully',
+                data: updatedService,
+            };
+        } catch (error) {
+            throw new NotFoundException({
+                status: 'error',
+                message: `Failed to remove institution from service with ID ${serviceId}`,
+                data: null,
+            });
+        }
+    }
 }

@@ -25,7 +25,7 @@ export class Service extends Document {
     @Prop({ required: true, unique: true })
     link: string;
 
-    @Prop({ type: [{ type: Object, ref: 'Institution' }] })
+    @Prop({ type: [{ type: Types.ObjectId, ref: 'Institution' }] })
     institutions: Institution[];
 
     @Prop({ type: [{ type: Object }] })

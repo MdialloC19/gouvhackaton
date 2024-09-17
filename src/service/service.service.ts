@@ -18,25 +18,34 @@ export class ServiceService {
     ) {}
 
     async create(createServiceDto: CreateServiceDto): Promise<Service> {
-        const { name, link, ...rest } = createServiceDto;
-
+        const { name, link, institutions, ...rest } = createServiceDto;
+    
         const existingName = await this.serviceModel.findOne({ name }).exec();
         if (existingName) {
             throw new ConflictException(
                 'Service with this name already exists',
             );
         }
-
+    
         const existingLink = await this.serviceModel.findOne({ link }).exec();
         if (existingLink) {
             throw new ConflictException(
                 'Service with this link already exists',
             );
         }
-
+    
         const createdService = new this.serviceModel({ name, link, ...rest });
-        return createdService.save();
+        const savedService = await createdService.save();
+    
+        if (institutions && institutions.length > 0) {
+            for (const institutionId of institutions) {
+                await this.addInstitutionToService(savedService._id.toString(), institutionId.toString());
+            }
+        }
+    
+        return this.serviceModel.findById(savedService._id).populate('institutions').exec();
     }
+    
 
     async findAll(): Promise<Service[]> {
         return this.serviceModel
@@ -61,6 +70,75 @@ export class ServiceService {
         .populate('institutions')
         .exec();
     }
+
+
+    async removeInstitutionFromService(
+        serviceId: string,
+        institutionId: string,
+    ): Promise<Service> {
+        const service = await this.serviceModel.findById(serviceId).exec();
+        if (!service) {
+            throw new NotFoundException(
+                `Service with ID ${serviceId} not found`,
+            );
+        }
+
+        const institution =
+            await this.institutionService.findOne(institutionId);
+        if (!institution) {
+            throw new NotFoundException(
+                `Institution with ID ${institutionId} not found`,
+            );
+        }
+
+        const institutionIndex = service.institutions.findIndex(
+            (inst) => inst._id.toString() === institution._id.toString(),
+        );
+
+        if (institutionIndex === -1) {
+            throw new NotFoundException(
+                `Institution with ID ${institutionId} not found in service`,
+            );
+        }
+
+        service.institutions.splice(institutionIndex, 1);
+
+        await service.save();
+
+        return service;
+    }
+
+    async addInstitutionToService(
+        serviceId: string,
+        institutionId: string,
+    ): Promise<Service> {
+        const service = await this.serviceModel.findById(serviceId);
+        if (!service) {
+            throw new NotFoundException(
+                `Service with ID ${serviceId} not found`,
+            );
+        }
+
+        const institution =
+            await this.institutionService.findOne(institutionId);
+        if (!institution) {
+            throw new NotFoundException(
+                `Institution with ID ${institutionId} not found`,
+            );
+        }
+
+        if (service.institutions.includes(institution.id)) {
+            throw new ConflictException(
+                'Institution already associated with this service',
+            );
+        }
+
+        service.institutions.push(institution);
+        await service.save();
+        return service;
+    }
+
+  
 
     async update(
         id: string,

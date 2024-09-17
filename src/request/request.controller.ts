@@ -259,59 +259,64 @@ export class RequestController {
     }
 
     @Get('institution/:fonctionnaireId/request-count')
-    @ApiOperation({
-        summary: 'Obtenir le nombre de demandes par service pour l\'institution du fonctionnaire',
-    })
-    @ApiParam({ name: 'fonctionnaireId', description: 'ID du fonctionnaire', type: String })
-    async getRequestCountByServiceForInstitution(
-        @Param('fonctionnaireId') fonctionnaireId: string,
-    ) {
-        try {
-            const fonctionnaire = await this.fonctionnaireService.findOne(fonctionnaireId);
-            if (!fonctionnaire) {
-                throw new NotFoundException(`Fonctionnaire with ID ${fonctionnaireId} not found.`);
-            }
+@ApiOperation({
+    summary: 'Obtenir le nombre de demandes par service pour l\'institution du fonctionnaire, ainsi que le total global',
+})
+@ApiParam({ name: 'fonctionnaireId', description: 'ID du fonctionnaire', type: String })
+async getRequestCountByServiceForInstitution(
+    @Param('fonctionnaireId') fonctionnaireId: string,
+) {
+    try {
+        const fonctionnaire = await this.fonctionnaireService.findOne(fonctionnaireId);
+        if (!fonctionnaire) {
+            throw new NotFoundException(`Fonctionnaire with ID ${fonctionnaireId} not found.`);
+        }
 
-            const institutionId = fonctionnaire.institution._id.toString();
-            console.log(institutionId) ;
+        const institutionId = fonctionnaire.institution._id.toString();
+        const services = await this.serviceService.findByInstitution(institutionId);
 
-            const services = await this.serviceService.findByInstitution(institutionId);
-            console.log(services)
+        let totalRequestCount = 0;
 
-            const requestCounts = await Promise.all(
-                services.map(async (service) => {
-                    const count = await this.requestService.countByServiceAndInstitution(
-                        service._id.toString(),
-                        institutionId,
-                    );
-                    return {
-                        serviceId: service._id.toString(),
-                        serviceName: service.name,
-                        requestCount: count,
-                    };
-                }),
-            );
+        const requestCounts = await Promise.all(
+            services.map(async (service) => {
+                const count = await this.requestService.countByServiceAndInstitution(
+                    service._id.toString(),
+                    institutionId,
+                );
+                totalRequestCount += count; // Ajout du nombre de demandes au total global
 
-            return {
-                status: 'success',
-                message: 'Request counts by service retrieved successfully',
-                data: requestCounts,
-            };
-        } catch (error) {
-            if (error instanceof NotFoundException) {
-                throw new NotFoundException({
-                    status: 'error',
-                    message: error.message,
-                    data: null,
-                });
-            }
-            throw new BadRequestException({
+                return {
+                    serviceId: service._id.toString(),
+                    serviceName: service.name,
+                    requestCount: count,
+                };
+            }),
+        );
+
+        return {
+            status: 'success',
+            message: 'Request counts by service and total retrieved successfully',
+            data: {
+                services: requestCounts,
+                totalRequests: totalRequestCount, // Inclure le total global dans la réponse
+            },
+        };
+    } catch (error) {
+        if (error instanceof NotFoundException) {
+            throw new NotFoundException({
                 status: 'error',
-                message: 'An unexpected error occurred',
+                message: error.message,
                 data: null,
             });
         }
+        throw new BadRequestException({
+            status: 'error',
+            message: 'An unexpected error occurred',
+            data: null,
+        });
     }
+}
+
 
     @Get('institution/:institutionId')
     @ApiOperation({ summary: 'Obtenir les demandes pour une institution' })
