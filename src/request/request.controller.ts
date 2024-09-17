@@ -24,11 +24,15 @@ import {
     ApiQuery,
 } from '@nestjs/swagger';
 import { ApiResponse } from 'src/interface/apiResponses.interface';
+import { FonctionnaireService } from 'src/fonctionnaire/fonctionnaire.service';
+import { ServiceService } from 'src/service/service.service';
 
 @ApiTags('Requests')
 @Controller('requests')
 export class RequestController {
-    constructor(private readonly requestService: RequestService) {}
+    constructor(private readonly requestService: RequestService,
+        private readonly fonctionnaireService: FonctionnaireService,
+        private readonly serviceService: ServiceService,) {}
 
     @Post()
     @ApiOperation({ summary: 'Créer une nouvelle demande' })
@@ -237,6 +241,61 @@ export class RequestController {
                     'Requests for service and fonctionnaire retrieved successfully',
                 data: result.data,
                 metadata: result.metadata,
+            };
+        } catch (error) {
+            if (error instanceof NotFoundException) {
+                throw new NotFoundException({
+                    status: 'error',
+                    message: error.message,
+                    data: null,
+                });
+            }
+            throw new BadRequestException({
+                status: 'error',
+                message: 'An unexpected error occurred',
+                data: null,
+            });
+        }
+    }
+
+    @Get('institution/:fonctionnaireId/request-count')
+    @ApiOperation({
+        summary: 'Obtenir le nombre de demandes par service pour l\'institution du fonctionnaire',
+    })
+    @ApiParam({ name: 'fonctionnaireId', description: 'ID du fonctionnaire', type: String })
+    async getRequestCountByServiceForInstitution(
+        @Param('fonctionnaireId') fonctionnaireId: string,
+    ) {
+        try {
+            const fonctionnaire = await this.fonctionnaireService.findOne(fonctionnaireId);
+            if (!fonctionnaire) {
+                throw new NotFoundException(`Fonctionnaire with ID ${fonctionnaireId} not found.`);
+            }
+
+            const institutionId = fonctionnaire.institution._id.toString();
+            console.log(institutionId) ;
+
+            const services = await this.serviceService.findByInstitution(institutionId);
+            console.log(services)
+
+            const requestCounts = await Promise.all(
+                services.map(async (service) => {
+                    const count = await this.requestService.countByServiceAndInstitution(
+                        service._id.toString(),
+                        institutionId,
+                    );
+                    return {
+                        serviceId: service._id.toString(),
+                        serviceName: service.name,
+                        requestCount: count,
+                    };
+                }),
+            );
+
+            return {
+                status: 'success',
+                message: 'Request counts by service retrieved successfully',
+                data: requestCounts,
             };
         } catch (error) {
             if (error instanceof NotFoundException) {
@@ -521,4 +580,8 @@ export class RequestController {
             });
         }
     }
+
+
+
+
 }

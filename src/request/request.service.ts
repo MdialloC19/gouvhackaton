@@ -261,6 +261,7 @@ export class RequestService {
             );
         }
 
+
         return {
             status: 'success',
             message: 'Requests retrieved successfully',
@@ -269,6 +270,13 @@ export class RequestService {
                 total_count: totalCount,
             },
         };
+    }
+
+    async countByServiceAndInstitution(serviceId: string, institutionId: string): Promise<number> {
+        return this.requestModel.countDocuments({
+            service: serviceId,
+            institution: institutionId,
+        }).exec();
     }
 
     async findByInstitution(institutionId: string): Promise<Request[]> {

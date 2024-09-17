@@ -42,26 +42,24 @@ export class ServiceService {
         return this.serviceModel
             .find()
             .populate('institutions')
-            .populate('fields')
             .exec();
     }
 
     async findOne(id: string): Promise<Service> {
         const service = await this.serviceModel
-            .findById(id)
-            .populate('institutions')
-            .populate('fields')
-            .exec();
-        if (!service) {
-            throw new NotFoundException(`Service with ID "${id}" not found`);
-        }
+        .findById(id)
+        .populate('institutions')
+        .exec();
+        console.log(await this.serviceModel.find({}).exec())    
         return service;
     }
 
     async findByInstitution(institutionId: string): Promise<Service[]> {
         const institution =
             await this.institutionService.findOne(institutionId);
-        return this.serviceModel.find({ institutions: institution }).exec();
+        return this.serviceModel.find({ institutions: institution })
+        .populate('institutions')
+        .exec();
     }
 
     async update(
@@ -70,6 +68,7 @@ export class ServiceService {
     ): Promise<Service> {
         const updatedService = await this.serviceModel
             .findByIdAndUpdate(id, updateServiceDto, { new: true })
+            .populate('institutions')
             .exec();
         if (!updatedService) {
             throw new NotFoundException(`Service with ID "${id}" not found`);

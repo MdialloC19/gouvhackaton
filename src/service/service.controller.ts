@@ -317,7 +317,7 @@ export class ServiceController {
     async findByInstitution(
         @Param('institutionId') institutionId: string,
     ): Promise<ApiResponse<Service[]>> {
-        try {
+      try {
             const services =
                 await this.serviceService.findByInstitution(institutionId);
             if (services.length === 0) {
@@ -332,7 +332,7 @@ export class ServiceController {
                 message: 'Services retrieved successfully',
                 data: services,
             };
-        } catch (error) {
+       } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Failed to retrieve services by institution',
