@@ -12,6 +12,13 @@ enum RequestState {
     Rejete = 'rejeté',
 }
 
+enum PaymentMethod {
+    Wave = 'wave',
+    OrangeMoney = 'orange-money',
+    FreeMoney = 'free-money',
+    Carte = 'carte',
+}
+
 @Schema()
 export class Request extends Document {
     @Prop({ type: Types.ObjectId, ref: 'Citoyen', required: true })
@@ -47,8 +54,11 @@ export class Request extends Document {
     @Prop({ type: Map, of: String })
     textResponses: Map<string, string>;
 
-    @Prop({ type: Map, of: Types.ObjectId })
-    documentResponses: Map<string, Types.ObjectId>;
+    @Prop({ type: Map, of: String })
+    documentResponses: Map<string, String>;
+
+    @Prop({ type: String, enum: PaymentMethod })
+    paymentMethods: PaymentMethod[];
 }
 
 export const RequestSchema = SchemaFactory.createForClass(Request);

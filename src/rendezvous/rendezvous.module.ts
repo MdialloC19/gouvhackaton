@@ -14,7 +14,7 @@ import { FonctionnaireModule } from 'src/fonctionnaire/fonctionnaire.module';
         ]),
         CitoyenModule,
         InstitutionModule,
-        FonctionnaireModule
+        FonctionnaireModule,
     ],
     providers: [RendezvousService],
     controllers: [RendezvousController],

@@ -190,6 +190,26 @@ export class DocumentController {
         res.send(document.buffer);
     }
 
+    @Get('/info/:id')
+    @ApiOperation({ summary: "Obtenir les metadonnées d'un document par ID" })
+    @ApiParam({ name: 'id', description: 'ID du document', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Données du document récupérées avec succès.',
+    })
+    @SwaggerApiResponse({ status: 404, description: 'Document non trouvé.' })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération des données du document.',
+    })
+    async getDocumentDataById(@Param('id') id: string) {
+        const document = await this.documentService.getDocumentById(id);
+        if (!document) {
+            throw new NotFoundException(`Document avec ID ${id} non trouvé`);
+        }
+        return document;
+    }
+
     // Citoyen, Fonctionnaire, Admin
     @Delete(':id')
     @ApiOperation({ summary: 'Supprimer un document par ID' })

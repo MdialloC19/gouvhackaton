@@ -87,72 +87,13 @@ export class ServiceService {
         return deletedService;
     }
 
-    async removeInstitutionFromService(
-        serviceId: string,
-        institutionId: string,
-    ): Promise<Service> {
-        const service = await this.serviceModel.findById(serviceId).exec();
-        if (!service) {
-            throw new NotFoundException(
-                `Service with ID ${serviceId} not found`,
-            );
-        }
-
-        const institution =
-            await this.institutionService.findOne(institutionId);
-        if (!institution) {
-            throw new NotFoundException(
-                `Institution with ID ${institutionId} not found`,
-            );
-        }
-
-        const institutionIndex = service.institutions.findIndex(
-            (inst) => inst._id.toString() === institution._id.toString(),
-        );
-
-        if (institutionIndex === -1) {
-            throw new NotFoundException(
-                `Institution with ID ${institutionId} not found in service`,
-            );
-        }
-
-        service.institutions.splice(institutionIndex, 1);
-
-        await service.save();
-
-        return service;
+    async getDistinctCategories(): Promise<string[]> {
+        return this.serviceModel.distinct('category').exec();
     }
 
-    async addInstitutionToService(
-        serviceId: string,
-        institutionId: string,
-    ): Promise<Service> {
-        const service = await this.serviceModel.findById(serviceId);
-        if (!service) {
-            throw new NotFoundException(
-                `Service with ID ${serviceId} not found`,
-            );
-        }
-
-        const institution =
-            await this.institutionService.findOne(institutionId);
-        if (!institution) {
-            throw new NotFoundException(
-                `Institution with ID ${institutionId} not found`,
-            );
-        }
-
-        if (service.institutions.includes(institution.id)) {
-            throw new ConflictException(
-                'Institution already associated with this service',
-            );
-        }
-
-        service.institutions.push(institution);
-        await service.save();
-        return service;
+    async getByCategory(category: string): Promise<Service[]> {
+        return this.serviceModel.find({ category }).exec();
     }
-
     async findByName(name: string): Promise<Service> {
         return this.serviceModel.findOne({ name }).exec();
     }

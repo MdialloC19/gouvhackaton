@@ -3,6 +3,12 @@ import { IsNotEmpty, IsEnum, IsOptional, IsMongoId } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
 import { Types } from 'mongoose';
 
+enum PaymentMethod {
+    Wave = 'wave',
+    OrangeMoney = 'orange-money',
+    FreeMoney = 'free-money',
+    Carte = 'carte',
+}
 export class CreateRequestDto {
     @ApiProperty({
         description: 'ID du citoyen effectuant la demande',
@@ -68,4 +74,15 @@ export class CreateRequestDto {
     })
     @IsOptional()
     documentResponses: Record<string, Types.ObjectId>;
+
+    @ApiProperty({
+        description: 'Méthode de paiement utilisé par le citoyen ',
+        example: 'wave',
+        enum: PaymentMethod,
+        isArray: true,
+        required: false,
+    })
+    @IsOptional()
+    @IsEnum(PaymentMethod)
+    paymentMethods?: PaymentMethod;
 }

@@ -1,7 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { Document, Types } from 'mongoose';
 import { Institution } from '../institution/institution.schema';
-import { Field } from './field.schema';
+import { FormFieldDto } from './dto/create-service.dto';
 @Schema()
 export class Service extends Document {
     @Prop({ required: true, unique: true })
@@ -29,7 +29,28 @@ export class Service extends Document {
     institutions: Institution[];
 
     @Prop({ type: [{ type: Object }] })
-    fields: Field[];
+    fields: FormFieldDto[];
+
+    @Prop()
+    whoCanMakeRequest: string;
+
+    @Prop()
+    structureInCharge: string;
+
+    @Prop()
+    competentInstitution: string;
+
+    @Prop()
+    serviceHours: string;
+
+    @Prop({ type: [String] })
+    stepsToFollow: string[];
+
+    @Prop()
+    youtubeLink: string;
+
+    @Prop()
+    wolofVoiceLink: string;
 }
 
 export const ServiceSchema = SchemaFactory.createForClass(Service);

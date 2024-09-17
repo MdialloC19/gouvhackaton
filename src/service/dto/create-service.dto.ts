@@ -16,7 +16,7 @@ import { Type } from 'class-transformer';
 
 class FieldTypeDto {
     @IsString()
-    typeName: string;
+    typeName: EnumFieldType;
 
     @IsOptional()
     @IsArray()
@@ -24,7 +24,7 @@ class FieldTypeDto {
     options?: string[];
 }
 
-class FormFieldDto {
+export class FormFieldDto {
     @IsUUID()
     uuid: string;
 
@@ -106,7 +106,7 @@ export class CreateServiceDto {
     })
     @IsArray()
     @IsOptional()
-    institutionsIds?: Types.ObjectId[];
+    institutions?: Types.ObjectId[];
 
     @ApiProperty({
         description: 'Liste des champs requis pour ce service (optionnel)',
@@ -118,13 +118,6 @@ export class CreateServiceDto {
                 label: { type: 'string', example: 'Nom complet' },
                 fieldType: {
                     type: 'string',
-                    enum: [
-                        'INPUT',
-                        'SELECT',
-                        'UPLOAD_FILE',
-                        'UPLOAD_IMAGE',
-                        'DATE',
-                    ],
                     example: EnumFieldType.TEXT,
                 },
                 required: { type: 'boolean', example: true },
@@ -143,6 +136,66 @@ export class CreateServiceDto {
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => FormFieldDto)
-    formFields: FormFieldDto[];
-    
+    fields: FormFieldDto[];
+
+    @ApiProperty({
+        description: 'Qui peut faire la demande',
+        example: "Tout citoyen possédant une carte d'identité nationale valide",
+    })
+    @IsOptional()
+    @IsString()
+    whoCanMakeRequest: string;
+
+    @ApiProperty({
+        description: 'Structure responsable de la gestion du service',
+        example: "Ministère de l'Intérieur",
+    })
+    @IsString()
+    @IsOptional()
+    structureInCharge: string;
+
+    @ApiProperty({
+        description: 'Institution compétente pour le service',
+        example: "Direction de l'Identification Civile",
+    })
+    @IsOptional()
+    @IsString()
+    competentInstitution: string;
+
+    @ApiProperty({
+        description: 'Heures de service',
+        example: 'Lundi à vendredi, de 9h à 17h',
+    })
+    @IsString()
+    @IsOptional()
+    serviceHours: string;
+
+    @ApiProperty({
+        description: 'Étapes à suivre pour compléter le service',
+        example: [
+            'Étape 1 : Remplir le formulaire en ligne',
+            'Étape 2 : Soumettre les documents justificatifs',
+            'Étape 3 : Attendre la confirmation',
+        ],
+    })
+    @IsArray()
+    @IsOptional()
+    @IsString({ each: true })
+    stepsToFollow: string[];
+
+    @ApiProperty({
+        description: "Lien YouTube pour plus d'informations sur le service",
+        example: 'https://www.youtube.com/watch?v=exemple',
+    })
+    @IsUrl()
+    @IsOptional()
+    youtubeLink?: string;
+
+    @ApiProperty({
+        description: 'Lien vers une explication vocale en wolof sur le service',
+        example: 'https://exemple.com/wolof-voice-service',
+    })
+    @IsUrl()
+    @IsOptional()
+    wolofVoiceLink?: string;
 }

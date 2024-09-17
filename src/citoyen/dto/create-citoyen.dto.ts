@@ -130,7 +130,7 @@ export class CreateCitoyenDto {
     @IsOptional()
     @IsString()
     readonly address?: string;
-    
+
     @ApiProperty({
         description: 'Pays de naissance',
         example: 'Senegal',

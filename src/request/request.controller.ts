@@ -83,7 +83,9 @@ export class RequestController {
     }
 
     @Put(':id')
-    @ApiOperation({ summary: 'Mettre à jour une demande par ID' })
+    @ApiOperation({
+        summary: 'Mettre à jour la demande par ID fait par le fonctionnaire',
+    })
     @ApiParam({ name: 'id', description: 'ID de la demande', type: String })
     @ApiBody({ type: UpdateRequestDto })
     @SwaggerApiResponse({
@@ -490,6 +492,31 @@ export class RequestController {
             throw new BadRequestException({
                 status: 'error',
                 message: 'An unexpected error occurred',
+                data: null,
+            });
+        }
+    }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer une request par ID' })
+    @ApiParam({ name: 'id', description: 'ID du request', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'request supprimé avec succès.',
+    })
+    @SwaggerApiResponse({ status: 404, description: 'request non trouvé.' })
+    async remove(@Param('id') id: string): Promise<ApiResponse<null>> {
+        try {
+            await this.requestService.remove(id);
+            return {
+                status: 'success',
+                message: 'request deleted successfully',
+                data: null,
+            };
+        } catch (error) {
+            throw new NotFoundException({
+                status: 'error',
+                message: `request with ID ${id} not found`,
                 data: null,
             });
         }
