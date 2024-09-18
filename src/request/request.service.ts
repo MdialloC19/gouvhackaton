@@ -178,7 +178,7 @@ export class RequestService {
 
     async findByCitoyen(citoyenId: string): Promise<Request[]> {
         const requests = await this.requestModel
-            .find({ citoyen: new Types.ObjectId(citoyenId) })
+            .find({ citoyen: citoyenId })
             .populate('service institution processedBy citoyen')
             .exec();
         if (requests.length === 0) {
