@@ -16,6 +16,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
    * @returns {Promise<any>} - Le fonctionnaire authentifié ou une exception UnauthorizedException
    */
   async validate(email: string, password: string): Promise<any> {
+    console.log("email", email);
+    console.log("password", password);
     const fonctionnaire = await this.fonctionnaireAuthService.validateFonctionnaire(email, password);
 
     if (!fonctionnaire) {

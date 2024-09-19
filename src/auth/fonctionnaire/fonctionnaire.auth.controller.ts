@@ -35,7 +35,7 @@ export class FonctionnaireAuthController {
       signed: true,
     });
 
-    return { message: 'Login successful', result: { fonctionnaire } };
+    return { message: 'Login successful', result: { fonctionnaire, token } };
   }
 
   /**

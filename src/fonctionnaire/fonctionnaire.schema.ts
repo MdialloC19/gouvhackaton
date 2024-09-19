@@ -14,6 +14,9 @@ export class Fonctionnaire extends User {
     @Prop()
     role: string;
 
+    @Prop()
+    password: string;
+
     @Prop({ type: Types.ObjectId, ref: 'Institution', required: true })
     institution: Institution;
 }

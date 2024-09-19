@@ -1,15 +1,17 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import * as cookieParser from 'cookie-parser'; 
 import { CorsOptions } from '@nestjs/common/interfaces/external/cors-options.interface';
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
 
+    // Configuration de Swagger
     const config = new DocumentBuilder()
         .setTitle('Portail Numérique des Services Publics')
         .setDescription(
-            'API pour la gestion des services publics en ligne, permettant la soumission de demandes, la prise de rendez-vous,et la gestion des utilisateurs ',
+            'API pour la gestion des services publics en ligne, permettant la soumission de demandes, la prise de rendez-vous, et la gestion des utilisateurs',
         )
         .setVersion('1.0')
         .addTag('API')
@@ -17,6 +19,8 @@ async function bootstrap() {
 
     const document = SwaggerModule.createDocument(app, config);
     SwaggerModule.setup('api', app, document);
+
+    // Configuration CORS
     const corsOptions: CorsOptions = {
         origin: '*',
         methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
@@ -32,6 +36,11 @@ async function bootstrap() {
     };
 
     app.enableCors(corsOptions);
+
+    
+    app.use(cookieParser('your-secret-key')); 
+
     await app.listen(3000);
 }
+
 bootstrap();

@@ -141,7 +141,6 @@ export class FonctionnaireService {
         const fonctionnaire = await this.fonctionnaireModel
             .findOne({ email })
             .populate('institution')
-            .select('-password')
             .exec();
         if (!fonctionnaire) {
             throw new NotFoundException(
