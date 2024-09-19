@@ -21,6 +21,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
    * @param {any} payload - Les informations extraites du token JWT
    * @returns {Promise<any>} - Le fonctionnaire correspondant ou une exception UnauthorizedException
    */
+  
   async validate(payload: any): Promise<any> {
     const fonctionnaire = await this.fonctionnaireService.findOne(payload.id);
     if (!fonctionnaire) {

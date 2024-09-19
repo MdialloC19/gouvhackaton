@@ -24,6 +24,9 @@ import { RendezvousModule } from './rendezvous/rendezvous.module';
 import { InstitutionModule } from './institution/institution.module';
 import { AdminModule } from './admin/admin.module';
 import { RequestSchema } from './request/request.schema';
+import { FonctionnaireAuthModule } from './auth/fonctionnaire/fonctionnaire.auth.module';
+
+
 @Module({
     imports: [
         ConfigModule,
@@ -46,6 +49,8 @@ import { RequestSchema } from './request/request.schema';
         RendezvousModule,
         InstitutionModule,
         AdminModule,
+        FonctionnaireAuthModule
+       
     ],
     controllers: [],
     providers: [],
