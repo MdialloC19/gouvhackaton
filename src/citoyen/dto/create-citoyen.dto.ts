@@ -65,6 +65,7 @@ export class CreateCitoyenDto {
         description: 'Sexe du citoyen',
         example: 'F',
     })
+    
     @IsString()
     readonly sex: string;
 

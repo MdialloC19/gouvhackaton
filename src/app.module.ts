@@ -25,6 +25,7 @@ import { InstitutionModule } from './institution/institution.module';
 import { AdminModule } from './admin/admin.module';
 import { RequestSchema } from './request/request.schema';
 import { FonctionnaireAuthModule } from './auth/fonctionnaire/fonctionnaire.auth.module';
+import { CitoyenAuthModule } from './auth/citoyen/citoyen.auth.module';
 
 
 @Module({
@@ -49,7 +50,8 @@ import { FonctionnaireAuthModule } from './auth/fonctionnaire/fonctionnaire.auth
         RendezvousModule,
         InstitutionModule,
         AdminModule,
-        FonctionnaireAuthModule
+        FonctionnaireAuthModule,
+        CitoyenAuthModule
        
     ],
     controllers: [],

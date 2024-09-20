@@ -13,7 +13,7 @@ import { FonctionnaireAuthService } from './fonctionnaire.auth.service';
 import { AuthGuard } from '@nestjs/passport';
 import { CreateFonctionnaireDto } from '../../fonctionnaire/dto/create-fonctionnaire.dto';
 
-@Controller('fonctionnaire/auth')
+@Controller('fonctionnaires/auth')
 export class FonctionnaireAuthController {
   constructor(private fonctionnaireAuthService: FonctionnaireAuthService) {}
 
@@ -35,7 +35,7 @@ export class FonctionnaireAuthController {
       signed: true,
     });
 
-    return { message: 'Login successful', result: { fonctionnaire, token } };
+    return { message: 'Login successful', result: { fonctionnaire } };
   }
 
   /**

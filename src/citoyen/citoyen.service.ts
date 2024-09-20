@@ -79,7 +79,7 @@ export class CitoyenService {
     }
 
     async findByCNI(CNI: string): Promise<Citoyen | null> {
-        return this.citoyenModel.findOne({ CNI }).select('-password').exec();
+        return this.citoyenModel.findOne({ CNI }).exec();
     }
 
     async getList(
