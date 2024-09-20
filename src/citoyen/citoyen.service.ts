@@ -73,7 +73,7 @@ export class CitoyenService {
 
     async findByPhoneNumber(phoneNumber: string): Promise<Citoyen | null> {
         return this.citoyenModel
-            .findOne({ phoneNumber })
+            .findOne({ phoneNumber }) 
             .exec();
     }
 

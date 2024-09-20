@@ -20,8 +20,8 @@ import {
     /**
      * Valide si un citoyen existe avec le CNI et le mot de passe
      */
-    async validateCitoyen(CNI: string, pass: string): Promise<Citoyen | null> {
-      const citoyen = await this.citoyenService.findByCNI(CNI);
+    async validateCitoyen(phoneNumber: string, pass: string): Promise<Citoyen | null> {
+      const citoyen = await this.citoyenService.findByPhoneNumber(phoneNumber);
       if (!citoyen) {
         throw new NotFoundException('Citoyen not found');
       }
