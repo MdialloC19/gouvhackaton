@@ -38,7 +38,7 @@ async function bootstrap() {
     app.enableCors(corsOptions);
 
     
-    app.use(cookieParser('your-secret-key')); 
+    app.use(cookieParser(process.env.COOKIE_SECRET)); // Utilisation de cookie-parser pour les cookies signés
 
     await app.listen(3000);
 }

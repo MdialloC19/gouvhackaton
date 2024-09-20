@@ -28,7 +28,7 @@ export class CitoyenAuthController {
   @ApiOperation({ summary: 'Connexion du citoyen' })
   @ApiBody({
     description: "Données d'authentification du citoyen",
-    schema: { example: { phoneNumber: '+33123456789', password: 'Str0ngP@ssw0rd!' } },
+    schema: { example: { phoneNumber: '+33123456789', password: 'somethingStrong ' } },
   })
   @SwaggerApiResponse({
     status: 200,
