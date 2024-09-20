@@ -10,6 +10,7 @@ import { Types } from 'mongoose';
 
 enum RequestState {
     EnCours = 'en-cours',
+    Confirme = 'confirmé',
     Termine = 'terminé',
     Rejete = 'rejeté',
 }

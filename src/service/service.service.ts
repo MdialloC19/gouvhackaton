@@ -18,74 +18,59 @@ export class ServiceService {
     ) {}
 
     async create(createServiceDto: CreateServiceDto): Promise<Service> {
-        const { name, link, ...rest } = createServiceDto;
-
+        const { name, link, institutions, ...rest } = createServiceDto;
+    
         const existingName = await this.serviceModel.findOne({ name }).exec();
         if (existingName) {
             throw new ConflictException(
                 'Service with this name already exists',
             );
         }
-
+    
         const existingLink = await this.serviceModel.findOne({ link }).exec();
         if (existingLink) {
             throw new ConflictException(
                 'Service with this link already exists',
             );
         }
-
+    
         const createdService = new this.serviceModel({ name, link, ...rest });
-        return createdService.save();
+        const savedService = await createdService.save();
+    
+        if (institutions && institutions.length > 0) {
+            for (const institutionId of institutions) {
+                await this.addInstitutionToService(savedService._id.toString(), institutionId.toString());
+            }
+        }
+    
+        return this.serviceModel.findById(savedService._id).populate('institutions').exec();
     }
+    
 
     async findAll(): Promise<Service[]> {
         return this.serviceModel
             .find()
             .populate('institutions')
-            .populate('fields')
             .exec();
     }
 
     async findOne(id: string): Promise<Service> {
         const service = await this.serviceModel
-            .findById(id)
-            .populate('institutions')
-            .populate('fields')
-            .exec();
-        if (!service) {
-            throw new NotFoundException(`Service with ID "${id}" not found`);
-        }
+        .findById(id)
+        .populate('institutions')
+        .exec();
+        console.log(await this.serviceModel.find({}).exec())    
         return service;
     }
 
     async findByInstitution(institutionId: string): Promise<Service[]> {
         const institution =
             await this.institutionService.findOne(institutionId);
-        return this.serviceModel.find({ institutions: institution }).exec();
+        return this.serviceModel.find({ institutions: institution })
+        .populate('institutions')
+        .exec();
     }
 
-    async update(
-        id: string,
-        updateServiceDto: UpdateServiceDto,
-    ): Promise<Service> {
-        const updatedService = await this.serviceModel
-            .findByIdAndUpdate(id, updateServiceDto, { new: true })
-            .exec();
-        if (!updatedService) {
-            throw new NotFoundException(`Service with ID "${id}" not found`);
-        }
-        return updatedService;
-    }
-
-    async remove(id: string): Promise<Service> {
-        const deletedService = await this.serviceModel
-            .findByIdAndDelete(id)
-            .exec();
-        if (!deletedService) {
-            throw new NotFoundException(`Service with ID "${id}" not found`);
-        }
-        return deletedService;
-    }
 
     async removeInstitutionFromService(
         serviceId: string,
@@ -153,6 +138,39 @@ export class ServiceService {
         return service;
     }
 
+  
+
+    async update(
+        id: string,
+        updateServiceDto: UpdateServiceDto,
+    ): Promise<Service> {
+        const updatedService = await this.serviceModel
+            .findByIdAndUpdate(id, updateServiceDto, { new: true })
+            .populate('institutions')
+            .exec();
+        if (!updatedService) {
+            throw new NotFoundException(`Service with ID "${id}" not found`);
+        }
+        return updatedService;
+    }
+
+    async remove(id: string): Promise<Service> {
+        const deletedService = await this.serviceModel
+            .findByIdAndDelete(id)
+            .exec();
+        if (!deletedService) {
+            throw new NotFoundException(`Service with ID "${id}" not found`);
+        }
+        return deletedService;
+    }
+
+    async getDistinctCategories(): Promise<string[]> {
+        return this.serviceModel.distinct('category').exec();
+    }
+
+    async getByCategory(category: string): Promise<Service[]> {
+        return this.serviceModel.find({ category }).exec();
+    }
     async findByName(name: string): Promise<Service> {
         return this.serviceModel.findOne({ name }).exec();
     }

@@ -87,7 +87,8 @@ export class RendezvousController {
     }
     @Get('fonctionnaire/:fonctionnaireId')
     @ApiOperation({
-        summary: 'Obtenir les rendez-vous pour un fonctionnaire avec des options de pagination, de tri et de filtrage',
+        summary:
+            'Obtenir les rendez-vous pour un fonctionnaire avec des options de pagination, de tri et de filtrage',
     })
     @ApiParam({
         name: 'fonctionnaireId',

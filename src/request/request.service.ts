@@ -32,53 +32,64 @@ export class RequestService {
         } = createRequestDto;
 
         const service = await this.serviceService.findOne(serviceId.toString());
+
         if (!service) {
             throw new NotFoundException(
                 `Service with ID ${serviceId} not found`,
             );
-        }
-
-        const institutionExists = service.institutions.some(
-            (inst: any) => inst._id.toString() === institutionId,
-        );
-
-        if (!institutionExists) {
-            throw new BadRequestException(
-                `Institution with ID ${institutionId} is not part of the service`,
-            );
-        }
-
-        for (const fieldId in documentResponses) {
-            if (documentResponses.hasOwnProperty(fieldId)) {
-                const docId = documentResponses[fieldId].toString();
-                const documentExists =
-                    await this.documentService.getDocumentById(docId);
-                if (!documentExists) {
-                    throw new NotFoundException(
-                        `Document with ID ${docId} not found`,
-                    );
-                }
-            }
         }
         const responses: any = {
             textResponses: {},
             documentResponses: {},
         };
 
-        for (const [fieldLabel, response] of Object.entries(textResponses)) {
-            const field = service.fields.find((f) => f.label === fieldLabel);
+        if (textResponses && Object.keys(textResponses).length > 0) {
+            for (const [fieldLabel, response] of Object.entries(
+                textResponses,
+            )) {
+                if (response === null || response === undefined) {
+                    throw new BadRequestException(
+                        `Text response for field ${fieldLabel} is null or undefined.`,
+                    );
+                }
 
-            if (!field) {
-                throw new BadRequestException(
-                    `Field with label ${fieldLabel} not found in service ${service._id}`,
-                );
+                const field = service.fields.find((f) => f.name === fieldLabel);
+                if (!field) {
+                    throw new BadRequestException(
+                        `Field with label ${fieldLabel} not found in service ${service._id}`,
+                    );
+                }
+
+                responses.textResponses[fieldLabel] = response;
             }
+        }
 
-            if (field.fieldType === 'file') {
+        if (documentResponses && Object.keys(documentResponses).length > 0) {
+            for (const [fieldLabel, response] of Object.entries(
+                documentResponses,
+            )) {
+                if (response === null || response === undefined) {
+                    throw new BadRequestException(
+                        `Document response for field ${fieldLabel} is null or undefined.`,
+                    );
+                }
+
+                const field = service.fields.find((f) => f.name === fieldLabel);
+                if (!field) {
+                    throw new BadRequestException(
+                        `Field with label ${fieldLabel} not found in service ${service._id}`,
+                    );
+                }
+
                 const docId = response.toString();
+                if (!docId) {
+                    throw new BadRequestException(
+                        `Document ID for field ${fieldLabel} is invalid.`,
+                    );
+                }
+
                 const documentExists =
                     await this.documentService.getDocumentById(docId);
-
                 if (!documentExists) {
                     throw new NotFoundException(
                         `Document with ID ${docId} not found`,
@@ -86,8 +97,6 @@ export class RequestService {
                 }
 
                 responses.documentResponses[fieldLabel] = docId;
-            } else {
-                responses.textResponses[fieldLabel] = response;
             }
         }
 
@@ -169,7 +178,7 @@ export class RequestService {
 
     async findByCitoyen(citoyenId: string): Promise<Request[]> {
         const requests = await this.requestModel
-            .find({ citoyen: new Types.ObjectId(citoyenId) })
+            .find({ citoyen: citoyenId })
             .populate('service institution processedBy citoyen')
             .exec();
         if (requests.length === 0) {
@@ -252,6 +261,7 @@ export class RequestService {
             );
         }
 
+
         return {
             status: 'success',
             message: 'Requests retrieved successfully',
@@ -260,6 +270,13 @@ export class RequestService {
                 total_count: totalCount,
             },
         };
+    }
+
+    async countByServiceAndInstitution(serviceId: string, institutionId: string): Promise<number> {
+        return this.requestModel.countDocuments({
+            service: serviceId,
+            institution: institutionId,
+        }).exec();
     }
 
     async findByInstitution(institutionId: string): Promise<Request[]> {
@@ -273,6 +290,16 @@ export class RequestService {
             );
         }
         return requests;
+    }
+
+    async remove(id: string): Promise<Request> {
+        const deletedrequest = await this.requestModel
+            .findByIdAndDelete(id)
+            .exec();
+        if (!deletedrequest) {
+            throw new NotFoundException(`request with ID "${id}" not found`);
+        }
+        return deletedrequest;
     }
 
     async findByProcessedBy(fonctionnaireId: string): Promise<Request[]> {

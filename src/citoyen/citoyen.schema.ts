@@ -6,35 +6,34 @@ export enum MaritalStatus {
     DIVORCED = 'Divorcé(e)',
     WIDOWED = 'Veuf(ve)',
 }
-    @Schema()
-    export class Citoyen extends User {
-        @Prop()
-        fathersName: string;
-    
-        @Prop()
-        fathersSurname: string;
-    
-        @Prop()
-        mothersName: string;
-    
-        @Prop()
-        mothersSurname: string;
-    
-        @Prop({
-            type: String,
-            enum: MaritalStatus,
-            default: MaritalStatus.SINGLE,
-        })
-        maritalStatus: MaritalStatus;
-        @Prop()
-        address: string;
-    
-        @Prop()
-        birthCountry: string;
-    
-        @Prop()
-        birthDepartment: string;
-    }
+@Schema()
+export class Citoyen extends User {
+    @Prop()
+    fathersName: string;
 
+    @Prop()
+    fathersSurname: string;
+
+    @Prop()
+    mothersName: string;
+
+    @Prop()
+    mothersSurname: string;
+
+    @Prop({
+        type: String,
+        enum: MaritalStatus,
+        default: MaritalStatus.SINGLE,
+    })
+    maritalStatus: MaritalStatus;
+    @Prop()
+    address: string;
+
+    @Prop()
+    birthCountry: string;
+
+    @Prop()
+    birthDepartment: string;
+}
 
 export const CitoyenSchema = SchemaFactory.createForClass(Citoyen);

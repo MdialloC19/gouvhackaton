@@ -24,11 +24,15 @@ import {
     ApiQuery,
 } from '@nestjs/swagger';
 import { ApiResponse } from 'src/interface/apiResponses.interface';
+import { FonctionnaireService } from 'src/fonctionnaire/fonctionnaire.service';
+import { ServiceService } from 'src/service/service.service';
 
 @ApiTags('Requests')
 @Controller('requests')
 export class RequestController {
-    constructor(private readonly requestService: RequestService) {}
+    constructor(private readonly requestService: RequestService,
+        private readonly fonctionnaireService: FonctionnaireService,
+        private readonly serviceService: ServiceService,) {}
 
     @Post()
     @ApiOperation({ summary: 'Créer une nouvelle demande' })
@@ -83,7 +87,9 @@ export class RequestController {
     }
 
     @Put(':id')
-    @ApiOperation({ summary: 'Mettre à jour une demande par ID' })
+    @ApiOperation({
+        summary: 'Mettre à jour la demande par ID fait par le fonctionnaire',
+    })
     @ApiParam({ name: 'id', description: 'ID de la demande', type: String })
     @ApiBody({ type: UpdateRequestDto })
     @SwaggerApiResponse({
@@ -251,6 +257,66 @@ export class RequestController {
             });
         }
     }
+
+    @Get('institution/:fonctionnaireId/request-count')
+@ApiOperation({
+    summary: 'Obtenir le nombre de demandes par service pour l\'institution du fonctionnaire, ainsi que le total global',
+})
+@ApiParam({ name: 'fonctionnaireId', description: 'ID du fonctionnaire', type: String })
+async getRequestCountByServiceForInstitution(
+    @Param('fonctionnaireId') fonctionnaireId: string,
+) {
+    try {
+        const fonctionnaire = await this.fonctionnaireService.findOne(fonctionnaireId);
+        if (!fonctionnaire) {
+            throw new NotFoundException(`Fonctionnaire with ID ${fonctionnaireId} not found.`);
+        }
+
+        const institutionId = fonctionnaire.institution._id.toString();
+        const services = await this.serviceService.findByInstitution(institutionId);
+
+        let totalRequestCount = 0;
+
+        const requestCounts = await Promise.all(
+            services.map(async (service) => {
+                const count = await this.requestService.countByServiceAndInstitution(
+                    service._id.toString(),
+                    institutionId,
+                );
+                totalRequestCount += count; // Ajout du nombre de demandes au total global
+
+                return {
+                    serviceId: service._id.toString(),
+                    serviceName: service.name,
+                    requestCount: count,
+                };
+            }),
+        );
+
+        return {
+            status: 'success',
+            message: 'Request counts by service and total retrieved successfully',
+            data: {
+                services: requestCounts,
+                totalRequests: totalRequestCount, // Inclure le total global dans la réponse
+            },
+        };
+    } catch (error) {
+        if (error instanceof NotFoundException) {
+            throw new NotFoundException({
+                status: 'error',
+                message: error.message,
+                data: null,
+            });
+        }
+        throw new BadRequestException({
+            status: 'error',
+            message: 'An unexpected error occurred',
+            data: null,
+        });
+    }
+}
+
 
     @Get('institution/:institutionId')
     @ApiOperation({ summary: 'Obtenir les demandes pour une institution' })
@@ -494,4 +560,33 @@ export class RequestController {
             });
         }
     }
+
+    @Delete(':id')
+    @ApiOperation({ summary: 'Supprimer une request par ID' })
+    @ApiParam({ name: 'id', description: 'ID du request', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'request supprimé avec succès.',
+    })
+    @SwaggerApiResponse({ status: 404, description: 'request non trouvé.' })
+    async remove(@Param('id') id: string): Promise<ApiResponse<null>> {
+        try {
+            await this.requestService.remove(id);
+            return {
+                status: 'success',
+                message: 'request deleted successfully',
+                data: null,
+            };
+        } catch (error) {
+            throw new NotFoundException({
+                status: 'error',
+                message: `request with ID ${id} not found`,
+                data: null,
+            });
+        }
+    }
+
+
+
+
 }

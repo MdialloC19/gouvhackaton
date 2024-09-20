@@ -249,6 +249,17 @@ export class ServiceController {
             });
         }
     }
+    @ApiOperation({ summary: 'Obtenir les catégories distinctes des services' })
+    @Get('categories/distinct')
+    async getDistinctCategories() {
+        return await this.serviceService.getDistinctCategories();
+    }
+
+    @ApiOperation({ summary: 'Obtenir les services par catégorie' })
+    @Get('category/:category')
+    async getByCategory(@Param('category') category: string) {
+        return await this.serviceService.getByCategory(category);
+    }
 
     @Get(':id')
     @ApiOperation({ summary: 'Obtenir un service par ID' })
@@ -306,7 +317,7 @@ export class ServiceController {
     async findByInstitution(
         @Param('institutionId') institutionId: string,
     ): Promise<ApiResponse<Service[]>> {
-        try {
+      try {
             const services =
                 await this.serviceService.findByInstitution(institutionId);
             if (services.length === 0) {
@@ -321,7 +332,7 @@ export class ServiceController {
                 message: 'Services retrieved successfully',
                 data: services,
             };
-        } catch (error) {
+       } catch (error) {
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Failed to retrieve services by institution',
