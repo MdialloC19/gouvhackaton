@@ -24,7 +24,7 @@ export class LocalCitoyenStrategy extends PassportStrategy(Strategy, 'local-cito
     if (!citoyen) {
       throw new UnauthorizedException('Invalid phone number or password');
     }
-
+ 
     return citoyen;
   }
 }

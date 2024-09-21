@@ -28,7 +28,7 @@ export class CitoyenAuthController {
   @ApiOperation({ summary: 'Connexion du citoyen' })
   @ApiBody({
     description: "Données d'authentification du citoyen",
-    schema: { example: { phoneNumber: '+33123456789', password: 'somethingStrong ' } },
+    schema: { example: { phoneNumber: '+221123456789', password: 'somethingStrong ' } },
   })
   @SwaggerApiResponse({
     status: 200,
@@ -46,13 +46,14 @@ export class CitoyenAuthController {
             job: 'Ingénieur',
             sex: 'M',
           },
-          token: 'eyJhbGciOiJIUzI1NiIsInR5cCI...'
+          token: ''
         }
       }
     }
   })
   @SwaggerApiResponse({ status: 401, description: 'Échec de la connexion : identifiants invalides.' })
   async login(@Request() req, @Res({ passthrough: true }) response): Promise<any> {
+   
     const { citoyen, token } = await this.citoyenAuthService.login(req.user);
     response.cookie('token', token, {
       maxAge: 48 * 60 * 60 * 1000, // 48 heures
