@@ -38,16 +38,18 @@ export class CitoyenAuthService {
     }
 
     const { password, ...result } = citoyen.toObject();
+
     return result;
   }
 
   /**
    * Génère un token JWT pour le citoyen après une connexion réussie
    * @param {Citoyen} citoyen - Le citoyen pour lequel générer un token
-   * @returns {Promise<{ citoyen: any, token: string }>} - Le citoyen et son token JWT
+   * @returns {Promise<{ citoyen: Citoyen, token: string }>} - Le citoyen et son token JWT
    */
-  public async login(citoyen: Citoyen): Promise<{ citoyen: any, token: string }> {
+  public async login(citoyen: Citoyen): Promise<{ citoyen: Citoyen, token: string }> {
     const token = await this.generateToken(citoyen);
+    // console.log('Token generated:', token, citoyen );
     return { citoyen, token };
   }
 
