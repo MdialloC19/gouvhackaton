@@ -43,11 +43,6 @@ export class InstitutionService {
         const institution = await this.institutionModel
             .findOne({ name })
             .exec();
-        if (!institution) {
-            throw new NotFoundException(
-                `Institution with name "${name}" not found`,
-            );
-        }
         return institution;
     }
 
