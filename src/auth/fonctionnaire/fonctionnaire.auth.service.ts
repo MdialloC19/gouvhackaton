@@ -83,7 +83,7 @@ export class FonctionnaireAuthService {
     return { fonctionnaire: result, token };
   }
 
-  // Méthodes privées pour générer le token et hacher le mot de passe (pas besoin de Swagger)
+
   private async generateToken(fonctionnaire: any): Promise<string> {
     return this.jwtService.signAsync(fonctionnaire);
   }

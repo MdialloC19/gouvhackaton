@@ -138,16 +138,16 @@ export class FonctionnaireService {
         return deletedFonctionnaire;
     }
     async findByEmail(email: string): Promise<Fonctionnaire> {
-        const fonctionnaire = await this.fonctionnaireModel
+        return  this.fonctionnaireModel
             .findOne({ email })
             .populate('institution')
             .exec();
-        if (!fonctionnaire) {
-            throw new NotFoundException(
-                `Fonctionnaire with email "${email}" not found`,
-            );
-        }
-        return fonctionnaire;
+        // if (!fonctionnaire) {
+        //     throw new NotFoundException(
+        //         `Fonctionnaire with email "${email}" not found`,
+        //     );
+        // }
+       
     }
 
     async findByIdNumber(idNumber: string): Promise<Fonctionnaire> {
