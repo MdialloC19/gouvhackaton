@@ -23,6 +23,7 @@ import {
     ApiParam,
     ApiQuery,
 } from '@nestjs/swagger';
+import { buffer } from 'stream/consumers';
 
 @ApiTags('Documents')
 @Controller('documents')
@@ -176,19 +177,37 @@ export class DocumentController {
         status: 500,
         description: 'Échec de la récupération du fichier du document.',
     })
+    @Get('/file/:id')
+    @ApiOperation({ summary: "Obtenir le fichier d'un document par ID" })
+    @ApiParam({ name: 'id', description: 'ID du document', type: String })
+    @SwaggerApiResponse({
+        status: 200,
+        description: 'Fichier du document récupéré avec succès.',
+    })
+    @SwaggerApiResponse({ status: 404, description: 'Document non trouvé.' })
+    @SwaggerApiResponse({
+        status: 500,
+        description: 'Échec de la récupération du fichier du document.',
+    })
     async getDocumentById(@Param('id') id: string, @Res() res: Response) {
         const document = await this.documentService.getBuffer(id);
         if (!document) {
             throw new NotFoundException(`Document avec ID ${id} non trouvé`);
         }
-
         res.setHeader('Content-Type', document.mimetype);
-        res.setHeader(
-            'Content-Disposition',
-            `attachment; filename="${document.originalname}"`,
-        );
-        res.send(document.buffer);
+        res.setHeader('Content-Disposition', `attachment; filename="${document.originalname}"`);
+    
+        let bufferAsString = document.buffer.toString();
+    
+        if (bufferAsString.startsWith('data:')) {
+            bufferAsString = bufferAsString.split(',')[1];
+        }
+    
+        const finalBuffer = Buffer.from(bufferAsString, 'base64');
+    
+        return res.end(finalBuffer);
     }
+    
 
     @Get('/info/:id')
     @ApiOperation({ summary: "Obtenir les metadonnées d'un document par ID" })

@@ -59,7 +59,6 @@ export class ServiceService {
         .findById(id)
         .populate('institutions')
         .exec();
-        console.log(await this.serviceModel.find({}).exec())    
         return service;
     }
 

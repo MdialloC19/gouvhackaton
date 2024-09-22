@@ -58,7 +58,6 @@ export class RendezvousService {
 
             return rendezvous;
         } catch (error) {
-            console.log(error);
             throw new Error(`Failed to retrieve rendezvous: ${error.message}`);
         }
     }

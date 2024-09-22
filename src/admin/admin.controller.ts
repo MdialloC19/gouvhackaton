@@ -76,7 +76,7 @@ export class AdminController {
         description: "Échec de la récupération de l'administrateur.",
     })
     async findOne(@Param('id') id: string): Promise<Admin> {
-        return this.adminService.findOne(id);
+        return await this.adminService.findOne(id);
     }
 
     @Put(':id')
