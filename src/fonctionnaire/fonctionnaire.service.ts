@@ -211,7 +211,7 @@ export class FonctionnaireService {
             query.skip(start).limit(end - start + 1);
         }
 
-        return query.exec();
+        return query.populate('institution').exec();
     }
 
     async countFiltered(filter?: string): Promise<number> {
@@ -226,6 +226,7 @@ export class FonctionnaireService {
 
         return this.fonctionnaireModel
             .find({ _id: { $in: ids } })
+            .populate('institution')
             .select('-password')
             .exec();
     }
@@ -235,6 +236,7 @@ export class FonctionnaireService {
 
         return this.fonctionnaireModel
             .find(filterCriteria)
+            .populate('institution')
             .select('-password')
             .exec();
     }
@@ -244,6 +246,7 @@ export class FonctionnaireService {
     ): Promise<Service[]> {
         const fonctionnaire = await this.fonctionnaireModel
             .findOne({ _id: fonctionnaireId })
+            .populate('institution')
             .exec();
         if (!fonctionnaire) {
             throw new NotFoundException(
