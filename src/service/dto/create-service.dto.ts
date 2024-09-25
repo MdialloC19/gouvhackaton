@@ -16,12 +16,10 @@ import { Type } from 'class-transformer';
 
 class FieldTypeDto {
     @IsString()
-    typeName: EnumFieldType;
+    id: string;
 
-    @IsOptional()
-    @IsArray()
-    @IsString({ each: true })
-    options?: string[];
+    @IsString()
+    name: EnumFieldType;
 }
 
 export class FormFieldDto {
