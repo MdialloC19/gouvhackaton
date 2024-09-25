@@ -11,6 +11,7 @@ import { UpdateFonctionnaireDto } from './dto/update-fonctionnaire.dto';
 import { InstitutionService } from '../institution/institution.service';
 import { ServiceService } from 'src/service/service.service';
 import { Service } from 'src/service/service.schema';
+import * as bcrypt from 'bcrypt';
 
 @Injectable()
 export class FonctionnaireService {
@@ -20,6 +21,11 @@ export class FonctionnaireService {
         private readonly institutionService: InstitutionService,
         private readonly serviceService: ServiceService,
     ) {}
+
+    private async hashPassword(password: string): Promise<string> {
+        const salt = await bcrypt.genSalt(10);
+        return bcrypt.hash(password, salt);
+      }
 
     async create(
         createFonctionnaireDto: CreateFonctionnaireDto,
@@ -31,8 +37,12 @@ export class FonctionnaireService {
             email,
             idNumber,
             birthDate,
+            password,
             ...rest
         } = createFonctionnaireDto;
+
+        const hashedPassword = await this.hashPassword(password);
+        
 
         const institution =
             await this.institutionService.findOne(institutionId);
@@ -76,6 +86,7 @@ export class FonctionnaireService {
             idNumber,
             institution: institution._id,
             birthDate: birthDate ? new Date(birthDate) : undefined,
+            password: hashedPassword,
             ...rest,
         });
 

@@ -92,6 +92,7 @@ export class FonctionnaireAuthService {
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(password, salt);
   }
+  
 
   private async comparePassword(password: string, storedPasswordHash: string): Promise<boolean> {
     if (!storedPasswordHash) {
