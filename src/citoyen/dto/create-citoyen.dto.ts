@@ -14,7 +14,6 @@ export class CreateCitoyenDto {
         example: '1234567890123',
     })
     @IsString()
-    @IsNotEmpty()
     readonly CNI: string;
 
     @ApiProperty({

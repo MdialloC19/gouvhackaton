@@ -3,18 +3,17 @@ import { IsNotEmpty } from 'class-validator';
 import { Document } from 'mongoose';
 
 export enum EnumSex {
-    Homme = 'Homme',
-    Femme = 'Femme',
+    M = 'M',
+    F = 'F',
 }
 
 @Schema()
 export class User extends Document {
-    @IsNotEmpty()
-    @Prop({ required: true, unique: true })
+    @Prop()
+
     CNI: string;
 
-    @IsNotEmpty()
-    @Prop({ unique: true })
+    @Prop()
     phoneNumber: string;
 
     @IsNotEmpty()
