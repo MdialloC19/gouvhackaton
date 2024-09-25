@@ -16,8 +16,13 @@ import { Type } from 'class-transformer';
 
 class FieldTypeDto {
     @IsString()
-    id: string;
+    typeName: EnumFieldType;
 
+    @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    options?: string[];
+    
     @IsString()
     name: EnumFieldType;
 }
