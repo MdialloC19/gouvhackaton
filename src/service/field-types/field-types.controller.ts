@@ -8,47 +8,47 @@ export class FieldTypesController {
     getAll() {
         return [
             {
-                id: 'text',
+                typeName: 'text',
                 name: 'Texte',
             },
             {
-                id: 'url',
+                typeName: 'url',
                 name: 'URL',
             },
             {
-                id: 'tel',
+                typeName: 'tel',
                 name: 'Téléphone',
             },
             {
-                id: 'number',
+                typeName: 'number',
                 name: 'Nombre',
             },
             {
-                id: 'range',
+                typeName: 'range',
                 name: 'Plage',
             },
             {
-                id: 'date',
+                typeName: 'date',
                 name: 'Date',
             },
             {
-                id: 'checkbox',
+                typeName: 'checkbox',
                 name: 'Case à cocher',
             },
             {
-                id: 'radio',
+                typeName: 'radio',
                 name: 'Bouton radio',
             },
             {
-                id: 'file',
+                typeName: 'file',
                 name: 'Fichier',
             },
             {
-                id: 'textarea',
+                typeName: 'textarea',
                 name: 'Zone de texte',
             },
             {
-                id: 'select',
+                typeName: 'select',
                 name: 'Liste déroulante',
             },
         ];

@@ -22,7 +22,7 @@ class FieldTypeDto {
     @IsArray()
     @IsString({ each: true })
     options?: string[];
-    
+
     @IsString()
     name: EnumFieldType;
 }
