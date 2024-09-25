@@ -333,6 +333,14 @@ export class ServiceController {
                 data: services,
             };
        } catch (error) {
+        if (error instanceof NotFoundException) {
+            throw new NotFoundException({
+                status: 'error',
+                message: error.message,
+                data: null,
+            });
+        }
+        else
             throw new InternalServerErrorException({
                 status: 'error',
                 message: 'Failed to retrieve services by institution',

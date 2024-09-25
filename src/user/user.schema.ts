@@ -9,8 +9,7 @@ export enum EnumSex {
 
 @Schema()
 export class User extends Document {
-    @IsNotEmpty()
-    @Prop({ required: true })
+    @Prop({ required: false })
     CNI: string;
 
     @IsNotEmpty()
